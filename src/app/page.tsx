@@ -1,103 +1,183 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import DataTable from '@/components/global/DataTable';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toQueryString } from '@/lib/helpers';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { ColumnDef } from '@tanstack/react-table';
+import { Bolt, DollarSign, Leaf, Settings2, Zap } from 'lucide-react';
+import React from 'react';
+
+type CoinResponse = {
+  data: null | {
+    coins: Coin[];
+    cursor: string | null;
+  };
+};
+
+type Filters = {
+  creatorIds?: string[];
+  totalVolume?: {
+    min?: number;
+    max?: number;
+  };
+  volume24h?: {
+    min?: number;
+    max?: number;
+  };
+  marketCap?: {
+    min?: number;
+    max?: number;
+  };
+  uniqueHolders?: {
+    min?: number;
+    max?: number;
+  };
+};
+
+const Home = () => {
+  const [filters, setFilters] = React.useState<Filters>({});
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useInfiniteQuery<CoinResponse>({
+      queryKey: ['coins'],
+      initialPageParam: null,
+      refetchInterval: 5000,
+      getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
+      queryFn: async ({ pageParam = null }) => {
+        const query = toQueryString({ cursor: pageParam });
+        const res = await fetch(`/api/coins?${query}`);
+        // --
+        if (!res.ok) return null;
+        return res.json();
+      },
+    });
+
+  const coins = (data?.pages.flatMap((page) => page.data?.coins) ?? []).filter((c) => !!c);
+  const creators = React.useMemo(() => {
+    const map = new Map<string, Creator>();
+    coins.forEach((coin) => {
+      if (!map.has(coin.creator.id)) {
+        map.set(coin.creator.id, coin.creator);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [coins]);
+
+  const filteredCoins = React.useMemo(() => {
+    return coins.filter((coin) => {
+      if (filters.creatorIds?.length && !filters.creatorIds.includes(coin.creator.id)) {
+        return false;
+      }
+
+      const totalVolume = parseFloat(coin.totalVolume || '0');
+      const volume24h = parseFloat(coin.volume24h || '0');
+      const marketCap = parseFloat(coin.marketCap || '0');
+      const uniqueHolders = coin.uniqueHolders;
+
+      if (filters.totalVolume?.min !== undefined && totalVolume < filters.totalVolume.min)
+        return false;
+      if (filters.totalVolume?.max !== undefined && totalVolume > filters.totalVolume.max)
+        return false;
+      if (filters.volume24h?.min !== undefined && volume24h < filters.volume24h.min) return false;
+      if (filters.volume24h?.max !== undefined && volume24h > filters.volume24h.max) return false;
+      if (filters.marketCap?.min !== undefined && marketCap < filters.marketCap.min) return false;
+      if (filters.marketCap?.max !== undefined && marketCap > filters.marketCap.max) return false;
+      if (filters.uniqueHolders?.min !== undefined && uniqueHolders < filters.uniqueHolders.min)
+        return false;
+      if (filters.uniqueHolders?.max !== undefined && uniqueHolders > filters.uniqueHolders.max)
+        return false;
+
+      return true;
+    });
+  }, [coins, filters]);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    const el = document.getElementById('load-more');
+    if (el) observer.observe(el);
+    // --
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const columns: ColumnDef<Coin>[] = [
+    {
+      header: 'Token',
+      enableSorting: false,
+      cell: ({ row }) => <div>{row.original.name}</div>,
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created',
+      enableSorting: true,
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'marketCap',
+      header: 'Market Cap',
+      enableSorting: true, // ✅ sortable
+      cell: (info) => info.getValue(),
+    },
+    {
+      accessorKey: 'totalVolume',
+      header: 'Total Volume',
+      enableSorting: true,
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Actions',
+      enableSorting: false,
+      cell: () => <button className="px-2 py-1 bg-blue-500 text-white rounded">Buy</button>,
+    },
+  ];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="space-y-3">
+      <div className="p-3 flex items-center justify-between">
+        <div className="space-y-0.5">
+          <h1 className="flex items-center gap-2 text-green-600">
+            <Leaf />
+            <span className="font-medium text-2xl">New Pairs</span>
+          </h1>
+          <p className="text-sm text-muted-foreground">Find the latest tokens across zora</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border gap-2.5 p-[3px] rounded-lg bg-secondary">
+            <div className="flex items-center gap-1.5 ml-2">
+              <Zap strokeWidth={1.8} className="size-4 opacity-50" />
+              <span className="text-[13px] font-medium font-mono uppercase">Buy</span>
+            </div>
+            <div className="relative bg-background rounded-lg">
+              <Input className="w-[4.5rem] h-8" />
+              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">
+                $
+              </span>
+            </div>
+          </div>
+
+          <Button>
+            <span>Filter</span>
+            <Settings2 className="opacity-60" strokeWidth={1.5} />
+          </Button>
+        </div>
+      </div>
+
+      <DataTable<Coin> columns={columns} data={filteredCoins} />
+
+      <div id="load-more" className="h-10" />
+      {isFetchingNextPage && <p>Loading more...</p>}
     </div>
   );
-}
+};
+
+export default Home;
