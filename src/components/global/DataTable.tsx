@@ -38,6 +38,7 @@ export default function DataTable<T>({
     data: React.useMemo(() => [...data], [data]),
     columns,
     state: { sorting },
+    getRowId: (row) => (row as any).address,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
