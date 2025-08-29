@@ -7,8 +7,6 @@ import {
   Compass,
   History,
   Mail,
-  MailPlus,
-  Settings,
   Star,
   WalletCards,
   X,

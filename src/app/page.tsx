@@ -43,17 +43,14 @@ type Filters = {
 };
 
 const Home = () => {
-  const hasLocalStorage = !!window && 'localStorage' in window;
   const [filters, setFilters] = React.useState<Filters>({});
-  const [buyAmount, setBuyAmount] = React.useState<string | null>(
-    hasLocalStorage ? localStorage.getItem('buyAmount') : null
-  );
+  const [buyAmount, setBuyAmount] = React.useState<string | null>(null);
   const triggerRowRef = React.useRef<HTMLTableRowElement>(null);
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<CoinResponse>({
       queryKey: ['coins'],
       initialPageParam: null,
-      refetchInterval: 2000,
+      // refetchInterval: 2000,
       getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
       queryFn: async ({ pageParam = null }) => {
         const query = toQueryString({ cursor: pageParam });
@@ -103,6 +100,10 @@ const Home = () => {
       return true;
     });
   }, [coins, filters]);
+
+  React.useEffect(() => {
+    setBuyAmount(localStorage.getItem('buyAmount'));
+  }, []);
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
@@ -306,10 +307,10 @@ const Home = () => {
                   const value = e.target.value;
                   if (value) {
                     setBuyAmount(e.target.value);
-                    if (hasLocalStorage) localStorage.setItem('buyAmount', value);
+                    localStorage.setItem('buyAmount', value);
                   } else {
                     setBuyAmount(null);
-                    if (hasLocalStorage) localStorage.removeItem('buyAmount');
+                    localStorage.removeItem('buyAmount');
                   }
                 }}
               />
