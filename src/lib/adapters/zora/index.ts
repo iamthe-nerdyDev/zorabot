@@ -41,7 +41,7 @@ class Zora {
     const query = toQueryString({
       after: cursor,
       listType: 'NEW',
-      count: 20,
+      count: 40,
     });
 
     const { error, data } = await this.client.getInstance().get(`/explore?${query}`);

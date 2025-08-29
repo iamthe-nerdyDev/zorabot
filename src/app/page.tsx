@@ -14,6 +14,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown, ChevronUp, Coins, Copy, ListFilter, Zap } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
+import { useInView } from 'react-intersection-observer';
 
 type CoinResponse = {
   data: null | {
@@ -45,12 +46,12 @@ type Filters = {
 const Home = () => {
   const [filters, setFilters] = React.useState<Filters>({});
   const [buyAmount, setBuyAmount] = React.useState<string | null>(null);
-  const triggerRowRef = React.useRef<HTMLTableRowElement>(null);
+  const { ref, inView } = useInView();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<CoinResponse>({
       queryKey: ['coins'],
       initialPageParam: null,
-      // refetchInterval: 2000,
+      refetchInterval: 2000,
       getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
       queryFn: async ({ pageParam = null }) => {
         const query = toQueryString({ cursor: pageParam });
@@ -106,21 +107,8 @@ const Home = () => {
   }, []);
 
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (triggerRowRef.current) {
-      observer.observe(triggerRowRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage, triggerRowRef]);
+    if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
+  }, [fetchNextPage, inView, hasNextPage]);
 
   const columns: ColumnDef<Coin>[] = [
     {
@@ -335,8 +323,8 @@ const Home = () => {
         <DataTable<Coin>
           columns={columns}
           data={filteredCoins}
-          triggerRowRef={triggerRowRef}
-          triggerOffset={7}
+          triggerRowRef={ref}
+          triggerOffset={10}
         />
       )}
     </div>

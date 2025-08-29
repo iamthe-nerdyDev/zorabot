@@ -17,7 +17,7 @@ type Props<T> = {
   columns: ColumnDef<T>[];
   data: T[];
   enableStickyColumns?: boolean;
-  triggerRowRef?: React.RefObject<HTMLTableRowElement | null>;
+  triggerRowRef?: (node?: Element | null | undefined) => void;
   triggerOffset?: number;
 };
 
