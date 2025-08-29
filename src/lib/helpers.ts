@@ -33,3 +33,9 @@ export function formatNumber(number?: number | null) {
 
   return '<0.001';
 }
+
+export async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {}
+}

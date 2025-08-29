@@ -8,7 +8,7 @@ import Basescan from '@/components/icons/Basescan';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFilterSidebar } from '@/hooks/useFilterSideBar';
-import { formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
+import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
@@ -113,7 +113,10 @@ const Home = () => {
               <Link className="w-full max-w-20 truncate" href={`/coin/${row.original.address}`}>
                 <span className="font-medium text-xs">{row.original.symbol}</span>
               </Link>
-              <button className="opacity-60 shrink-0">
+              <button
+                className="opacity-60 shrink-0"
+                onClick={() => copyToClipboard(row.original.address)}
+              >
                 <Copy className="size-3" strokeWidth={3} />
               </button>
             </h4>
