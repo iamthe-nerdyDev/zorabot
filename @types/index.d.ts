@@ -34,3 +34,25 @@ type Coin = {
   mediaContent: ZoraMedia;
   creator: Creator;
 };
+
+type Filters = {
+  creatorIds?: string[];
+  isCreatorToken?: boolean;
+  isContentToken?: boolean;
+  totalVolume?: {
+    min?: number;
+    max?: number;
+  };
+  volume24h?: {
+    min?: number;
+    max?: number;
+  };
+  marketCap?: {
+    min?: number;
+    max?: number;
+  };
+  uniqueHolders?: {
+    min?: number;
+    max?: number;
+  };
+};

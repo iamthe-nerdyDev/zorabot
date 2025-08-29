@@ -6,6 +6,7 @@ import Navbar from '../global/Navbar';
 import Sidebar from '../global/Sidebar';
 import ModalProvider from './ModalProvider';
 import { ThemeProvider } from './ThemeProvider';
+import FilterComponent from '../global/FilterComponent';
 
 export default function GlobalProvider({ children }: PropsWithChildren) {
   const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
               <div>{children}</div>
             </aside>
           </main>
+          <FilterComponent />
         </ModalProvider>
       </QueryClientProvider>
     </ThemeProvider>

@@ -7,6 +7,7 @@ import TimeAgo from '@/components/global/TimeAgo';
 import Basescan from '@/components/icons/Basescan';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useFilterSidebar } from '@/hooks/useFilterSideBar';
 import { formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -23,30 +24,11 @@ type CoinResponse = {
   };
 };
 
-type Filters = {
-  creatorIds?: string[];
-  totalVolume?: {
-    min?: number;
-    max?: number;
-  };
-  volume24h?: {
-    min?: number;
-    max?: number;
-  };
-  marketCap?: {
-    min?: number;
-    max?: number;
-  };
-  uniqueHolders?: {
-    min?: number;
-    max?: number;
-  };
-};
-
 const Home = () => {
   const [filters, setFilters] = React.useState<Filters>({});
   const [buyAmount, setBuyAmount] = React.useState<string | null>(null);
   const { ref, inView } = useInView();
+  const { open } = useFilterSidebar();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<CoinResponse>({
       queryKey: ['coins'],
@@ -76,7 +58,9 @@ const Home = () => {
 
   const filteredCoins = React.useMemo(() => {
     return coins.filter((coin) => {
-      if (filters.creatorIds?.length && !filters.creatorIds.includes(coin.creator.id)) {
+      if (filters.isContentToken && coin.isCreatorToken) return false;
+      if (filters.isCreatorToken && !coin.isCreatorToken) return false;
+      if (filters.creatorIds?.length && !filters.creatorIds.includes(coin.creator.handle)) {
         return false;
       }
 
@@ -255,7 +239,7 @@ const Home = () => {
       enableSorting: false,
       cell: () => (
         <div>
-          <Button variant={'outline'} className="min-w-20" onClick={() => alert('hi')}>
+          <Button variant={'outline'} className="min-w-20">
             <Zap className="size-3 stroke-orange-500" />
             <span className="-ml-0.5 font-semibold text-xs">
               ${(buyAmount ?? 0)?.toLocaleString()}
@@ -272,7 +256,7 @@ const Home = () => {
         <div className="flex flex-col gap-0.5">
           <h1 className="flex items-center gap-2 text-green-400">
             <Coins className="size-5.5" strokeWidth={2} />
-            <span className="font-semibold text-xl">New Pairs</span>
+            <span className="font-semibold text-xl">New Tokens</span>
           </h1>
           <p className="hidden md:block text-sm text-muted-foreground">
             Find the latest tokens across zora
@@ -302,13 +286,30 @@ const Home = () => {
                   }
                 }}
               />
-              <span className="absolute text-xs right-[9px] top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
+              <span className="absolute text-xs right-[10px] top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
                 $
               </span>
             </div>
           </div>
 
-          <Button className="h-8.5 w-21">
+          <Button
+            className="h-8.5 w-21"
+            disabled={isLoading}
+            onClick={() => {
+              open({
+                cb: setFilters,
+                options: {
+                  creators,
+                  isContentToken: true,
+                  isCreatorToken: true,
+                  marketCap: true,
+                  totalVolume: true,
+                  uniqueHolders: true,
+                  volume24h: true,
+                },
+              });
+            }}
+          >
             <span>Filter</span>
             <ListFilter className="opacity-60 size-3.5" strokeWidth={2} />
           </Button>
