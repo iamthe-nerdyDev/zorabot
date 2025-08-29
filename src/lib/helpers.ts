@@ -11,3 +11,25 @@ export function toQueryString(obj?: Record<string, any>) {
 
   return qs.stringify(query);
 }
+
+export function getPercentChange(a: number, delta: number): number {
+  const oldPrice = a - delta;
+  if (oldPrice === 0) return 0;
+  return (delta / oldPrice) * 100;
+}
+
+export function formatNumber(number?: number | null) {
+  if (!number || number == 0) return '0';
+
+  const num = Math.abs(number);
+  if (num >= 1_000_000_000_000) return (number / 1_000_000_000_000).toFixed(2) + 'T';
+  if (num >= 1_000_000_000) return (number / 1_000_000_000).toFixed(2) + 'B';
+  if (num >= 1_000_000) return (number / 1_000_000).toFixed(2) + 'M';
+  if (num >= 1_000) return (number / 1_000).toFixed(2) + 'K';
+
+  if (num >= 0.001) {
+    return number.toFixed(3).replace(/\.?0+$/, '');
+  }
+
+  return '<0.001';
+}

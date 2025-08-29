@@ -1,12 +1,18 @@
 'use client';
 
 import DataTable from '@/components/global/DataTable';
+import { Loader } from '@/components/global/Loader';
+import SmartImage from '@/components/global/SmartImage';
+import TimeAgo from '@/components/global/TimeAgo';
+import Basescan from '@/components/icons/Basescan';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { toQueryString } from '@/lib/helpers';
+import { formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
+import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { Bolt, DollarSign, Leaf, Settings2, Zap } from 'lucide-react';
+import { ChevronDown, ChevronUp, Coins, Copy, ListFilter, Zap } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react';
 
 type CoinResponse = {
@@ -37,12 +43,17 @@ type Filters = {
 };
 
 const Home = () => {
+  const hasLocalStorage = !!window && 'localStorage' in window;
   const [filters, setFilters] = React.useState<Filters>({});
+  const [buyAmount, setBuyAmount] = React.useState<string | null>(
+    hasLocalStorage ? localStorage.getItem('buyAmount') : null
+  );
+  const triggerRowRef = React.useRef<HTMLTableRowElement>(null);
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<CoinResponse>({
       queryKey: ['coins'],
       initialPageParam: null,
-      refetchInterval: 5000,
+      refetchInterval: 2000,
       getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
       queryFn: async ({ pageParam = null }) => {
         const query = toQueryString({ cursor: pageParam });
@@ -100,82 +111,233 @@ const Home = () => {
           fetchNextPage();
         }
       },
-      { threshold: 1 }
+      { threshold: 0.5 }
     );
 
-    const el = document.getElementById('load-more');
-    if (el) observer.observe(el);
-    // --
+    if (triggerRowRef.current) {
+      observer.observe(triggerRowRef.current);
+    }
+
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, triggerRowRef]);
 
   const columns: ColumnDef<Coin>[] = [
     {
       header: 'Token',
       enableSorting: false,
-      cell: ({ row }) => <div>{row.original.name}</div>,
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2.5 pr-">
+          <Link href={`/coin/${row.original.address}`}>
+            <SmartImage
+              src={row.original.mediaContent.previewImage.medium}
+              alt={row.original.symbol}
+              className="size-9 rounded-full"
+              loaderClassName="size-9 rounded-full bg-secondary"
+            />
+          </Link>
+          <div className="space-y-[1px]">
+            <h4 className="flex items-center gap-1">
+              <Link className="w-full max-w-20 truncate" href={`/coin/${row.original.address}`}>
+                <span className="font-medium text-xs">{row.original.symbol}</span>
+              </Link>
+              <button className="opacity-60 shrink-0">
+                <Copy className="size-3" strokeWidth={3} />
+              </button>
+            </h4>
+            <div className="flex items-center gap-1.5">
+              <TimeAgo
+                className="text-green-600 font-semibold text-xs opacity-100"
+                date={row.original.created_at}
+              />
+              <Link target="_blank" href={`https://basescan.org/address/${row.original.address}`}>
+                <Basescan className="size-[13px] dark:text-[#555] #eee" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      ),
     },
     {
       accessorKey: 'created_at',
       header: 'Created',
       enableSorting: true,
-      cell: (info) => info.getValue(),
+      cell: ({ row, renderValue }) => (
+        <Link href={`/coin/${row.original.address}`}>
+          <p className="text-end">
+            <TimeAgo className="font-medium text-xs" date={renderValue() as string} />
+          </p>
+        </Link>
+      ),
     },
     {
       accessorKey: 'marketCap',
       header: 'Market Cap',
-      enableSorting: true, // ✅ sortable
-      cell: (info) => info.getValue(),
+      enableSorting: true,
+      cell: ({ row, renderValue }) => {
+        const change = getPercentChange(
+          Number(row.original.marketCap),
+          Number(row.original.marketCapDelta24h)
+        );
+
+        return (
+          <Link href={`/coin/${row.original.address}`}>
+            <div className="text-end space-y-[1px]">
+              <p className="text-sm">${formatNumber(Number(renderValue()))}</p>
+              <div className="flex items-center justify-end gap-1.5">
+                <p
+                  className={cn(
+                    'flex items-center gap-0.5',
+                    change >= 0 ? 'text-green-600' : 'text-red-600'
+                  )}
+                >
+                  {change >= 0 ? (
+                    <ChevronUp className="size-3" />
+                  ) : (
+                    <ChevronDown className="size-3" />
+                  )}
+                  <span className="text-[12px] font-medium">{formatNumber(change)}%</span>
+                </p>
+                <p className="text-xs opacity-60 font-medium">(24h)</p>
+              </div>
+            </div>
+          </Link>
+        );
+      },
     },
     {
       accessorKey: 'totalVolume',
       header: 'Total Volume',
       enableSorting: true,
-      cell: (info) => info.getValue(),
+      cell: ({ row, renderValue }) => (
+        <Link href={`/coin/${row.original.address}`}>
+          <div className="text-end space-y-[1px]">
+            <p className="text-sm">${formatNumber(Number(renderValue()))}</p>
+            <div className="flex items-center justify-end gap-1.5">
+              <p className="flex items-center gap-0.5">
+                <span className="text-[12px] font-medium">
+                  ${formatNumber(Number(row.original.volume24h))}
+                </span>
+              </p>
+              <p className="text-xs opacity-60 font-medium">(24h)</p>
+            </div>
+          </div>
+        </Link>
+      ),
+    },
+    {
+      accessorKey: 'price.priceInUsdc',
+      header: 'Price',
+      enableSorting: true,
+      cell: ({ row, renderValue }) => (
+        <Link href={`/coin/${row.original.address}`}>
+          <div className="text-end space-y-[1px]">
+            <p className="text-end text-sm font-medium">${formatNumber(Number(renderValue()))}</p>
+            <p className="text-xs opacity-60">
+              {formatNumber(Number(row.original.price.priceInPoolToken))}&nbsp;
+              {row.original.poolToken.name}
+            </p>
+          </div>
+        </Link>
+      ),
+    },
+    {
+      accessorKey: 'uniqueHolders',
+      header: 'Unqiue Holders',
+      enableSorting: true,
+      cell: ({ row, renderValue }) => {
+        const holders = Number(renderValue());
+        return (
+          <Link href={`/coin/${row.original.address}`}>
+            <div className="flex items-center gap-3.5 justify-end">
+              <p className="text-end text-sm font-medium">{formatNumber(holders)}</p>
+              <span
+                className={cn(
+                  'block h-7 w-[3px] rounded-full',
+                  holders > 0 ? 'bg-green-500' : 'bg-gray-400'
+                )}
+              />
+            </div>
+          </Link>
+        );
+      },
     },
     {
       header: 'Actions',
       enableSorting: false,
-      cell: () => <button className="px-2 py-1 bg-blue-500 text-white rounded">Buy</button>,
+      cell: () => (
+        <div>
+          <Button variant={'outline'} className="min-w-20" onClick={() => alert('hi')}>
+            <Zap className="size-3 stroke-orange-500" />
+            <span className="-ml-0.5 font-semibold text-xs">
+              ${(buyAmount ?? 0)?.toLocaleString()}
+            </span>
+          </Button>
+        </div>
+      ),
     },
   ];
 
   return (
-    <div className="space-y-3">
-      <div className="p-3 flex items-center justify-between">
-        <div className="space-y-0.5">
-          <h1 className="flex items-center gap-2 text-green-600">
-            <Leaf />
-            <span className="font-medium text-2xl">New Pairs</span>
+    <div>
+      <div className="p-3 flex items-center justify-between sticky top-[65px] bg-background z-25 border-b">
+        <div className="flex flex-col gap-0.5">
+          <h1 className="flex items-center gap-2 text-green-400">
+            <Coins className="size-5.5" strokeWidth={2} />
+            <span className="font-semibold text-xl">New Pairs</span>
           </h1>
-          <p className="text-sm text-muted-foreground">Find the latest tokens across zora</p>
+          <p className="hidden md:block text-sm text-muted-foreground">
+            Find the latest tokens across zora
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center border gap-2.5 p-[3px] rounded-lg bg-secondary">
-            <div className="flex items-center gap-1.5 ml-2">
-              <Zap strokeWidth={1.8} className="size-4 opacity-50" />
-              <span className="text-[13px] font-medium font-mono uppercase">Buy</span>
+          <div className="flex items-center border gap-[7px] p-[3px] rounded-lg bg-secondary">
+            <div className="flex items-center gap-1 ml-1.5">
+              <Zap strokeWidth={1.8} className="size-3 opacity-50" />
+              <span className="text-xs font-medium font-mono uppercase">Buy</span>
             </div>
             <div className="relative bg-background rounded-lg">
-              <Input className="w-[4.5rem] h-8" />
-              <span className="absolute right-2.5 top-1/2 -translate-y-1/2 font-mono text-sm text-muted-foreground">
+              <Input
+                className="w-[4.5rem] font-medium h-7.5 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                type="number"
+                style={{ fontSize: '12px' }}
+                value={String(buyAmount ?? '')}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value) {
+                    setBuyAmount(e.target.value);
+                    if (hasLocalStorage) localStorage.setItem('buyAmount', value);
+                  } else {
+                    setBuyAmount(null);
+                    if (hasLocalStorage) localStorage.removeItem('buyAmount');
+                  }
+                }}
+              />
+              <span className="absolute text-xs right-[9px] top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
                 $
               </span>
             </div>
           </div>
 
-          <Button>
+          <Button className="h-8.5 w-21">
             <span>Filter</span>
-            <Settings2 className="opacity-60" strokeWidth={1.5} />
+            <ListFilter className="opacity-60 size-3.5" strokeWidth={2} />
           </Button>
         </div>
       </div>
 
-      <DataTable<Coin> columns={columns} data={filteredCoins} />
-
-      <div id="load-more" className="h-10" />
-      {isFetchingNextPage && <p>Loading more...</p>}
+      {isLoading ? (
+        <div className="h-[70svh] flex items-center justify-center">
+          <Loader />
+        </div>
+      ) : (
+        <DataTable<Coin>
+          columns={columns}
+          data={filteredCoins}
+          triggerRowRef={triggerRowRef}
+          triggerOffset={7}
+        />
+      )}
     </div>
   );
 };

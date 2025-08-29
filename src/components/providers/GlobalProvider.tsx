@@ -11,10 +11,16 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
   const queryClient = new QueryClient();
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      forcedTheme="dark"
+      enableSystem={false}
+      disableTransitionOnChange
+    >
       <QueryClientProvider client={queryClient}>
         <ModalProvider>
-          <main className="md:w-[calc(100vw-60px)] md:ml-15">
+          <main className="md:w-[calc(100vw-64px)] md:ml-16">
             <aside>
               <Sidebar />
             </aside>

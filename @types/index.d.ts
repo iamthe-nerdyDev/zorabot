@@ -34,5 +34,3 @@ type Coin = {
   mediaContent: ZoraMedia;
   creator: Creator;
 };
-
-//  from array of creators (have to come up with a distinct list of creators present in response), totalVolume (min, max), volume24h (min, max), marketCap (min, max), uniqueHolders (min, max)

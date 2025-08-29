@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { Input } from '../ui/input';
-import { Bell, PanelLeftOpen, Search, Star, WalletCards } from 'lucide-react';
+import { Bell, Menu, Search, Star, WalletCards } from 'lucide-react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { useSidebar } from '@/hooks/useSidebar';
 
 export default function Navbar() {
+  const { open } = useSidebar();
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === '/') {
@@ -40,8 +42,13 @@ export default function Navbar() {
   return (
     <div className="flex items-center justify-between p-3 border-b sticky top-0 bg-background z-20">
       <div className="flex items-center gap-3 w-[65%] max-w-[25rem]">
-        <Button variant={'outline'} size={'icon'} className="rounded-full flex md:hidden">
-          <PanelLeftOpen strokeWidth={1.8} />
+        <Button
+          onClick={open}
+          variant={'outline'}
+          size={'icon'}
+          className="rounded-full flex md:hidden"
+        >
+          <Menu strokeWidth={1.8} />
         </Button>
         <aside className="w-full">
           <div className="w-full relative">
