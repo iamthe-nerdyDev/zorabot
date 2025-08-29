@@ -25,7 +25,7 @@ export default function Sidebar() {
   const { state, close } = useSidebar();
 
   const menus = [
-    { title: 'New Pairs', icon: History, href: '/' },
+    { title: 'New Pairs', icon: History, href: '/', match: ['/coin/*'] },
     { title: 'Explore', icon: Compass, href: '/explore' },
     { title: 'Alerts', icon: Bell, href: '/alerts' },
     { title: 'Watchlist', icon: Star, href: '/watchlist' },

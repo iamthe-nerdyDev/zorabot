@@ -14,6 +14,15 @@ export default function FilterComponent() {
   const [filters, setFilters] = React.useState<Filters>({});
   const { state, close, options, cb } = useFilterSidebar();
 
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && state) close();
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [state, close]);
+
   const forrmInputs = React.useMemo(() => {
     if (!options) return [];
     const arr = [];

@@ -14,7 +14,7 @@ export function toQueryString(obj?: Record<string, any>) {
 
 export function getPercentChange(a: number, delta: number): number {
   const oldPrice = a - delta;
-  if (oldPrice === 0) return 0;
+  if (oldPrice <= 0) return 0;
   return (delta / oldPrice) * 100;
 }
 
