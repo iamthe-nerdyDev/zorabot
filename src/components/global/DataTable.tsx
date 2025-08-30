@@ -46,7 +46,7 @@ export default function DataTable<T>({
 
   return (
     <div
-      className={cn('overflow-auto max-h-[81dvh]', containerClassName)}
+      className={cn('overflow-auto max-h-[83svh] 2xl:max-h-[85svh]', containerClassName)}
       style={{
         WebkitOverflowScrolling: 'touch',
         transform: 'translateZ(0)',

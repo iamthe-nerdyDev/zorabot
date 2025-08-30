@@ -7,6 +7,7 @@ import {
   Compass,
   History,
   Mail,
+  Search,
   Star,
   WalletCards,
   X,
@@ -19,9 +20,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/hooks/useSidebar';
+import { isPathMatching } from '@/lib/helpers';
 
 export default function Sidebar() {
-  const pathName = usePathname();
+  const path = usePathname();
   const { state, close } = useSidebar();
 
   const menus = [
@@ -39,7 +41,7 @@ export default function Sidebar() {
 
   React.useEffect(() => {
     close();
-  }, [pathName, close]);
+  }, [path, close]);
 
   React.useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -59,7 +61,8 @@ export default function Sidebar() {
           </Link>
 
           {menus.map((menu) => {
-            const isActive = pathName === menu.href;
+            const isActive =
+              path === menu.href || (menu.match && menu.match.some((m) => isPathMatching(path, m)));
 
             return (
               <Tooltip key={menu.title}>
@@ -119,18 +122,27 @@ export default function Sidebar() {
             transition={{ type: 'spring', stiffness: 300, damping: 30, duration: 0.3 }}
             className="fixed left-0 top-0 bottom-0 h-svh w-full z-50 bg-background border-r md:hidden p-4"
           >
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-8 mt-1">
               <Link href={'/'} className="w-6 h-auto">
                 <img src={'/logo.png'} />
               </Link>
-              <button onClick={close}>
-                <X className="size-5 opacity-60" />
-              </button>
+
+              <div className="flex items-center gap-4">
+                <button onClick={close}>
+                  <Search className="size-5" />
+                </button>
+
+                <button onClick={close}>
+                  <X className="size-5 opacity-60" />
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-col gap-6">
               {menus.map((menu) => {
-                const isActive = pathName === menu.href;
+                const isActive =
+                  path === menu.href ||
+                  (menu.match && menu.match.some((m) => isPathMatching(path, m)));
 
                 return (
                   <Link

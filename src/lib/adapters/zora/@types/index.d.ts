@@ -68,5 +68,21 @@ type ZoraCoin = {
       hookAddress: string;
     };
   };
-  cursor: string;
+  cursor?: string;
+};
+
+type ZoraChartPoints = {
+  timestamp: '2025-08-03T18:12:00';
+  closePrice: '0.000003334717456479119082706038920323780';
+};
+
+type ZoraChart = {
+  __typename: string;
+  __isIGraphQLZora20Token: string;
+  id: string;
+  oneHour: ZoraChartPoints[];
+  oneDay: ZoraChartPoints[];
+  oneWeek: ZoraChartPoints[];
+  oneMonth: ZoraChartPoints[];
+  all: ZoraChartPoints[];
 };

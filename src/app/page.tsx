@@ -255,11 +255,11 @@ const Home = () => {
 
   return (
     <div>
-      <div className="p-3 flex items-center justify-between sticky top-[65px] bg-background z-25 border-b">
+      <div className="p-3 gap-3 flex items-center justify-between sticky top-[65px] bg-background z-25 border-b">
         <div className="flex flex-col gap-0.5">
           <h1 className="flex items-center gap-2 text-green-400">
             <Coins className="size-5.5" strokeWidth={2} />
-            <span className="font-semibold text-xl">New Tokens</span>
+            <span className="font-semibold text-xl truncate">New Tokens</span>
           </h1>
           <p className="hidden md:block text-sm text-muted-foreground">
             Find the latest tokens across zora
@@ -324,12 +324,14 @@ const Home = () => {
           <Loader />
         </div>
       ) : (
-        <DataTable<Coin>
-          columns={columns}
-          data={filteredCoins}
-          triggerRowRef={ref}
-          triggerOffset={10}
-        />
+        <div className="overflow-y-hidden">
+          <DataTable<Coin>
+            columns={columns}
+            data={filteredCoins}
+            triggerRowRef={ref}
+            triggerOffset={10}
+          />
+        </div>
       )}
     </div>
   );

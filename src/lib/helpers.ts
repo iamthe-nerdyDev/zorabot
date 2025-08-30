@@ -39,3 +39,11 @@ export async function copyToClipboard(text: string) {
     await navigator.clipboard.writeText(text);
   } catch {}
 }
+
+export const isPathMatching = (currentPath: string, pattern: string) => {
+  if (!pattern) return false;
+  // --
+  const regexPattern = pattern.replace(/\//g, '\\/').replace(/\*/g, '.*');
+  const regex = new RegExp(`^${regexPattern}$`);
+  return regex.test(currentPath);
+};

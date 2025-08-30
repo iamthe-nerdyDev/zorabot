@@ -1,5 +1,7 @@
 import { toQueryString } from '@/lib/helpers';
 import ZoraClient from './client';
+import axios from 'axios';
+import { ZORA_GRAPHQL_URL } from '@/lib/constants';
 
 class Zora {
   constructor(private client = new ZoraClient()) {}
@@ -37,6 +39,15 @@ class Zora {
     };
   }
 
+  async getCoin(address: string) {
+    const query = toQueryString({ address });
+    const { error, data } = await this.client.getInstance().get(`/coin?${query}`);
+    if (error) return null;
+    // --
+    const response: ZoraCoin = { node: data.zora20Token };
+    return this.formatCoin(response);
+  }
+
   async getCoins(cursor: string | null) {
     const query = toQueryString({
       after: cursor,
@@ -62,6 +73,22 @@ class Zora {
       coins,
       cursor: response.exploreList.pageInfo.endCursor,
     };
+  }
+
+  async getCoinMCDataPoints(coin_id: string) {
+    try {
+      const { data } = await axios.post(ZORA_GRAPHQL_URL, {
+        hash: '9682c6e510be63021648c9eb5342c567',
+        variables: {
+          id: coin_id,
+        },
+        operationName: 'ChartQuery',
+      });
+
+      return data.data.node as ZoraChart;
+    } catch {
+      return null;
+    }
   }
 }
 
