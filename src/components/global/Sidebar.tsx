@@ -27,11 +27,11 @@ export default function Sidebar() {
   const { state, close } = useSidebar();
 
   const menus = [
-    { title: 'New Pairs', icon: History, href: '/', match: ['/coin/*'] },
+    { title: 'New Tokens', icon: History, href: '/', match: ['/coin/*'] },
     { title: 'Explore', icon: Compass, href: '/explore' },
     { title: 'Alerts', icon: Bell, href: '/alerts' },
     { title: 'Watchlist', icon: Star, href: '/watchlist' },
-    { title: 'Portfolio', icon: WalletCards, href: '/explore' },
+    { title: 'Portfolio', icon: WalletCards, href: '/portfolio' },
   ];
 
   const actions = [

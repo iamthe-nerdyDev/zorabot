@@ -78,6 +78,33 @@ class Zora {
     };
   }
 
+  async getCoinsExplore(listType: string, cursor: string | null) {
+    const query = toQueryString({
+      after: cursor,
+      listType,
+      count: 40,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/explore?${query}`);
+    if (error) return null;
+    // --
+    const response = data as {
+      exploreList: {
+        edges: ZoraCoin[];
+        pageInfo: {
+          endCursor: string | null;
+          hasNextPage: true;
+        };
+      };
+    };
+
+    const coins = response.exploreList.edges.map((e) => this.formatCoin(e));
+    return {
+      coins,
+      cursor: response.exploreList.pageInfo.endCursor,
+    };
+  }
+
   async getCoinMCDataPoints(coin_id: string) {
     try {
       const { data } = await axios.post(ZORA_GRAPHQL_URL, {

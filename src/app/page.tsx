@@ -8,10 +8,12 @@ import Basescan from '@/components/icons/Basescan';
 import Ethereum from '@/components/icons/Ethereum';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFilterSidebar } from '@/hooks/useFilterSideBar';
 import { useStorage } from '@/hooks/useStorage';
 import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
+import { IconUserScreen, IconComet } from '@tabler/icons-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronDown, ChevronUp, Coins, Copy, ListFilter, Zap } from 'lucide-react';
@@ -97,35 +99,54 @@ const Home = () => {
       header: 'Token',
       enableSorting: false,
       cell: ({ row }) => (
-        <div className="flex items-center gap-2.5 pr-">
-          <Link href={`/coin/${row.original.address}`}>
-            <SmartImage
-              src={row.original.mediaContent.previewImage.medium}
-              alt={row.original.symbol}
-              className="size-9 rounded-full"
-              loaderClassName="size-9 rounded-full bg-secondary"
-            />
-          </Link>
-          <div className="space-y-[1px]">
-            <h4 className="flex items-center gap-1">
-              <Link className="w-full max-w-20 truncate" href={`/coin/${row.original.address}`}>
-                <span className="font-medium text-xs">{row.original.symbol}</span>
-              </Link>
-              <button
-                className="opacity-60 shrink-0"
-                onClick={() => copyToClipboard(row.original.address)}
-              >
-                <Copy className="size-3" strokeWidth={3} />
-              </button>
-            </h4>
-            <div className="flex items-center gap-1.5">
-              <TimeAgo
-                className="text-green-600 font-semibold text-xs opacity-100"
-                date={row.original.created_at}
+        <div className="flex items-center gap-2.5">
+          <div>
+            <Tooltip>
+              <TooltipTrigger>
+                {row.original.isCreatorToken ? (
+                  <IconUserScreen className="size-5 text-yellow-400" strokeWidth={1.5} />
+                ) : (
+                  <IconComet className="size-5 text-indigo-400" strokeWidth={1.5} />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="font-medium">
+                  {row.original.isCreatorToken ? 'Creator Token' : 'Content Token'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          <div className="flex items-center gap-2.5 pr-">
+            <Link href={`/coin/${row.original.address}`}>
+              <SmartImage
+                src={row.original.mediaContent.previewImage.medium}
+                alt={row.original.symbol}
+                className="size-9 rounded-full"
+                loaderClassName="size-9 rounded-full bg-secondary"
               />
-              <Link target="_blank" href={`https://basescan.org/address/${row.original.address}`}>
-                <Basescan className="size-[13px] dark:text-[#555] #eee" />
-              </Link>
+            </Link>
+            <div className="space-y-[1px]">
+              <h4 className="flex items-center gap-1">
+                <Link className="w-full max-w-20 truncate" href={`/coin/${row.original.address}`}>
+                  <span className="font-medium text-xs">{row.original.symbol}</span>
+                </Link>
+                <button
+                  className="opacity-60 shrink-0"
+                  onClick={() => copyToClipboard(row.original.address)}
+                >
+                  <Copy className="size-3" strokeWidth={3} />
+                </button>
+              </h4>
+              <div className="flex items-center gap-1.5">
+                <TimeAgo
+                  className="text-green-600 font-semibold text-xs opacity-100"
+                  date={row.original.created_at}
+                />
+                <Link target="_blank" href={`https://basescan.org/address/${row.original.address}`}>
+                  <Basescan className="size-[13px] dark:text-[#555] #eee" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -212,7 +233,7 @@ const Home = () => {
     },
     {
       accessorKey: 'uniqueHolders',
-      header: 'Holders',
+      header: 'Unique Holders',
       enableSorting: true,
       cell: ({ row, renderValue }) => {
         const holders = Number(renderValue());
@@ -232,7 +253,7 @@ const Home = () => {
       },
     },
     {
-      header: 'Actions',
+      header: 'Quick Buy',
       enableSorting: false,
       cell: () => (
         <div>
@@ -309,7 +330,7 @@ const Home = () => {
       </div>
 
       {isLoading ? (
-        <div className="h-[70svh] flex items-center justify-center">
+        <div className="h-[calc(100vh-126px)] md:h-[calc(100vh-142px)] flex items-center justify-center">
           <Loader />
         </div>
       ) : (
