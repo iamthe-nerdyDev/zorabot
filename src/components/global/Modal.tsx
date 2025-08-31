@@ -59,7 +59,7 @@ export default function Modal() {
             animate="visible"
             exit="exit"
             onClick={close}
-            className="fixed inset-0 h-dvh flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 h-dvh flex items-center backdrop-blur-sm justify-center p-4 z-50 overflow-y-auto"
           >
             <div
               className="max-w-lg w-full rounded-md bg-[#111] mx-auto my-8 border"

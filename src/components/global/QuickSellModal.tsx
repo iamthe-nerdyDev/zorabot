@@ -1,6 +1,6 @@
 import useModal from '@/hooks/useModal';
 import { useStorage } from '@/hooks/useStorage';
-import { Percent, X } from 'lucide-react';
+import { ArrowRight, Percent, X } from 'lucide-react';
 import React from 'react';
 import { Input } from '../ui/input';
 import SmartImage from './SmartImage';
@@ -9,6 +9,10 @@ import { Button } from '../ui/button';
 type Props = {
   balance: string;
   coin: Coin;
+};
+
+const toBalance = (balance: string) => {
+  return (BigInt(balance) / BigInt(10 ** 18)).toString();
 };
 
 export default function QuickSellModal({ balance, coin }: Props) {
@@ -29,6 +33,16 @@ export default function QuickSellModal({ balance, coin }: Props) {
       </div>
 
       <div className="space-y-4">
+        <p className="py-4 px-3.5 -mb-3 font-medium text-[15px] flex items-center gap-2">
+          <span>Total Holding:</span>
+          <ArrowRight className="size-3 opacity-50" />
+          <span className="border-b-[1.5px] border-dotted border-gray-400">
+            {Number(toBalance(balance)).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        </p>
+
         <div className="p-3.5 pb-0">
           <div className="bg-secondary/40 p-1.5 border rounded-lg flex items-center gap-1 relative mb-2.5">
             <span className="text-xs uppercase font-semibold w-17 text-center shrink-0">

@@ -49,10 +49,7 @@ export default function DataTable<T>({
 
   return (
     <div
-      className={cn(
-        'overflow-y-auto h-[calc(100vh-126px)] md:h-[calc(100vh-142px)]',
-        containerClassName
-      )}
+      className={cn('overflow-y-auto', containerClassName)}
       style={{
         WebkitOverflowScrolling: 'touch',
         transform: 'translateZ(0)',

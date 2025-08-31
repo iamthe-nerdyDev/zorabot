@@ -269,8 +269,8 @@ const Home = () => {
   ];
 
   return (
-    <div>
-      <div className="p-3 gap-3 flex items-center justify-between sticky top-[61px] md:top-[65px] bg-background z-25 border-b">
+    <div className="overflow-y-hidden">
+      <div className="p-3 gap-3 flex items-center justify-between sticky top-0 bg-background z-25 border-b">
         <div className="flex flex-col gap-0.5">
           <h1 className="flex items-center gap-2 text-green-400">
             <Coins className="size-5.5" strokeWidth={2} />
@@ -340,6 +340,7 @@ const Home = () => {
             data={filteredCoins}
             triggerRowRef={ref}
             triggerOffset={10}
+            containerClassName="h-[calc(100dvh-126px)] md:h-[calc(100dvh-142px)]"
           />
         </div>
       )}

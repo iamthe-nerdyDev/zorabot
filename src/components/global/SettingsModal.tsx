@@ -47,8 +47,8 @@ const QuickBuySetting = () => {
                 onClick={() => setIsOpen(false)}
                 className="text-[#999]"
               >
-                <X className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Discard</p>
+                <X className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="text-[13px] hidden sm:block">Discard</p>
               </Button>
 
               <Button
@@ -60,8 +60,8 @@ const QuickBuySetting = () => {
                 }}
                 className="text-green-400"
               >
-                <Check className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Save Changes</p>
+                <Check className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="text-[13px] hidden sm:block">Save Changes</p>
               </Button>
             </React.Fragment>
           ) : (
@@ -82,7 +82,7 @@ const QuickBuySetting = () => {
         <div className="px-3.5 py-3 flex justify-end">
           <div className="relative bg-background rounded-lg">
             <Input
-              className="w-[6.5rem] font-medium h-7.5 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+              className="w-[7.5rem] pl-3.5 font-medium h-8.5 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
               type="number"
               autoComplete="off"
               style={{ fontSize: '12px' }}
@@ -139,8 +139,8 @@ const BuyPresets = () => {
                 onClick={() => setIsOpen(false)}
                 className="text-[#999]"
               >
-                <X className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Discard</p>
+                <X className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="text-[13px] hidden sm:block">Discard</p>
               </Button>
 
               <Button
@@ -152,8 +152,8 @@ const BuyPresets = () => {
                 }}
                 className="text-green-400"
               >
-                <Check className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Save Changes</p>
+                <Check className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="text-[13px] hidden sm:block">Save Changes</p>
               </Button>
             </React.Fragment>
           ) : (
@@ -171,29 +171,31 @@ const BuyPresets = () => {
       </div>
 
       {isOpen ? (
-        <div className="px-3.5 py-3 flex justify-end">
-          <div className="flex items-center gap-3">
-            {value.map((entry, idx) => (
-              <div key={entry} className="relative bg-background rounded-lg">
-                <Input
-                  className="w-[5.5rem] font-medium h-8 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                  type="number"
-                  autoComplete="off"
-                  style={{ fontSize: '12px' }}
-                  value={String(entry)}
-                  onChange={(e) => {
-                    const inp = e.target.value;
-                    if (!isNaN(Number(inp))) {
-                      const arr = [...value];
-                      arr[idx] = Number(inp);
-                      // --
-                      setValue(arr);
-                    }
-                  }}
-                />
-                <Ethereum className="absolute size-3 right-[7px] top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
-            ))}
+        <div className="flex justify-end">
+          <div className="px-3.5 py-3 flex justify-end w-full md:w-[28rem]">
+            <div className="flex items-center gap-3">
+              {value.map((entry, idx) => (
+                <div key={entry} className="flex-1 relative bg-background rounded-lg">
+                  <Input
+                    className="w-full font-medium h-8 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    type="number"
+                    autoComplete="off"
+                    style={{ fontSize: '12px' }}
+                    value={String(entry)}
+                    onChange={(e) => {
+                      const inp = e.target.value;
+                      if (!isNaN(Number(inp))) {
+                        const arr = [...value];
+                        arr[idx] = Number(inp);
+                        // --
+                        setValue(arr);
+                      }
+                    }}
+                  />
+                  <Ethereum className="absolute size-3 right-[7px] top-1/2 -translate-y-1/2 text-gray-400" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}
@@ -240,8 +242,8 @@ const SellPresets = () => {
                 onClick={() => setIsOpen(false)}
                 className="text-[#999]"
               >
-                <X className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Discard</p>
+                <X className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="hidden sm:block text-[13px]">Discard</p>
               </Button>
 
               <Button
@@ -253,8 +255,8 @@ const SellPresets = () => {
                 }}
                 className="text-green-400"
               >
-                <Check className="size-3" strokeWidth={2.5} />
-                <p className="text-[13px]">Save Changes</p>
+                <Check className="size-4 sm:size-3" strokeWidth={2.5} />
+                <p className="hidden sm:block text-[13px]">Save Changes</p>
               </Button>
             </React.Fragment>
           ) : (
@@ -272,29 +274,31 @@ const SellPresets = () => {
       </div>
 
       {isOpen ? (
-        <div className="px-3.5 py-3 flex justify-end">
-          <div className="flex items-center gap-3">
-            {value.map((entry, idx) => (
-              <div key={entry} className="relative bg-background rounded-lg">
-                <Input
-                  className="w-[5.5rem] font-medium h-8 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                  type="number"
-                  autoComplete="off"
-                  style={{ fontSize: '12px' }}
-                  value={String(entry)}
-                  onChange={(e) => {
-                    const inp = e.target.value;
-                    if (!isNaN(Number(inp))) {
-                      const arr = [...value];
-                      arr[idx] = Number(inp);
-                      // --
-                      setValue(arr);
-                    }
-                  }}
-                />
-                <Percent className="absolute size-3 right-[7px] top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
-            ))}
+        <div className="flex justify-end">
+          <div className="px-3.5 py-3 flex justify-end w-full md:w-[28rem]">
+            <div className="flex items-center gap-3">
+              {value.map((entry, idx) => (
+                <div key={entry} className="flex-1 relative bg-background rounded-lg">
+                  <Input
+                    className="w-full font-medium h-8 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    type="number"
+                    autoComplete="off"
+                    style={{ fontSize: '12px' }}
+                    value={String(entry)}
+                    onChange={(e) => {
+                      const inp = e.target.value;
+                      if (!isNaN(Number(inp))) {
+                        const arr = [...value];
+                        arr[idx] = Number(inp);
+                        // --
+                        setValue(arr);
+                      }
+                    }}
+                  />
+                  <Percent className="absolute size-3 right-[7px] top-1/2 -translate-y-1/2 text-gray-400" />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       ) : null}

@@ -8,6 +8,7 @@ import { useSidebar } from '@/hooks/useSidebar';
 import { Separator } from '../ui/separator';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
+import Link from 'next/link';
 
 export default function Navbar() {
   const { open } = useSidebar();
@@ -40,7 +41,9 @@ export default function Navbar() {
             <div className="h-7">
               <Separator orientation="vertical" />
             </div>
-            <img src={'/logo.png'} className="w-5.5 h-auto" />
+            <Link href={'/'}>
+              <img src={'/logo.png'} className="w-5.5 h-auto" />
+            </Link>
           </div>
 
           <aside className="hidden md:flex items-center gap-3 w-[65%] max-w-[25rem]">

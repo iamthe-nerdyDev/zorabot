@@ -236,8 +236,8 @@ export default function PortfolioComponent() {
       <Loader />
     </div>
   ) : (
-    <div className="space-y-2">
-      <div className="p-6 flex">
+    <div className="overflow-y-hidden">
+      <div className="py-5 px-4 flex sticky top-0 z-30 bg-background border-b">
         <div className="flex-1">
           <p className="text-sm text-muted-foreground font-medium mb-1">Portfolio Value</p>
           <h1 className="text-2xl md:text-3xl font-semibold">
@@ -273,11 +273,11 @@ export default function PortfolioComponent() {
         </div>
       </div>
 
-      <div className="overflow-y-hidden border-t">
+      <div className="overflow-y-hidden">
         <DataTable<Holding>
           columns={columns}
           data={holdings}
-          containerClassName="h-[calc(100vh-175px)] md:h-[calc(100vh-188px)]"
+          containerClassName="h-[calc(100dvh-160px)] md:h-[calc(100dvh-173px)]"
           triggerRowRef={ref}
           triggerOffset={10}
         />

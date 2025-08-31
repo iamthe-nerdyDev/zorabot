@@ -365,7 +365,7 @@ export default function CoinTrades({ coin }: { coin: Coin }) {
         </Tabs>
       </div>
 
-      <div className="lg:px-3 py-2 w-full max-w-md mx-auto border-b flex items-center gap-3">
+      <div className="px-3 py-2 w-full max-w-md mx-auto border-b flex items-center gap-3">
         <Button className="flex-1 h-10.5" size={'lg'} variant={'outline'}>
           <IconStar />
           <span>Watchlist</span>
@@ -376,7 +376,7 @@ export default function CoinTrades({ coin }: { coin: Coin }) {
         </Button>
       </div>
 
-      <div className="lg:px-3 py-2 w-full max-w-md mx-auto">
+      <div className="px-3 py-2 w-full max-w-md mx-auto">
         {details.map((item) => (
           <div
             key={item.title}

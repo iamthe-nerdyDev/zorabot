@@ -31,7 +31,7 @@ export default function Sidebar() {
   const { open } = useModal();
 
   const menus = [
-    { title: 'New Tokens', icon: History, href: '/', match: ['/coin/*'] },
+    { title: 'New Tokens', icon: History, href: '/', match: ['/coin/*', '/creator/*'] },
     { title: 'Explore', icon: Compass, href: '/explore' },
     { title: 'Alerts', icon: Bell, href: '/alerts' },
     { title: 'Watchlist', icon: Star, href: '/watchlist' },
