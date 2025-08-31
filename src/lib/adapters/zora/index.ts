@@ -184,6 +184,58 @@ class Zora {
       cursor: response.zora20Token.swapActivities.pageInfo.endCursor,
     };
   }
+
+  async getPortfolio(address: string, cursor: string | null) {
+    const chainIds = [8453];
+    const query = toQueryString({
+      identifier: address,
+      count: 100,
+      chainIds,
+      after: cursor,
+      sortOption: 'BALANCE',
+      excludeHidden: false,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/profileBalances?${query}`);
+    if (error) return null;
+    // --
+    const response = data.profile.coinBalances as {
+      pageInfo: {
+        endCursor: string | null;
+        hasNextPage: boolean;
+      };
+      count: number;
+      edges: ZoraCoinBalance[];
+    };
+
+    return {
+      total: response.count,
+      holdings: response.edges.map((e) => ({
+        ...e.node,
+        coin: this.formatCoin({ node: e.node.coin }),
+      })),
+      cursor: response.pageInfo.endCursor,
+    };
+  }
+
+  async search(query: string) {
+    try {
+      const { data } = await axios.post(ZORA_GRAPHQL_URL, {
+        hash: 'b4de1fb1e9878971ed419265e3d0f612',
+        variables: {
+          text: query,
+        },
+        operationName: 'useSearchResultsProfilesQuery',
+      });
+
+      return data.data.profileSearch as {
+        edges: ZoraProfile[];
+        count: number;
+      };
+    } catch {
+      return null;
+    }
+  }
 }
 
 export default new Zora();

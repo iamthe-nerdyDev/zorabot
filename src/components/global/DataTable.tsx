@@ -10,6 +10,7 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
+import { Box } from 'lucide-react';
 
 type Props<T> = {
   containerClassName?: string;
@@ -19,6 +20,7 @@ type Props<T> = {
   enableStickyColumns?: boolean;
   triggerRowRef?: (node?: Element | null | undefined) => void;
   triggerOffset?: number;
+  emptyResult?: React.ReactNode;
 };
 
 export default function DataTable<T>({
@@ -30,6 +32,7 @@ export default function DataTable<T>({
   enableStickyColumns = true,
   triggerRowRef,
   triggerOffset = 1,
+  emptyResult,
   ...props
 }: React.ComponentProps<'table'> & Props<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -111,50 +114,65 @@ export default function DataTable<T>({
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row, idx) => {
-            const totalRows = table.getRowModel().rows.length;
-            const isTriggerRow = idx === totalRows - triggerOffset;
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={table.getAllColumns().length}>
+                {emptyResult ? (
+                  emptyResult
+                ) : (
+                  <div className="py-15 flex flex-col items-center justify-center gap-2.5">
+                    <Box className="size-10 opacity-60" strokeWidth={1} />
+                    <p className="text-xl opacity-80 text-center">Nothing here yet!</p>
+                  </div>
+                )}
+              </td>
+            </tr>
+          ) : (
+            table.getRowModel().rows.map((row, idx) => {
+              const totalRows = table.getRowModel().rows.length;
+              const isTriggerRow = idx === totalRows - triggerOffset;
 
-            return (
-              <tr
-                key={row.id}
-                className="border-b hover:bg-[#222]/50"
-                ref={isTriggerRow ? triggerRowRef : undefined}
-              >
-                {row.getVisibleCells().map((cell, idx) => {
-                  const isFirst = idx === 0;
-                  const isLast = idx === row.getVisibleCells().length - 1;
+              return (
+                <tr
+                  key={row.id}
+                  className="border-b hover:bg-[#222]/50"
+                  ref={isTriggerRow ? triggerRowRef : undefined}
+                >
+                  {row.getVisibleCells().map((cell, idx) => {
+                    const isFirst = idx === 0;
+                    const isLast = idx === row.getVisibleCells().length - 1;
 
-                  return (
-                    <td
-                      key={cell.id}
-                      className={cn(
-                        'whitespace-nowrap min-w-30',
-                        enableStickyColumns && isFirst && 'sticky left-0 z-10 bg-background',
-                        enableStickyColumns &&
-                          isLast &&
-                          row.getVisibleCells().length > 1 &&
-                          'sticky right-0 z-10 bg-background'
-                      )}
-                      style={{
-                        WebkitOverflowScrolling: 'touch',
-                        transform: 'translateZ(0)',
-                        backfaceVisibility: 'hidden',
-                        perspective: '1000px',
-                        scrollBehavior: 'smooth',
-                        touchAction: 'pan-x pan-y',
-                        willChange: 'scroll-position',
-                      }}
-                    >
-                      <div className={cn('p-3', isFirst && 'border-r', isLast && 'border-l')}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+                    return (
+                      <td
+                        key={cell.id}
+                        className={cn(
+                          'whitespace-nowrap min-w-30',
+                          enableStickyColumns && isFirst && 'sticky left-0 z-10 bg-background',
+                          enableStickyColumns &&
+                            isLast &&
+                            row.getVisibleCells().length > 1 &&
+                            'sticky right-0 z-10 bg-background'
+                        )}
+                        style={{
+                          WebkitOverflowScrolling: 'touch',
+                          transform: 'translateZ(0)',
+                          backfaceVisibility: 'hidden',
+                          perspective: '1000px',
+                          scrollBehavior: 'smooth',
+                          touchAction: 'pan-x pan-y',
+                          willChange: 'scroll-position',
+                        }}
+                      >
+                        <div className={cn('p-3', isFirst && 'border-r', isLast && 'border-l')}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>

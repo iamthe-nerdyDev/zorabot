@@ -2,14 +2,14 @@
 
 import {
   Bell,
-  Bolt,
   ChevronRight,
   Compass,
   History,
   Mail,
   Search,
+  Settings,
   Star,
-  WalletCards,
+  Wallet2,
   X,
 } from 'lucide-react';
 import React from 'react';
@@ -21,22 +21,39 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/hooks/useSidebar';
 import { isPathMatching } from '@/lib/helpers';
+import useModal from '@/hooks/useModal';
+import SettingsModal from './SettingsModal';
+import SearchModal from './SearchModal';
 
 export default function Sidebar() {
   const path = usePathname();
   const { state, close } = useSidebar();
+  const { open } = useModal();
 
   const menus = [
     { title: 'New Tokens', icon: History, href: '/', match: ['/coin/*'] },
     { title: 'Explore', icon: Compass, href: '/explore' },
     { title: 'Alerts', icon: Bell, href: '/alerts' },
     { title: 'Watchlist', icon: Star, href: '/watchlist' },
-    { title: 'Portfolio', icon: WalletCards, href: '/portfolio' },
+    { title: 'Portfolio', icon: Wallet2, href: '/portfolio' },
   ];
 
   const actions = [
-    { title: 'Settings', icon: Bolt, handleClick: () => {} },
-    { title: 'Send Us a Message', icon: Mail, handleClick: () => {} },
+    {
+      title: 'Settings',
+      icon: Settings,
+      handleClick: () => {
+        close();
+        open({ content: <SettingsModal /> });
+      },
+    },
+    {
+      title: 'Send Us a Message',
+      icon: Mail,
+      handleClick: () => {
+        window.open('mailto:momoreoluwaadedeji@gmail.com', '_blank');
+      },
+    },
   ];
 
   React.useEffect(() => {
@@ -54,7 +71,7 @@ export default function Sidebar() {
 
   return (
     <React.Fragment>
-      <div className="fixed left-0 top-0 bottom-0 h-svh w-16 z-20 bg-background border-r p-3 hidden md:flex flex-col items-center justify-between overflow-y-auto gap-15">
+      <div className="fixed left-0 top-0 bottom-0 h-dvh w-16 z-20 bg-background border-r p-3 hidden md:flex flex-col items-center justify-between overflow-y-auto gap-15">
         <div className="w-full flex flex-col items-center justify-center gap-1.5">
           <Link href={'/'} className="pt-3.5 pb-5 w-5 h-auto">
             <img src={'/logo.png'} />
@@ -84,7 +101,7 @@ export default function Sidebar() {
                         isActive ? 'opacity-100' : 'opacity-50'
                       )}
                     >
-                      {<menu.icon className="size-5" strokeWidth={1.5} />}
+                      {<menu.icon className="size-5" strokeWidth={2} />}
                     </div>
                   </Link>
                 </TooltipTrigger>
@@ -103,7 +120,7 @@ export default function Sidebar() {
                 onClick={action.handleClick}
                 className="size-9 flex items-center justify-center bg-[#555]/30 border rounded-full"
               >
-                {<action.icon className="size-4" strokeWidth={1.5} />}
+                {<action.icon className="size-4" strokeWidth={2} />}
               </TooltipTrigger>
               <TooltipContent side="right" className="font-bold">
                 <p className="font-medium">{action.title}</p>
@@ -120,7 +137,7 @@ export default function Sidebar() {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30, duration: 0.3 }}
-            className="fixed left-0 top-0 bottom-0 h-svh w-full z-50 bg-background border-r md:hidden p-4"
+            className="fixed left-0 top-0 bottom-0 h-dvh w-full z-50 bg-background border-r md:hidden p-4"
           >
             <div className="flex items-center justify-between mb-8 mt-1">
               <Link href={'/'} className="w-6 h-auto">
@@ -128,7 +145,12 @@ export default function Sidebar() {
               </Link>
 
               <div className="flex items-center gap-4">
-                <button onClick={close}>
+                <button
+                  onClick={() => {
+                    close();
+                    open({ content: <SearchModal /> });
+                  }}
+                >
                   <Search className="size-5" />
                 </button>
 
@@ -156,7 +178,7 @@ export default function Sidebar() {
                         isActive ? 'font-semibold opacity-100' : 'opacity-50'
                       )}
                     >
-                      <menu.icon className="size-5 opacity-50" />
+                      <menu.icon className="size-5 opacity-50" strokeWidth={2} />
                       <span>{menu.title}</span>
                     </div>
 
@@ -170,10 +192,14 @@ export default function Sidebar() {
 
             <div className="flex flex-col gap-6">
               {actions.map((action) => (
-                <button key={action.title} className="flex items-center justify-between">
+                <button
+                  key={action.title}
+                  onClick={action.handleClick}
+                  className="flex items-center justify-between"
+                >
                   <div className={cn('flex items-center gap-3')}>
-                    <action.icon className="size-5 opacity-50" />
-                    <span>{action.title}</span>
+                    <action.icon className="size-5 opacity-50" strokeWidth={2} />
+                    <span className="font-medium">{action.title}</span>
                   </div>
                 </button>
               ))}

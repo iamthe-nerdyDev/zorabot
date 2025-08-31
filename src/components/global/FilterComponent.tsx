@@ -52,7 +52,7 @@ export default function FilterComponent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 h-dvh bg-black/50 z-40"
             onClick={close}
           />
 
@@ -66,7 +66,7 @@ export default function FilterComponent() {
               damping: 30,
               duration: 0.3,
             }}
-            className="fixed right-0 top-0 bottom-0 h-svh w-full md:w-md z-50 bg-background border-l"
+            className="fixed right-0 top-0 bottom-0 h-dvh w-full md:w-md z-50 bg-background md:border-l"
           >
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-2">

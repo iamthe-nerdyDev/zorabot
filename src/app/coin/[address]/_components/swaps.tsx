@@ -66,23 +66,23 @@ export default function CoinSwaps({ coin }: { coin: Coin }) {
           <table className="min-w-full border-collapse">
             <thead className="bg-secondary sticky top-15 lg:top-[44.5px] z-20">
               <tr>
-                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-500 p-2.5 text-start">
+                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-400 p-2.5 text-start">
                   Time Ago
                 </th>
-                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-500 p-2.5 text-start">
+                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-400 p-2.5 text-start">
                   Type
                 </th>
-                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-500 p-2.5 text-start">
+                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-400 p-2.5 text-start">
                   Price <span className="text-green-400">USD</span>
                 </th>
-                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-500 p-2.5 text-start">
+                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-400 p-2.5 text-start">
                   <p className="w-full max-w-20 md:max-w-max lg:max-w-20 truncate">
                     Amount {coin.symbol}
                   </p>
                 </th>
-                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-500 p-2.5 text-start">
+                <th className="text-xs font-medium select-none whitespace-nowrap text-gray-400 p-2.5 text-start">
                   <p className="flex items-center gap-1.5">
-                    <Filter className="size-3" strokeWidth={2} />
+                    <Filter className="size-3" strokeWidth={2.5} />
                     <span>Maker</span>
                   </p>
                 </th>
@@ -92,19 +92,19 @@ export default function CoinSwaps({ coin }: { coin: Coin }) {
               {isLoading
                 ? Array.from({ length: 12 }).map((_, idx) => (
                     <tr key={idx}>
-                      <td className="px-3 py-1.5">
+                      <td className={cn('px-3 py-1.5', idx === 0 && 'pt-3')}>
                         <Skeleton baseColor="#333" highlightColor="#444" height={8} width={30} />
                       </td>
-                      <td className="px-3 py-1.5">
+                      <td className={cn('px-3 py-1.5', idx === 0 && 'pt-3')}>
                         <Skeleton baseColor="#333" highlightColor="#444" height={8} width={30} />
                       </td>
-                      <td className="px-3 py-1.5">
+                      <td className={cn('px-3 py-1.5', idx === 0 && 'pt-3')}>
                         <Skeleton baseColor="#333" highlightColor="#444" height={8} width={30} />
                       </td>
-                      <td className="px-3 py-1.5">
+                      <td className={cn('px-3 py-1.5', idx === 0 && 'pt-3')}>
                         <Skeleton baseColor="#333" highlightColor="#444" height={8} width={50} />
                       </td>
-                      <td className="px-3 py-1.5">
+                      <td className={cn('px-3 py-1.5', idx === 0 && 'pt-3')}>
                         <Skeleton baseColor="#333" highlightColor="#444" height={8} width={30} />
                       </td>
                     </tr>

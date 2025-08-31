@@ -2,6 +2,6 @@
 
 import React from 'react';
 
-export default function WatchlistComponent() {
+export default function CreatorComponent() {
   return <div></div>;
 }

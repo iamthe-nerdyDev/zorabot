@@ -6,14 +6,22 @@ import { Menu, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useSidebar } from '@/hooks/useSidebar';
 import { Separator } from '../ui/separator';
+import useModal from '@/hooks/useModal';
+import SearchModal from './SearchModal';
 
 export default function Navbar() {
   const { open } = useSidebar();
+  const { open: openModal } = useModal();
+
+  const openSearchModal = () => {
+    openModal({ content: <SearchModal /> });
+  };
+
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === '/') {
         e.preventDefault();
-        console.log('Triggered!');
+        openSearchModal();
       }
     };
 
@@ -36,9 +44,18 @@ export default function Navbar() {
           </div>
 
           <aside className="hidden md:flex items-center gap-3 w-[65%] max-w-[25rem]">
-            <div className="w-full relative">
+            <div
+              className="w-full relative select-none cursor-pointer"
+              role="button"
+              onClick={openSearchModal}
+            >
               <Search className="size-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-              <Input autoComplete="off" className="w-full pr-10 pl-9 h-10" placeholder="Search" />
+              <Input
+                autoComplete="off"
+                disabled
+                className="w-full pr-10 pl-9 h-10 disabled:border-[#666]"
+                placeholder="Search"
+              />
               <kbd className="absolute right-2 top-1/2 -translate-y-1/2 bg-muted text-muted-foreground pointer-events-none flex items-center justify-center size-6.5 gap-1 rounded-sm border font-mono text-[12px] font-medium opacity-100 select-none">
                 <span className="text-xs">/</span>
               </kbd>

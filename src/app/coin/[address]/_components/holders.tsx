@@ -3,7 +3,7 @@
 import { Loader } from '@/components/global/Loader';
 import SmartImage from '@/components/global/SmartImage';
 import { Separator } from '@/components/ui/separator';
-import { formatNumber, toQueryString } from '@/lib/helpers';
+import { copyToClipboard, formatNumber, toQueryString } from '@/lib/helpers';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Copy, UserRoundCog } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
@@ -124,7 +124,7 @@ export default function CoinHolders({ coin }: { coin: Coin }) {
                         </Tooltip>
                       ) : null}
                     </span>
-                    <button>
+                    <button onClick={() => copyToClipboard(holder.ownerAddress)}>
                       <Copy className="size-3 opacity-50" />
                     </button>
                   </p>

@@ -3,11 +3,17 @@
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { IconAppWindow, IconCircleSquare, IconFall, IconGasStation } from '@tabler/icons-react';
+import {
+  IconAppWindow,
+  IconCircleSquare,
+  IconFall,
+  IconGasStation,
+  IconStar,
+} from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import Ethereum from '@/components/icons/Ethereum';
 import { Separator } from '@/components/ui/separator';
-import { Bolt, ChevronRight, Clock, Copy, Wallet2, X } from 'lucide-react';
+import { Bell, Bolt, ChevronRight, Clock, Copy, Wallet2, X } from 'lucide-react';
 import SmartImage from '@/components/global/SmartImage';
 import { copyToClipboard, truncate } from '@/lib/helpers';
 import { format } from 'date-fns';
@@ -43,7 +49,7 @@ const SettingsSidebar = (props: { action: 'buy' | 'sell' }) => {
           </TabsList>
 
           <TabsContent value="buy-settings">
-            <div className="py-2 space-y-5">
+            <div className="py-3 space-y-6.5">
               <div>
                 <div className="flex items-center gap-1.5 mb-2.5">
                   <IconGasStation className="text-green-400 size-4.5" />
@@ -108,7 +114,7 @@ const SettingsSidebar = (props: { action: 'buy' | 'sell' }) => {
             </div>
           </TabsContent>
           <TabsContent value="sell-settings">
-            <div className="py-2 space-y-5">
+            <div className="py-3 space-y-6.5">
               <div>
                 <div className="flex items-center gap-1.5 mb-2.5">
                   <IconGasStation className="text-red-400 size-4.5" />
@@ -359,7 +365,18 @@ export default function CoinTrades({ coin }: { coin: Coin }) {
         </Tabs>
       </div>
 
-      <div className="px-3 py-2 w-full max-w-md mx-auto">
+      <div className="lg:px-3 py-2 w-full max-w-md mx-auto border-b flex items-center gap-3">
+        <Button className="flex-1 h-10.5" size={'lg'} variant={'outline'}>
+          <IconStar />
+          <span>Watchlist</span>
+        </Button>
+        <Button className="flex-1 h-10.5" size={'lg'} variant={'outline'}>
+          <Bell />
+          <span>Alerts</span>
+        </Button>
+      </div>
+
+      <div className="lg:px-3 py-2 w-full max-w-md mx-auto">
         {details.map((item) => (
           <div
             key={item.title}

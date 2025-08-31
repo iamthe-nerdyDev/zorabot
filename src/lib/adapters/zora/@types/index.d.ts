@@ -127,3 +127,36 @@ type ZoraCoinSwap = {
   };
   cursor: string;
 };
+
+type ZoraCoinBalance = {
+  node: {
+    balance: string;
+    id: string;
+    coin: ZoraCoin['node'];
+  };
+};
+
+type ZoraProfile = {
+  node: {
+    __typename: string;
+    handle: string;
+    avatar: {
+      icon: string;
+    };
+    vcFollowingStatus: string;
+    displayName: string;
+    publicWallet: {
+      walletAddress: string;
+      ensName: string | null;
+      id: string;
+    };
+    isUnverifiedCreator: boolean;
+    creatorCoin: {
+      marketCap: string;
+      marketCapDelta24h: string;
+      createdAt: string;
+      id: string;
+    };
+    id: string;
+  };
+};
