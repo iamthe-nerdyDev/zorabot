@@ -32,17 +32,17 @@ type CoinResponse = {
   };
 };
 
-const tabs = [
-  { title: 'Gainers', key: 'TOP_GAINERS' },
-  { title: 'Top Volume (24h)', key: 'TOP_VOLUME_24H' },
-  { title: 'Most Valuable', key: 'MOST_VALUABLE' },
-  { title: 'Old Tokens', key: 'OLD' },
-  { title: 'Last Traded Tokens', key: 'LAST_TRADED_UNIQUE' },
-  { title: 'New Creators', key: 'NEW_CREATORS' },
-  { title: 'Most Valuable Creators', key: 'MOST_VALUABLE_CREATORS' },
-];
-
 const Explore = () => {
+  const tabs = [
+    { title: 'Gainers', key: 'TOP_GAINERS' },
+    { title: 'Top Volume (24h)', key: 'TOP_VOLUME_24H' },
+    { title: 'Most Valuable', key: 'MOST_VALUABLE' },
+    { title: 'Old Tokens', key: 'OLD' },
+    { title: 'Last Traded Tokens', key: 'LAST_TRADED_UNIQUE' },
+    { title: 'New Creators', key: 'NEW_CREATORS' },
+    { title: 'Most Valuable Creators', key: 'MOST_VALUABLE_CREATORS' },
+  ];
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') ?? tabs[0].key;
