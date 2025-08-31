@@ -1,7 +1,13 @@
-import React from "react";
+import { type Metadata } from 'next';
+import React from 'react';
+import PortfolioComponent from './_components';
+
+export const metadata: Metadata = {
+  title: 'Portfolio',
+};
 
 const Portfolio = () => {
-  return <div>Portfolio</div>;
+  return <PortfolioComponent />;
 };
 
 export default Portfolio;

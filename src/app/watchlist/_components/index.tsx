@@ -1,0 +1,7 @@
+'use client';
+
+import React from 'react';
+
+export default function WatchlistComponent() {
+  return <div>WatchlistComponent</div>;
+}

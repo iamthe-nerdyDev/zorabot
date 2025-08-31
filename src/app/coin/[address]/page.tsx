@@ -2,10 +2,27 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { BASE_URL } from '@/lib/constants';
 import RenderCoin from './_components/render-coin';
+import { Metadata } from 'next';
+import { formatNumber } from '@/lib/helpers';
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const { address } = await params;
+  const res = await fetch(`${BASE_URL}/api/coin/${address}`, { cache: 'no-store' });
+  // --
+  const data = (await res.json()).data as {
+    coin: Coin;
+    chart: ZoraChart;
+  };
+
+  return {
+    title: data ? `${data.coin.symbol} $${formatNumber(Number(data.coin.price.priceInUsdc))}` : '',
+    description: data.coin.description,
+  };
+}
 
 const Coin = async ({ params }: any) => {
   const { address } = await params;
-  const res = await fetch(`${BASE_URL}/api/coin/${address}`);
+  const res = await fetch(`${BASE_URL}/api/coin/${address}`, { cache: 'no-store' });
   // --
   if (!res.ok) notFound();
   const data = (await res.json()).data as {

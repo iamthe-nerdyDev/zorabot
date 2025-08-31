@@ -1,7 +1,13 @@
-import React from "react";
+import { type Metadata } from 'next';
+import React from 'react';
+import WatchlistComponent from './_components';
+
+export const metadata: Metadata = {
+  title: 'Watchlist',
+};
 
 const Watchlist = () => {
-  return <div>Watchlist</div>;
+  return <WatchlistComponent />;
 };
 
 export default Watchlist;
