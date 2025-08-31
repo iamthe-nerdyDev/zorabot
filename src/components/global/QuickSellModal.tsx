@@ -1,3 +1,5 @@
+'use client';
+
 import useModal from '@/hooks/useModal';
 import { useStorage } from '@/hooks/useStorage';
 import { ArrowRight, Percent, X } from 'lucide-react';
