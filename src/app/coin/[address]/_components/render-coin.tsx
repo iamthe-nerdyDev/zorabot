@@ -1,20 +1,19 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { ArrowRightLeft, ChartColumn, Copy, History, User2, WalletCards } from 'lucide-react';
+import { ArrowRightLeft, Copy, History, User2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React from 'react';
-import CoinTrades from './trades';
-import CoinDetails from './details';
-import CoinPositions from './positions';
-import CoinHistory from './history';
 import CoinChart from './chart';
 import SmartImage from '@/components/global/SmartImage';
 import { copyToClipboard, formatNumber } from '@/lib/helpers';
 import TimeAgo from '@/components/global/TimeAgo';
 import Basescan from '@/components/icons/Basescan';
 import { Separator } from '@/components/ui/separator';
+import CoinSwaps from './swaps';
+import CoinTrades from './trades';
+import CoinHolders from './holders';
 
 type Props = {
   data: {
@@ -29,7 +28,7 @@ export default function RenderCoin({ data }: Props) {
 
   const showFallback = (tab: string | null) => {
     if (!tab) return true;
-    if (!['trade', 'details', 'history', 'positions'].includes(tab)) return true;
+    if (!['trade', 'holders', 'swaps'].includes(tab)) return true;
     return false;
   };
 
@@ -49,29 +48,22 @@ export default function RenderCoin({ data }: Props) {
       },
       {
         icon: History,
-        title: 'History',
-        isActive: tab === 'history',
-        href: '?tab=history',
-      },
-      {
-        icon: WalletCards,
-        title: 'Positions',
-        isActive: tab === 'positions',
-        href: '?tab=positions',
+        title: 'Swaps',
+        isActive: tab === 'swaps',
+        href: '?tab=swaps',
       },
     ];
   }, [tab]);
 
   const Tab = React.useMemo(() => {
     if (tab === 'trade') return CoinTrades;
-    if (tab === 'details') return CoinDetails;
-    if (tab === 'history') return CoinHistory;
-    if (tab === 'positions') return CoinPositions;
+    if (tab === 'holders') return CoinHolders;
+    if (tab === 'swaps') return CoinSwaps;
     return CoinTrades;
   }, [tab]);
 
   return (
-    <div className="w-full flex relative">
+    <div className="w-full flex relative lg:overflow-y-hidden lg:h-[91dvh]">
       <section className="w-full lg:[calc(100vw-600px)]">
         <div className="p-4 border-b flex flex-col gap-4 md:flex-row md:items-center md:gap-8 lg:flex-col lg:items-start lg:gap-4 xl:flex-row xl:items-center xl:gap-8">
           <div className="flex items-center gap-2.5 pr-">
@@ -83,7 +75,7 @@ export default function RenderCoin({ data }: Props) {
             />
             <div className="space-y-[1px]">
               <h4 className="flex items-center gap-1">
-                <span className="font-medium text-[13px] w-max xl:max-w-30 xl:truncate">
+                <span className="font-medium text-[13px] w-max md:max-w-[180px] lg:max-w-[350px] md:truncate xl:max-w-75 xl:truncate">
                   {data.coin.symbol}
                 </span>
                 <button
@@ -144,19 +136,20 @@ export default function RenderCoin({ data }: Props) {
         </div>
       </section>
 
-      <aside className="hidden lg:block w-150 border-l">
-        <nav className="w-full flex items-center border-b">
+      <aside className="hidden lg:block w-150 border-l h-full overflow-y-auto">
+        <nav className="w-full flex items-center border-b sticky top-0 bg-background z-20">
           {tabs.map((item, idx) => (
             <Link
               className={cn(
-                'w-1/4 text-center text-[13px] p-3 font-medium opacity-60',
+                'w-1/3 text-center text-[13px] p-3 font-medium opacity-60 flex items-center gap-[5px] justify-center',
                 idx !== tabs.length - 1 && 'border-r',
                 item.isActive && 'text-green-400 opacity-100'
               )}
               href={item.href}
               key={item.title}
             >
-              {item.title}
+              <item.icon className="size-[13px]" />
+              <p>{item.title}</p>
             </Link>
           ))}
         </nav>

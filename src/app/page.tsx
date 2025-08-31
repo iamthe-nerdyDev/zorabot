@@ -5,9 +5,11 @@ import { Loader } from '@/components/global/Loader';
 import SmartImage from '@/components/global/SmartImage';
 import TimeAgo from '@/components/global/TimeAgo';
 import Basescan from '@/components/icons/Basescan';
+import Ethereum from '@/components/icons/Ethereum';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useFilterSidebar } from '@/hooks/useFilterSideBar';
+import { useStorage } from '@/hooks/useStorage';
 import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -26,9 +28,9 @@ type CoinResponse = {
 
 const Home = () => {
   const [filters, setFilters] = React.useState<Filters>({});
-  const [buyAmount, setBuyAmount] = React.useState<string | null>(null);
   const { ref, inView } = useInView();
   const { open } = useFilterSidebar();
+  const storage = useStorage();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<CoinResponse>({
       queryKey: ['coins'],
@@ -85,10 +87,6 @@ const Home = () => {
       return true;
     });
   }, [coins, filters]);
-
-  React.useEffect(() => {
-    setBuyAmount(localStorage.getItem('buyAmount'));
-  }, []);
 
   React.useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
@@ -206,19 +204,15 @@ const Home = () => {
       enableSorting: true,
       cell: ({ row, renderValue }) => (
         <Link href={`/coin/${row.original.address}`}>
-          <div className="text-end space-y-[1px]">
-            <p className="text-end text-sm font-medium">${formatNumber(Number(renderValue()))}</p>
-            <p className="text-xs opacity-60">
-              {formatNumber(Number(row.original.price.priceInPoolToken))}&nbsp;
-              {row.original.poolToken.name}
-            </p>
+          <div className="text-end">
+            <p className="text-end text-sm font-medium">{formatNumber(Number(renderValue()))}$</p>
           </div>
         </Link>
       ),
     },
     {
       accessorKey: 'uniqueHolders',
-      header: 'Unqiue Holders',
+      header: 'Holders',
       enableSorting: true,
       cell: ({ row, renderValue }) => {
         const holders = Number(renderValue());
@@ -243,9 +237,9 @@ const Home = () => {
       cell: () => (
         <div>
           <Button variant={'outline'} className="min-w-20">
-            <Zap className="size-3 stroke-orange-500" />
+            <Ethereum className="size-3 text-gray-400" />
             <span className="-ml-0.5 font-semibold text-xs">
-              ${(buyAmount ?? 0)?.toLocaleString()}
+              {storage.quickBuyPreset?.toLocaleString()}
             </span>
           </Button>
         </div>
@@ -255,7 +249,7 @@ const Home = () => {
 
   return (
     <div>
-      <div className="p-3 gap-3 flex items-center justify-between sticky top-[65px] bg-background z-25 border-b">
+      <div className="p-3 gap-3 flex items-center justify-between sticky top-[61px] md:top-[65px] bg-background z-25 border-b">
         <div className="flex flex-col gap-0.5">
           <h1 className="flex items-center gap-2 text-green-400">
             <Coins className="size-5.5" strokeWidth={2} />
@@ -276,22 +270,17 @@ const Home = () => {
               <Input
                 className="w-[4.5rem] font-medium h-7.5 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 type="number"
+                autoComplete="off"
                 style={{ fontSize: '12px' }}
-                value={String(buyAmount ?? '')}
+                value={String(storage.quickBuyPreset || '')}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (value) {
-                    setBuyAmount(e.target.value);
-                    localStorage.setItem('buyAmount', value);
-                  } else {
-                    setBuyAmount(null);
-                    localStorage.removeItem('buyAmount');
-                  }
+                  // --
+                  if (value) storage.setQuickBuyPreset(Number(value));
+                  else storage.setQuickBuyPreset(0);
                 }}
               />
-              <span className="absolute text-xs right-[10px] top-1/2 -translate-y-1/2 font-mono text-muted-foreground">
-                $
-              </span>
+              <Ethereum className="absolute size-3 right-[7px] top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
           </div>
 

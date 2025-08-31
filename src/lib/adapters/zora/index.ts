@@ -18,6 +18,9 @@ class Zora {
       totalVolume: coin.node.totalVolume,
       volume24h: coin.node.volume24h,
       poolToken: coin.node.poolCurrencyToken,
+      uniswapPoolAddress: coin.node.uniswapV4PoolKey
+        ? '0x498581ff718922c3f8e6a244956af099b2652b2b'
+        : coin.node.uniswapV3PoolAddress,
       price: {
         priceInPoolToken: coin.node.tokenPrice.priceInPoolToken,
         priceInUsdc: coin.node.tokenPrice.priceInUsdc,
@@ -89,6 +92,70 @@ class Zora {
     } catch {
       return null;
     }
+  }
+
+  async getCoinHolders(address: string, cursor: string | null) {
+    const chainId = 8453;
+    const query = toQueryString({
+      address,
+      chainId,
+      after: cursor,
+      count: 40,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/coinHolders?${query}`);
+    if (error) return null;
+    // --
+    const response = data as {
+      zora20Token: {
+        tokenBalances: {
+          pageInfo: {
+            endCursor: string | null;
+            hasNextPage: boolean;
+          };
+          count: number;
+          edges: ZoraCoinHolder[];
+        };
+      };
+    };
+
+    return {
+      total: response.zora20Token.tokenBalances.count,
+      holders: response.zora20Token.tokenBalances.edges.map((e) => e.node),
+      cursor: response.zora20Token.tokenBalances.pageInfo.endCursor,
+    };
+  }
+
+  async getCoinSwaps(address: string, cursor: string | null) {
+    const chainId = 8453;
+    const query = toQueryString({
+      address,
+      chainId,
+      after: cursor,
+      first: 100,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/coinSwaps?${query}`);
+    if (error) return null;
+    // --
+    const response = data as {
+      zora20Token: {
+        swapActivities: {
+          pageInfo: {
+            endCursor: string | null;
+            hasNextPage: boolean;
+          };
+          count: number;
+          edges: ZoraCoinSwap[];
+        };
+      };
+    };
+
+    return {
+      total: response.zora20Token.swapActivities.count,
+      swaps: response.zora20Token.swapActivities.edges.map((e) => e.node),
+      cursor: response.zora20Token.swapActivities.pageInfo.endCursor,
+    };
   }
 }
 

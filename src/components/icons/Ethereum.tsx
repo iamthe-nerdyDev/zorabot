@@ -4,6 +4,7 @@ export default function Ethereum({
   width,
   height,
   className,
+  fill,
   ...props
 }: React.ComponentProps<'svg'>) {
   return (
@@ -13,6 +14,7 @@ export default function Ethereum({
       viewBox="0 0 24 24"
       role="img"
       className={className}
+      fill={fill || 'currentColor'}
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >

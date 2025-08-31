@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans_Condensed } from 'next/font/google';
 import GlobalProvider from '@/components/providers/GlobalProvider';
+import 'react-loading-skeleton/dist/skeleton.css';
 import './globals.css';
 
 const ibmPlexSans = IBM_Plex_Sans_Condensed({

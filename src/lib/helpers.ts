@@ -47,3 +47,9 @@ export const isPathMatching = (currentPath: string, pattern: string) => {
   const regex = new RegExp(`^${regexPattern}$`);
   return regex.test(currentPath);
 };
+
+export function truncate(value?: string | null, start = 6, end = 4) {
+  if (!value) return '';
+  if (value.length <= start + end) return value;
+  return value.slice(0, start) + '...' + value.slice(-end);
+}

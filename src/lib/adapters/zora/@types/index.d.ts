@@ -60,7 +60,8 @@ type ZoraCoin = {
     };
     mediaContent: ZoraMedia;
     uniqueHolders: number;
-    uniswapV4PoolKey: {
+    uniswapV3PoolAddress?: string;
+    uniswapV4PoolKey?: {
       token0Address: string;
       token1Address: string;
       fee: string;
@@ -72,8 +73,8 @@ type ZoraCoin = {
 };
 
 type ZoraChartPoints = {
-  timestamp: '2025-08-03T18:12:00';
-  closePrice: '0.000003334717456479119082706038920323780';
+  timestamp: string;
+  closePrice: string;
 };
 
 type ZoraChart = {
@@ -85,4 +86,44 @@ type ZoraChart = {
   oneWeek: ZoraChartPoints[];
   oneMonth: ZoraChartPoints[];
   all: ZoraChartPoints[];
+};
+
+type ZoraCoinHolder = {
+  node: {
+    balance: string;
+    ownerAddress: string;
+    ownerProfile: {
+      __typename: string;
+      id: string;
+      handle: string;
+      avatar: ZoraMedia | null;
+    };
+  };
+};
+
+type ZoraCoinSwap = {
+  node: {
+    id: string;
+    currencyAmountWithPrice: {
+      priceUsdc: string;
+      currencyAmount: {
+        currencyAddress: string;
+        amountDecimal: number;
+      };
+    };
+    senderAddress: string;
+    recipientAddress: string;
+    transactionHash: string;
+    coinAmount: string;
+    blockTimestamp: string;
+    activityType: 'BUY' | 'SELL';
+    senderProfile: {
+      __typename: string;
+      id: string;
+      handle: string;
+      avatar: ZoraMedia | null;
+    };
+    __typename: string;
+  };
+  cursor: string;
 };

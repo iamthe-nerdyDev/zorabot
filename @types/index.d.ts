@@ -18,6 +18,7 @@ type Coin = {
   totalSupply: string;
   totalVolume: string;
   volume24h: string;
+  uniswapPoolAddress?: string;
   price: {
     priceInUsdc: string;
     priceInPoolToken: string;
@@ -55,4 +56,39 @@ type Filters = {
     min?: number;
     max?: number;
   };
+};
+
+type CoinHolder = {
+  balance: string;
+  ownerAddress: string;
+  ownerProfile: {
+    __typename: string;
+    id: string;
+    handle: string;
+    avatar: ZoraMedia | null;
+  };
+};
+
+type CoinSwap = {
+  id: string;
+  currencyAmountWithPrice: {
+    priceUsdc: string;
+    currencyAmount: {
+      currencyAddress: string;
+      amountDecimal: number;
+    };
+  };
+  senderAddress: string;
+  recipientAddress: string;
+  transactionHash: string;
+  coinAmount: string;
+  blockTimestamp: string;
+  activityType: 'BUY' | 'SELL';
+  senderProfile: {
+    __typename: string;
+    id: string;
+    handle: string;
+    avatar: ZoraMedia | null;
+  };
+  __typename: string;
 };
