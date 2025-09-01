@@ -4,6 +4,7 @@ import { BASE_URL } from '@/lib/constants';
 import RenderCoin from './_components/render-coin';
 import { Metadata } from 'next';
 import { formatNumber } from '@/lib/helpers';
+import { Alert } from '@/generated/prisma';
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { address } = await params;
@@ -12,6 +13,8 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const data = (await res.json()).data as {
     coin: Coin;
     chart: ZoraChart;
+    alerts?: Alert[];
+    inWatchlist?: boolean;
   };
 
   return {

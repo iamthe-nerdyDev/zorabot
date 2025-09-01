@@ -4,6 +4,7 @@
     "tags": ["social", "tokens", "analytics"],
     "homeUrl": "https://zorabot.vercel.app",
     "iconUrl": "https://zorabot.vercel.app/farcaster/icon.png",
+    "imageUrl": "https://zorabot.vercel.app/farcaster/og.png",
     "version": "1",
     "subtitle": "The lens into Zora coins",
     "tagline": "The lens into Zora coins",

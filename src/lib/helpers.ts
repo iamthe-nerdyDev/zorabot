@@ -1,3 +1,4 @@
+import { ZodObject, ZodError } from 'zod';
 import qs from 'querystring';
 
 export function toQueryString(obj?: Record<string, any>) {
@@ -52,4 +53,22 @@ export function truncate(value?: string | null, start = 6, end = 4) {
   if (!value) return '';
   if (value.length <= start + end) return value;
   return value.slice(0, start) + '...' + value.slice(-end);
+}
+
+type ValidateZodSchemaResponse<T> = {
+  error?: string;
+  data?: T;
+};
+
+export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSchemaResponse<T> {
+  try {
+    return { data: schema.parse(data) as T };
+  } catch (e) {
+    if (e instanceof ZodError) {
+      const errors = e.issues.map((issue: any) => `${issue.path.join('.')}: ${issue.message}`);
+      return { error: errors[0] };
+    }
+
+    return { error: 'Something went wrong' };
+  }
 }

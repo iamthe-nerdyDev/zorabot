@@ -218,6 +218,19 @@ class Zora {
     };
   }
 
+  async getMultipleCoins(addresses: string[]) {
+    const chainId = 8453;
+    const query = toQueryString({
+      coins: addresses.map((value) => ({ collectionAddress: value, chainId })),
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/coins?${query}`);
+    if (error) return null;
+    // --
+    const response = data.zora20Tokens as ZoraCoin['node'][];
+    return response.map((r) => this.formatCoin({ node: r }));
+  }
+
   async search(query: string) {
     try {
       const { data } = await axios.post(ZORA_GRAPHQL_URL, {

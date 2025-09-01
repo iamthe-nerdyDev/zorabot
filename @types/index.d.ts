@@ -92,3 +92,5 @@ type CoinSwap = {
   };
   __typename: string;
 };
+
+type TokenType = 'native' | string;

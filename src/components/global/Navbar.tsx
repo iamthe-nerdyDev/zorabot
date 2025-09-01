@@ -2,15 +2,35 @@
 
 import React from 'react';
 import { Input } from '../ui/input';
-import { Menu, Search } from 'lucide-react';
+import { Copy, Menu, Power, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useSidebar } from '@/hooks/useSidebar';
 import { Separator } from '../ui/separator';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
+import { useApp } from '@/hooks/useApp';
+import { truncate } from '@/lib/helpers';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useConnectWallet, usePrivy } from '@privy-io/react-auth';
+import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
+import { ConnectKitButton } from 'connectkit';
 
 export default function Navbar() {
+  const { login, logout, authenticated, user } = usePrivy();
+  const { connectWallet } = useConnectWallet();
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+  // const { disconnect } = useDisconnect();
+  // const { signMessageAsync } = useSignMessage();
+  // const { walletClient, account, publicClient, isConnected } = useWalletClient();
+  const app = useApp();
   const { open } = useSidebar();
   const { open: openModal } = useModal();
 
@@ -29,6 +49,17 @@ export default function Navbar() {
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
+
+  const handleConnect = async () => {
+    if (app.isInMiniApp) {
+      // Use Farcaster connector for miniapp
+      const farcasterConnector = connectors.find((c) => c.id === 'farcaster');
+      if (farcasterConnector) connect({ connector: farcasterConnector });
+      else alert(JSON.stringify(connectors));
+    } else {
+      connectWallet();
+    }
+  };
 
   return (
     <nav className="p-3 border-b sticky top-0 bg-background z-20">
@@ -65,10 +96,41 @@ export default function Navbar() {
             </div>
           </aside>
 
+          <ConnectKitButton.Custom />
           <aside className="flex items-center gap-3">
-            <Button className="rounded-lg">
-              <span>Connect Wallet</span>
-            </Button>
+            {address ? (
+              <React.Fragment>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="rounded-lg">
+                    <Button variant={'outline'} className="rounded-lg" asChild>
+                      <p>
+                        <span className="size-1.5 bg-green-500 rounded-full" />
+                        <span>{truncate(address)}</span>
+                      </p>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-45 mr-3" side="bottom">
+                    <DropdownMenuLabel className="opacity-50">Account</DropdownMenuLabel>
+                    <DropdownMenuItem>
+                      <button className="flex items-center gap-2">
+                        <Copy className="size-3" strokeWidth={2} />
+                        <p className="text-[13px] font-medium">{truncate(address)}</p>
+                      </button>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <button className="flex items-center gap-2">
+                        <Power className="size-3" strokeWidth={2} />
+                        <p className="text-[13px] font-medium">Logout</p>
+                      </button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </React.Fragment>
+            ) : (
+              <Button className="rounded-lg" onClick={handleConnect}>
+                <span>Connect Wallet</span>
+              </Button>
+            )}
           </aside>
         </div>
       </div>

@@ -19,6 +19,7 @@ import { copyToClipboard, truncate } from '@/lib/helpers';
 import { format } from 'date-fns';
 import { useCustomSidebar } from '@/hooks/useCustomSidebar';
 import { useStorage } from '@/hooks/useStorage';
+import { Alert } from '@/generated/prisma';
 
 const SettingsSidebar = (props: { action: 'buy' | 'sell' }) => {
   const storage = useStorage();
@@ -184,7 +185,95 @@ const SettingsSidebar = (props: { action: 'buy' | 'sell' }) => {
   );
 };
 
-export default function CoinTrades({ coin }: { coin: Coin }) {
+const Buy = ({ coin }: { coin: Coin }) => {
+  const [amount, setAmount] = React.useState<number>();
+  const { open } = useCustomSidebar();
+  const storage = useStorage();
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="flex items-center gap-1.5 mt-1 mb-3 justify-end">
+          <Wallet2 className="size-3.5 opacity-50" />
+          <span className="font-semibold text-xs text-green-500">0 ETH</span>
+        </p>
+
+        <div className="bg-secondary/40 p-1.5 border rounded-lg flex items-center gap-1 relative mb-2.5">
+          <span className="text-xs uppercase font-medium w-17 text-center shrink-0">Amount</span>
+          <div className="bg-background rounded-lg w-full">
+            <Input
+              type="number"
+              className="w-full h-8.5 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+              style={{ fontSize: '13px' }}
+              value={String(amount ?? '')}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (!isNaN(val)) setAmount(val);
+              }}
+            />
+            <Ethereum
+              fill="#aaa"
+              className="size-3.5 absolute right-4 opacity-70 top-1/2 -translate-y-1/2"
+            />
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {storage.buyPresets.map((value) => (
+            <Button
+              key={value}
+              className="flex-1 h-10"
+              variant={'outline'}
+              onClick={() => setAmount(value)}
+            >
+              <span className="text-[13px]">{value}</span>
+              <Ethereum fill="#aaa" className="size-3.5" />
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        <Separator />
+        <div className="space-y-3.5">
+          <button
+            className="flex items-center justify-between w-full"
+            onClick={() => open({ content: <SettingsSidebar action="buy" /> })}
+          >
+            <p className="text-xs opacity-60 font-medium">Gas & Slippage</p>
+            <div className="flex items-center gap-3">
+              <p className="flex items-center gap-1">
+                <IconGasStation className="size-4 opacity-60" strokeWidth={1.5} />
+                <span className="text-xs font-medium">{storage.buyPriorityFee}</span>
+              </p>
+
+              <p className="flex items-center gap-1">
+                <IconFall className="size-4 opacity-60" strokeWidth={1.5} />
+                <span className="text-xs font-medium">{storage.buySlippage}%</span>
+              </p>
+
+              <div className="h-4">
+                <Separator orientation="vertical" />
+              </div>
+              <ChevronRight className="size-4 opacity-60" />
+            </div>
+          </button>
+
+          <Button size={'lg'} className="w-full h-11">
+            Insufficient Funds
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+type Props = {
+  coin: Coin;
+  alerts?: Alert[];
+  inWatchlist?: boolean;
+};
+
+export default function CoinTrades({ coin }: Props) {
   const { open } = useCustomSidebar();
   const storage = useStorage();
   const details = [

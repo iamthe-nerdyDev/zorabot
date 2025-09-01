@@ -14,11 +14,14 @@ import { Separator } from '@/components/ui/separator';
 import CoinSwaps from './swaps';
 import CoinTrades from './trades';
 import CoinHolders from './holders';
+import { Alert } from '@/generated/prisma';
 
 type Props = {
   data: {
     coin: Coin;
     chart: ZoraChart;
+    alerts?: Alert[];
+    inWatchlist?: boolean;
   };
 };
 
@@ -131,7 +134,7 @@ export default function RenderCoin({ data }: Props) {
             <CoinChart data={data.chart} price={Number(data.coin.price.priceInUsdc)} />
           </div>
           <div className="block lg:hidden mb-20">
-            <Tab coin={data.coin} />
+            <Tab coin={data.coin} alerts={data.alerts} inWatchlist={data.inWatchlist} />
           </div>
         </div>
       </section>
@@ -154,7 +157,7 @@ export default function RenderCoin({ data }: Props) {
           ))}
         </nav>
 
-        <Tab coin={data.coin} />
+        <Tab coin={data.coin} alerts={data.alerts} inWatchlist={data.inWatchlist} />
       </aside>
 
       <nav className="flex gap-5 py-3 px-5.5 lg:hidden bg-background fixed bottom-0 border z-20 rounded-full left-1/2 -translate-1/2">

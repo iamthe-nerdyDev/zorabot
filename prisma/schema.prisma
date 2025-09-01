@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                          String   @id @default(cuid())
+  fid                         String?  @unique
+  address                     String   @unique
+  farcasterNotificationUrl    String?  
+  farcasterNotificationToken  String?  
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  watchlists      Watchlist[]
+  alerts          Alert[]
+
+  @@map("users")
+}
+
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String   
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items WatchlistItem[]
+  alerts Alert[]
+
+  @@map("watchlist")
+}
+
+model WatchlistItem {
+  id          String @id @default(cuid())
+  watchlistId String
+  coinAddress String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  watchlist Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+
+  @@unique([watchlistId, coinAddress])
+  @@map("watchlist_items")
+}
+
+model Alert {
+  id          String      @id @default(cuid())
+  userId      String      
+  coinAddress String?      
+  watchlistId String?      
+  status      AlertStatus @default(ENABLED)
+  note        String?
+  condition   Json        
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlist Watchlist? @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+enum AlertStatus {
+  ENABLED
+  DISABLED
+}
