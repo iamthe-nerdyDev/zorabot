@@ -1,5 +1,5 @@
 import { type PrivyClientConfig } from '@privy-io/react-auth';
-import { base } from 'viem/chains';
+import { base } from 'wagmi/chains';
 
 export const privyConfig: PrivyClientConfig = {
   defaultChain: base,

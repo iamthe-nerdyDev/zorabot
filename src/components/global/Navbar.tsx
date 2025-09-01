@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useConnectWallet, usePrivy } from '@privy-io/react-auth';
 import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
-import { ConnectKitButton } from 'connectkit';
 
 export default function Navbar() {
   const { login, logout, authenticated, user } = usePrivy();
@@ -96,7 +95,6 @@ export default function Navbar() {
             </div>
           </aside>
 
-          <ConnectKitButton.Custom />
           <aside className="flex items-center gap-3">
             {address ? (
               <React.Fragment>
