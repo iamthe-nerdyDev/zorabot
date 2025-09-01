@@ -3,15 +3,8 @@
 import { User } from '@/generated/prisma';
 import { BASE_URL } from '@/lib/constants';
 import sdk from '@farcaster/miniapp-sdk';
+import { SiweMessage } from 'siwe';
 import { create } from 'zustand';
-
-type SwapInput = {
-  inputToken: TokenType;
-  outputToken: TokenType;
-  amountIn: bigint;
-  address: string;
-  slippage: number;
-};
 
 interface AppState {
   isReady: boolean;
@@ -21,8 +14,7 @@ interface AppState {
   getNonce: () => Promise<string | null>;
   whoami: () => Promise<void>;
   logout: () => Promise<void>;
-  siwe: (message: string, signature: string) => Promise<void>;
-  swap: (input: SwapInput) => Promise<void>;
+  siwe: (message: SiweMessage, signature: string) => Promise<boolean>;
 }
 
 export const useApp = create<AppState>((set, get) => ({
@@ -48,35 +40,44 @@ export const useApp = create<AppState>((set, get) => ({
     // --
     return (await res.json())?.data?.nonce ?? null;
   },
-  siwe: async (message: string, signature: string) => {
+  siwe: async (message: SiweMessage, signature: string) => {
     const state = get();
     const res = await fetch('/api/auth', {
       method: 'POST',
       body: JSON.stringify({ message, signature }),
     });
     // --
-    if (!res.ok) return;
+    if (!res.ok) return false;
     const user = (await res.json())?.data;
     // --- if in mini app, set user fid
-    if (state.isInMiniApp) await sdk.quickAuth.fetch(`${BASE_URL}/api/auth`);
+    if (state.isInMiniApp) {
+      await sdk.quickAuth.fetch(`${BASE_URL}/api/auth`, {
+        credentials: 'include',
+      });
+    }
 
     set({ user });
+    return true;
   },
   whoami: async () => {
-    const res = await fetch('/api/whoami');
+    const res = await fetch('/api/whoami', {
+      credentials: 'include',
+    });
     if (!res.ok) return;
     // --
     const user = (await res.json())?.data;
     set({ user });
   },
   logout: async () => {
-    const res = await fetch('/api/auth', { method: 'DELETE' });
+    const user = get().user;
+    set({ user: undefined });
+    const res = await fetch('/api/auth', {
+      method: 'DELETE',
+      credentials: 'include',
+    });
     if (!res.ok) return;
     // --
     const success = (await res.json())?.data;
-    if (success) set({ user: undefined });
-  },
-  swap: async (input: SwapInput) => {
-    const state = get();
+    if (!success) set({ user });
   },
 }));

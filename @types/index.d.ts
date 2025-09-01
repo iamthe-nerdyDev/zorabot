@@ -93,4 +93,7 @@ type CoinSwap = {
   __typename: string;
 };
 
-type TokenType = 'native' | string;
+type SessionData = {
+  nonce: string;
+  siwe: any;
+};

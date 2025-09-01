@@ -9,7 +9,6 @@ import { Separator } from '../ui/separator';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
-import { useApp } from '@/hooks/useApp';
 import { truncate } from '@/lib/helpers';
 import {
   DropdownMenu,
@@ -18,20 +17,27 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useConnectWallet, usePrivy } from '@privy-io/react-auth';
-import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
+import useMain from '@/hooks/useMain';
+import ConnectButton from './ConnectButton';
+import { useApp } from '@/hooks/useApp';
 
 export default function Navbar() {
-  const { login, logout, authenticated, user } = usePrivy();
-  const { connectWallet } = useConnectWallet();
-  const { connect, connectors } = useConnect();
-  const { address } = useAccount();
-  // const { disconnect } = useDisconnect();
-  // const { signMessageAsync } = useSignMessage();
-  // const { walletClient, account, publicClient, isConnected } = useWalletClient();
-  const app = useApp();
   const { open } = useSidebar();
   const { open: openModal } = useModal();
+  const { account, connect } = useMain();
+  const app = useApp();
+
+  // React.useEffect(() => {
+  //   if (!app.isReady) return;
+  //   if (!app.isInMiniApp) return;
+  //   // -- prompt auto connection in farcaster
+  //   if (!account.address) connect();
+  // }, [app.isInMiniApp, app.isReady, account.address]);
+
+  React.useEffect(() => {
+    if (!app.user || !account.address) return;
+    if (app.user.address !== account.address) app.logout();
+  }, [account.address, app.user]);
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -48,16 +54,6 @@ export default function Navbar() {
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
-
-  const handleConnect = async () => {
-    if (app.isInMiniApp) {
-      // Use Farcaster connector for miniapp
-      const farcasterConnector = connectors.find((c) => c.id === 'farcaster');
-      if (farcasterConnector) connect({ connector: farcasterConnector });
-    } else {
-      connectWallet();
-    }
-  };
 
   return (
     <nav className="p-3 border-b sticky top-0 bg-background z-20">
@@ -95,14 +91,14 @@ export default function Navbar() {
           </aside>
 
           <aside className="flex items-center gap-3">
-            {address ? (
+            {account.address && app.user ? (
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
                     <Button variant={'outline'} className="rounded-lg" asChild>
                       <p>
                         <span className="size-1.5 bg-green-500 rounded-full" />
-                        <span>{truncate(address)}</span>
+                        <span>{truncate(account.address)}</span>
                       </p>
                     </Button>
                   </DropdownMenuTrigger>
@@ -111,7 +107,7 @@ export default function Navbar() {
                     <DropdownMenuItem>
                       <button className="flex items-center gap-2">
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(address)}</p>
+                        <p className="text-[13px] font-medium">{truncate(account.address)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
@@ -124,9 +120,7 @@ export default function Navbar() {
                 </DropdownMenu>
               </React.Fragment>
             ) : (
-              <Button className="rounded-lg" onClick={handleConnect}>
-                <span>Connect Wallet</span>
-              </Button>
+              <ConnectButton />
             )}
           </aside>
         </div>

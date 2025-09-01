@@ -5,6 +5,7 @@ import { validateZodSchema } from '@/lib/helpers';
 import { NextRequest, NextResponse } from 'next/server';
 import { SiweMessage } from 'siwe';
 import z from 'zod';
+import session from '@/lib/adapters/session';
 
 const client = createClient();
 
@@ -12,7 +13,7 @@ const client = createClient();
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const Schema = z.object({
-    message: z.string().min(1, 'message cannot be empty'),
+    message: z.any(),
     signature: z.string().min(1, 'signature cannot be empty'),
   });
 
@@ -27,6 +28,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: siwe.error }, { status: 400 });
   }
 
+  const s = await session();
+  if (siwe.data.nonce !== s.nonce) {
+    return NextResponse.json({ error: 'Invalid nonce!' }, { status: 422 });
+  }
+
+  s.destroy();
   const user = await prisma.user.upsert({
     where: { address: siwe.data.address },
     create: { address: siwe.data.address },
