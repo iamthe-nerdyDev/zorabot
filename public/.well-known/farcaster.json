@@ -1,0 +1,26 @@
+{
+  "frame": {
+    "name": "ZoraBot",
+    "tags": ["social", "tokens", "analytics"],
+    "homeUrl": "https://zorabot.vercel.app",
+    "iconUrl": "https://zorabot.vercel.app/farcaster/icon.png",
+    "version": "1",
+    "subtitle": "The lens into Zora coins",
+    "webhookUrl": "https://zorabot.vercel.app/api/webhook",
+    "buttonTitle": "Open ZoraBot",
+    "description": "Get detailed insights about Zora tokens, creator coins, and posts directly inside Farcaster",
+    "screenshotUrls": [
+      "https://zorabot.vercel.app/farcaster/screenshots/1.png",
+      "https://zorabot.vercel.app/farcaster/screenshots/2.png",
+      "https://zorabot.vercel.app/farcaster/screenshots/3.png"
+    ],
+    "splashImageUrl": "https://zorabot.vercel.app/logo.png",
+    "primaryCategory": "finance",
+    "splashBackgroundColor": "#0a0a0a"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEzMTY5NDEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhjMzRENjY5MWU1M0UzMzVEZTA4QjEzNDNFM2EyM0ExN2JlODkzNUI4In0",
+    "payload": "eyJkb21haW4iOiJ6b3JhYm90LnZlcmNlbC5hcHAifQ",
+    "signature": "MHg5YjI1NGY4ODlmYjIwYzY1YmRjMTg1OThlMmY4ODNhZDRiNTcwZmUzMTQ5Yzc3MzBlYzlmYzgyMWZmMmQxMTg3MGU1NTIxNTc0YWRhODYyYjAxMGY3ZjRkNDQ3YjNkY2NhODY2YjIwY2EyYjQ5YTJmYWM0MGE1YjE3Y2VmYTU2OTFj"
+  }
+}
