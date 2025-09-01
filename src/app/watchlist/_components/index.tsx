@@ -1,15 +1,20 @@
 'use client';
 
-import { useWallets } from '@privy-io/react-auth';
+import useWallet from '@/hooks/useWallet';
+import { usePrivy } from '@privy-io/react-auth';
 import React from 'react';
+import { useAccount } from 'wagmi';
 
 export default function WatchlistComponent() {
-  const { wallets, ready: walletsReady } = useWallets();
+  const { wallet } = useWallet();
+  const { user } = usePrivy();
+  const account = useAccount();
 
   return (
     <div>
-      {String(walletsReady)}
-      {JSON.stringify(wallets)}
+      {JSON.stringify(account)}
+      {JSON.stringify(user)}
+      {JSON.stringify(wallet)}
     </div>
   );
 }

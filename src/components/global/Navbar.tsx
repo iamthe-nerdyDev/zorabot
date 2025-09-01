@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ConnectButton from './ConnectButton';
 import { usePrivy } from '@privy-io/react-auth';
-import { useAccount } from 'wagmi';
+import useWallet from '@/hooks/useWallet';
 
 export default function Navbar() {
   const { open } = useSidebar();
   const { open: openModal } = useModal();
   const { authenticated, logout } = usePrivy();
-  const { address } = useAccount();
+  const { wallet } = useWallet();
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -79,14 +79,14 @@ export default function Navbar() {
           </aside>
 
           <aside className="flex items-center gap-3">
-            {authenticated ? (
+            {authenticated && wallet ? (
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
                     <Button variant={'outline'} className="rounded-lg" asChild>
                       <p>
                         <span className="size-1.5 bg-green-500 rounded-full" />
-                        <span>{truncate(address)}</span>
+                        <span>{truncate(wallet.address)}</span>
                       </p>
                     </Button>
                   </DropdownMenuTrigger>
@@ -95,10 +95,10 @@ export default function Navbar() {
                     <DropdownMenuItem>
                       <button
                         className="flex items-center gap-2"
-                        onClick={() => copyToClipboard(address ?? '')}
+                        onClick={() => copyToClipboard(wallet.address)}
                       >
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(address)}</p>
+                        <p className="text-[13px] font-medium">{truncate(wallet.address)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>

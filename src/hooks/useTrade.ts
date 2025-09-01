@@ -1,6 +1,5 @@
 'use client';
 
-import { useAccount } from 'wagmi';
 import {
   ChainId,
   convertQuoteToRoute,
@@ -12,17 +11,18 @@ import {
 import React from 'react';
 import { useStorage } from './useStorage';
 import { BUY_PERCENTAGE, SELL_PERCENTAGE } from '@/lib/constants';
+import useWallet from './useWallet';
 
 export default function () {
   const storage = useStorage();
-  const { address } = useAccount();
+  const { wallet } = useWallet();
 
   const quote = React.useCallback(
     async (action: 'buy' | 'sell', from: string, to: string, amount: string) => {
-      if (!address) return;
+      if (!wallet) return;
       // --
       return await getQuote({
-        fromAddress: address,
+        fromAddress: wallet.address,
         fromChain: ChainId.BAS,
         toChain: ChainId.BAS,
         fromToken: from,
@@ -33,7 +33,7 @@ export default function () {
         fee: (action === 'buy' ? BUY_PERCENTAGE : SELL_PERCENTAGE) / 100,
       });
     },
-    [address]
+    [wallet]
   );
 
   const swap = React.useCallback(
