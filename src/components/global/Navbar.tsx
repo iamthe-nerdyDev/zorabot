@@ -54,7 +54,6 @@ export default function Navbar() {
       // Use Farcaster connector for miniapp
       const farcasterConnector = connectors.find((c) => c.id === 'farcaster');
       if (farcasterConnector) connect({ connector: farcasterConnector });
-      else alert(JSON.stringify(connectors));
     } else {
       connectWallet();
     }
