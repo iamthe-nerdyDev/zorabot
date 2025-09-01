@@ -92,8 +92,3 @@ type CoinSwap = {
   };
   __typename: string;
 };
-
-type SessionData = {
-  nonce: string;
-  siwe: any;
-};

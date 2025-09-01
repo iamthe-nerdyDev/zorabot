@@ -9,7 +9,7 @@ import { Separator } from '../ui/separator';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
-import { truncate } from '@/lib/helpers';
+import { copyToClipboard, truncate } from '@/lib/helpers';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,27 +17,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import useMain from '@/hooks/useMain';
 import ConnectButton from './ConnectButton';
-import { useApp } from '@/hooks/useApp';
+import { usePrivy } from '@privy-io/react-auth';
+import { useAccount } from 'wagmi';
 
 export default function Navbar() {
   const { open } = useSidebar();
   const { open: openModal } = useModal();
-  const { account, connect } = useMain();
-  const app = useApp();
-
-  // React.useEffect(() => {
-  //   if (!app.isReady) return;
-  //   if (!app.isInMiniApp) return;
-  //   // -- prompt auto connection in farcaster
-  //   if (!account.address) connect();
-  // }, [app.isInMiniApp, app.isReady, account.address]);
-
-  React.useEffect(() => {
-    if (!app.user || !account.address) return;
-    if (app.user.address !== account.address) app.logout();
-  }, [account.address, app.user]);
+  const { authenticated, logout } = usePrivy();
+  const { address } = useAccount();
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -91,27 +79,30 @@ export default function Navbar() {
           </aside>
 
           <aside className="flex items-center gap-3">
-            {account.address && app.user ? (
+            {authenticated ? (
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
                     <Button variant={'outline'} className="rounded-lg" asChild>
                       <p>
                         <span className="size-1.5 bg-green-500 rounded-full" />
-                        <span>{truncate(account.address)}</span>
+                        <span>{truncate(address)}</span>
                       </p>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-45 mr-3" side="bottom">
                     <DropdownMenuLabel className="opacity-50">Account</DropdownMenuLabel>
                     <DropdownMenuItem>
-                      <button className="flex items-center gap-2">
+                      <button
+                        className="flex items-center gap-2"
+                        onClick={() => copyToClipboard(address ?? '')}
+                      >
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(account.address)}</p>
+                        <p className="text-[13px] font-medium">{truncate(address)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <button className="flex items-center gap-2">
+                      <button className="flex items-center gap-2" onClick={logout}>
                         <Power className="size-3" strokeWidth={2} />
                         <p className="text-[13px] font-medium">Logout</p>
                       </button>

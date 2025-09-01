@@ -5,7 +5,10 @@ import { createConfig, EVM, config } from '@lifi/sdk';
 import { getWalletClient } from '@wagmi/core';
 import { wagmiConfig } from '@/lib/wagmi/config';
 import { WagmiProvider } from '@privy-io/wagmi';
-import { useApp } from '@/hooks/useApp';
+import { usePrivy } from '@privy-io/react-auth';
+import { Loader } from '../global/Loader';
+import miniappSdk from '@farcaster/miniapp-sdk';
+import { useLoginToMiniApp } from '@privy-io/react-auth/farcaster';
 
 createConfig({
   integrator: 'ZoraCore',
@@ -18,11 +21,52 @@ createConfig({
 });
 
 export default function CustomWagmiProvider({ children }: PropsWithChildren) {
-  const app = useApp();
+  const { ready, authenticated } = usePrivy();
+  const { initLoginToMiniApp, loginToMiniApp } = useLoginToMiniApp();
+  const [isSDKLoaded, setIsSDKLoaded] = React.useState(false);
+  const [isInMiniApp, setIsInMiniApp] = React.useState(false);
 
   React.useEffect(() => {
-    if (app.user) config.set({ ...config.get(), userId: app.user.id });
-  }, [app.user]);
+    async function init() {
+      if (!miniappSdk || isSDKLoaded) return;
+      // --
+      const response = await miniappSdk.isInMiniApp();
+      if (response) {
+        miniappSdk.back.enableWebNavigation();
+        miniappSdk.actions.ready();
+        setIsInMiniApp(true);
+      }
+
+      setIsSDKLoaded(true);
+    }
+
+    init();
+  }, [isSDKLoaded]);
+
+  // React.useEffect(() => {
+  //  config.set({ ...config.get(), userId: app.user.id });
+  // }, []);
+
+  React.useEffect(() => {
+    if (ready && !authenticated && isInMiniApp) {
+      const login = async () => {
+        const { nonce } = await initLoginToMiniApp();
+        const result = await miniappSdk.actions.signIn({ nonce: nonce });
+        // --
+        await loginToMiniApp({ message: result.message, signature: result.signature });
+      };
+
+      login();
+    }
+  }, [ready, authenticated, isInMiniApp]);
+
+  if (!isSDKLoaded || !ready) {
+    return (
+      <div className="flex items-center justify-center h-dvh w-full">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>

@@ -10,28 +10,12 @@ import { ThemeProvider } from './ThemeProvider';
 import FilterComponent from '../global/FilterComponent';
 import CustomSidebar from '../global/CustomSidebar';
 import Modal from '../global/Modal';
-import { useApp } from '@/hooks/useApp';
 import { privyConfig } from '@/lib/adapters/privy/config';
 import { PRIVY_APP_ID, PRIVY_CLIENT_ID } from '@/lib/constants';
 import CustomWagmiProvider from './CustomWagmiProvider';
-import { Loader } from '../global/Loader';
 
 export default function GlobalProvider({ children }: PropsWithChildren) {
   const queryClient = new QueryClient();
-  const app = useApp();
-
-  React.useEffect(() => {
-    app.init();
-  }, [app.isReady]);
-
-  if (!app.isReady) {
-    // change to logo zoom in and out loader
-    return (
-      <div className="flex items-center justify-center h-dvh w-full">
-        <Loader />
-      </div>
-    );
-  }
 
   return (
     <Suspense>

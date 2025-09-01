@@ -5,7 +5,6 @@ export const ZORA_API_BASE_URL =
 export const ZORA_API_KEY = process.env.ZORA_API_KEY;
 export const ZORA_GRAPHQL_URL = 'https://api.zora.co/universal/graphql';
 export const RPC_URL = process.env.RPC_URL;
-export const SESSION_PASSWORD = process.env.SESSION_PASSWORD;
 // -- client keys
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 export const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'cmeqz4m1i01npkz0cqljvaf2g';
