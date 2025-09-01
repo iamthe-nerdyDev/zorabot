@@ -1,10 +1,10 @@
 import { base } from 'wagmi/chains';
-import { http, createConfig } from 'wagmi';
-import { RPC_URL } from '../constants';
+import { http } from 'wagmi';
+import { createConfig } from '@privy-io/wagmi';
 
 export const wagmiConfig = createConfig({
   chains: [base],
   transports: {
-    [base.id]: http(RPC_URL),
+    [base.id]: http(),
   },
 });

@@ -24,8 +24,7 @@ import useWallet from '@/hooks/useWallet';
 export default function Navbar() {
   const { open } = useSidebar();
   const { open: openModal } = useModal();
-  const { authenticated, logout } = usePrivy();
-  const { wallet } = useWallet();
+  const { authenticated, logout, user } = usePrivy();
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -79,14 +78,14 @@ export default function Navbar() {
           </aside>
 
           <aside className="flex items-center gap-3">
-            {authenticated && wallet ? (
+            {authenticated && user?.wallet?.address ? (
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
                     <Button variant={'outline'} className="rounded-lg" asChild>
                       <p>
                         <span className="size-1.5 bg-green-500 rounded-full" />
-                        <span>{truncate(wallet.address)}</span>
+                        <span>{truncate(user.wallet.address)}</span>
                       </p>
                     </Button>
                   </DropdownMenuTrigger>
@@ -95,10 +94,10 @@ export default function Navbar() {
                     <DropdownMenuItem>
                       <button
                         className="flex items-center gap-2"
-                        onClick={() => copyToClipboard(wallet.address)}
+                        onClick={() => copyToClipboard(user.wallet!.address)}
                       >
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(wallet.address)}</p>
+                        <p className="text-[13px] font-medium">{truncate(user.wallet.address)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>

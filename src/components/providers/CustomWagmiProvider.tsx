@@ -21,7 +21,7 @@ createConfig({
 });
 
 export default function CustomWagmiProvider({ children }: PropsWithChildren) {
-  const { ready, authenticated } = usePrivy();
+  const { ready, authenticated, user } = usePrivy();
   const { initLoginToMiniApp, loginToMiniApp } = useLoginToMiniApp();
   const [isSDKLoaded, setIsSDKLoaded] = React.useState(false);
   const [isInMiniApp, setIsInMiniApp] = React.useState(false);
@@ -31,10 +31,10 @@ export default function CustomWagmiProvider({ children }: PropsWithChildren) {
       if (!miniappSdk || isSDKLoaded) return;
       // --
       const response = await miniappSdk.isInMiniApp();
+      setIsInMiniApp(response);
       if (response) {
         miniappSdk.back.enableWebNavigation();
         miniappSdk.actions.ready();
-        setIsInMiniApp(true);
       }
 
       setIsSDKLoaded(true);
@@ -43,9 +43,9 @@ export default function CustomWagmiProvider({ children }: PropsWithChildren) {
     init();
   }, [isSDKLoaded]);
 
-  // React.useEffect(() => {
-  //  config.set({ ...config.get(), userId: app.user.id });
-  // }, []);
+  React.useEffect(() => {
+    if (user) config.set({ ...config.get(), userId: user.id });
+  }, [user]);
 
   React.useEffect(() => {
     if (ready && !authenticated && isInMiniApp) {
@@ -60,7 +60,7 @@ export default function CustomWagmiProvider({ children }: PropsWithChildren) {
     }
   }, [ready, authenticated, isInMiniApp]);
 
-  if (!isSDKLoaded || !ready) {
+  if (!isSDKLoaded) {
     return (
       <div className="flex items-center justify-center h-dvh w-full">
         <Loader />
