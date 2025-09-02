@@ -19,12 +19,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ConnectButton from './ConnectButton';
 import { usePrivy } from '@privy-io/react-auth';
-import useWallet from '@/hooks/useWallet';
+import { useAccount } from 'wagmi';
 
 export default function Navbar() {
   const { open } = useSidebar();
   const { open: openModal } = useModal();
-  const { authenticated, logout, user } = usePrivy();
+  const { address } = useAccount();
+  const { authenticated, user, logout } = usePrivy();
+  // --
+  const addr = React.useMemo(() => address || user?.wallet?.address, [address, user?.wallet]);
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -78,14 +81,14 @@ export default function Navbar() {
           </aside>
 
           <aside className="flex items-center gap-3">
-            {authenticated && user?.wallet?.address ? (
+            {authenticated && addr ? (
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
                     <Button variant={'outline'} className="rounded-lg" asChild>
                       <p>
                         <span className="size-1.5 bg-green-500 rounded-full" />
-                        <span>{truncate(user.wallet.address)}</span>
+                        <span>{truncate(addr)}</span>
                       </p>
                     </Button>
                   </DropdownMenuTrigger>
@@ -94,10 +97,10 @@ export default function Navbar() {
                     <DropdownMenuItem>
                       <button
                         className="flex items-center gap-2"
-                        onClick={() => copyToClipboard(user.wallet!.address)}
+                        onClick={() => copyToClipboard(addr)}
                       >
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(user.wallet.address)}</p>
+                        <p className="text-[13px] font-medium">{truncate(addr)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>

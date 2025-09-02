@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { IBM_Plex_Mono, IBM_Plex_Sans_Condensed } from 'next/font/google';
 import GlobalProvider from '@/components/providers/GlobalProvider';
+import NextTopLoader from 'nextjs-toploader';
 import 'react-loading-skeleton/dist/skeleton.css';
 import './globals.css';
 
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}>
         <GlobalProvider>{children}</GlobalProvider>
+        <NextTopLoader color="#2299DD" />
       </body>
     </html>
   );

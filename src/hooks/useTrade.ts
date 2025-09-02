@@ -11,18 +11,18 @@ import {
 import React from 'react';
 import { useStorage } from './useStorage';
 import { BUY_PERCENTAGE, SELL_PERCENTAGE } from '@/lib/constants';
-import useWallet from './useWallet';
+import { useAccount } from 'wagmi';
 
 export default function () {
   const storage = useStorage();
-  const { wallet } = useWallet();
+  const { address } = useAccount();
 
   const quote = React.useCallback(
     async (action: 'buy' | 'sell', from: string, to: string, amount: string) => {
-      if (!wallet) return;
+      if (!address) return;
       // --
       return await getQuote({
-        fromAddress: wallet.address,
+        fromAddress: address,
         fromChain: ChainId.BAS,
         toChain: ChainId.BAS,
         fromToken: from,
@@ -31,9 +31,10 @@ export default function () {
         slippage: (action === 'buy' ? storage.buySlippage : storage.sellSlippage) / 100,
         order: storage.quoteOrder,
         fee: (action === 'buy' ? BUY_PERCENTAGE : SELL_PERCENTAGE) / 100,
+        maxPriceImpact: 1,
       });
     },
-    [wallet]
+    [address]
   );
 
   const swap = React.useCallback(

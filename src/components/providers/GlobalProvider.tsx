@@ -12,7 +12,9 @@ import CustomSidebar from '../global/CustomSidebar';
 import Modal from '../global/Modal';
 import { privyConfig } from '@/lib/adapters/privy/config';
 import { PRIVY_APP_ID, PRIVY_CLIENT_ID } from '@/lib/constants';
-import CustomWagmiProvider from './CustomWagmiProvider';
+import CustomProvider from './CustomProvider';
+import { WagmiProvider } from '@privy-io/wagmi';
+import { wagmiConfig } from '@/lib/adapters/wagmi/config';
 
 export default function GlobalProvider({ children }: PropsWithChildren) {
   const queryClient = new QueryClient();
@@ -28,23 +30,25 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
       >
         <PrivyProvider appId={PRIVY_APP_ID} clientId={PRIVY_CLIENT_ID} config={privyConfig}>
           <QueryClientProvider client={queryClient}>
-            <CustomWagmiProvider>
-              <ModalProvider>
-                <main className="md:w-[calc(100vw-64px)] md:ml-16">
-                  <aside>
-                    <Sidebar />
-                  </aside>
+            <WagmiProvider config={wagmiConfig}>
+              <CustomProvider>
+                <ModalProvider>
+                  <main className="md:w-[calc(100vw-64px)] md:ml-16">
+                    <aside>
+                      <Sidebar />
+                    </aside>
 
-                  <aside>
-                    <Navbar />
-                    <div>{children}</div>
-                  </aside>
-                </main>
-                <Modal />
-                <FilterComponent />
-                <CustomSidebar />
-              </ModalProvider>
-            </CustomWagmiProvider>
+                    <aside>
+                      <Navbar />
+                      <div>{children}</div>
+                    </aside>
+                  </main>
+                  <Modal />
+                  <FilterComponent />
+                  <CustomSidebar />
+                </ModalProvider>
+              </CustomProvider>
+            </WagmiProvider>
           </QueryClientProvider>
         </PrivyProvider>
       </ThemeProvider>

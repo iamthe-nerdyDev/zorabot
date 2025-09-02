@@ -72,3 +72,7 @@ export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSch
     return { error: 'Something went wrong' };
   }
 }
+
+export function toNumber(value: string, decimals = 0) {
+  return Number(value) / 10 ** decimals;
+}

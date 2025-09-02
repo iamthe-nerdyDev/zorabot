@@ -2,25 +2,28 @@
 
 import React, { type PropsWithChildren } from 'react';
 import { createConfig, EVM, config } from '@lifi/sdk';
-import { getWalletClient } from '@wagmi/core';
-import { wagmiConfig } from '@/lib/wagmi/config';
-import { WagmiProvider } from '@privy-io/wagmi';
+import { getWalletClient, switchChain } from '@wagmi/core';
+import { wagmiConfig } from '@/lib/adapters/wagmi/config';
 import { usePrivy } from '@privy-io/react-auth';
 import { Loader } from '../global/Loader';
 import miniappSdk from '@farcaster/miniapp-sdk';
 import { useLoginToMiniApp } from '@privy-io/react-auth/farcaster';
 
 createConfig({
-  integrator: 'ZoraCore',
-  preloadChains: true,
+  integrator: 'Main',
   providers: [
     EVM({
       getWalletClient: () => getWalletClient(wagmiConfig),
+      switchChain: async (chainId) => {
+        //@ts-ignore
+        const chain = await switchChain(wagmiConfig, { chainId });
+        return getWalletClient(wagmiConfig, { chainId: chain.id });
+      },
     }),
   ],
 });
 
-export default function CustomWagmiProvider({ children }: PropsWithChildren) {
+export default function CustomProvider({ children }: PropsWithChildren) {
   const { ready, authenticated, user } = usePrivy();
   const { initLoginToMiniApp, loginToMiniApp } = useLoginToMiniApp();
   const [isSDKLoaded, setIsSDKLoaded] = React.useState(false);
@@ -68,9 +71,5 @@ export default function CustomWagmiProvider({ children }: PropsWithChildren) {
     );
   }
 
-  return (
-    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
-      {children}
-    </WagmiProvider>
-  );
+  return children;
 }
