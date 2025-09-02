@@ -119,7 +119,7 @@ export default function CoinSwaps({ coin }: { coin: Coin }) {
                         <div className="flex items-center gap-1.5">
                           <Link
                             target="_blank"
-                            href={`https://basescan.org/transaction/${swap.transactionHash}`}
+                            href={`https://basescan.org/tx/${swap.transactionHash}`}
                           >
                             <Basescan className="size-[13px] dark:text-[#555] #eee" />
                           </Link>

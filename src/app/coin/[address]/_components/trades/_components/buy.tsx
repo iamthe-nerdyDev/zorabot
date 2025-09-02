@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useCustomSidebar } from '@/hooks/useCustomSidebar';
 import { useStorage } from '@/hooks/useStorage';
 import useTrade from '@/hooks/useTrade';
-import { formatNumber } from '@/lib/helpers';
+import { formatNumber, getNativeBalance } from '@/lib/helpers';
 import type { LiFiStep } from '@lifi/sdk';
 import { usePrivy } from '@privy-io/react-auth';
 import { IconGasStation, IconFall } from '@tabler/icons-react';
@@ -17,15 +17,40 @@ import SettingsSidebar from './settings-sidebar';
 import Quote from './quote';
 import Ethereum from '@/components/icons/Ethereum';
 import { Separator } from '@/components/ui/separator';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-export default function Buy({ coin, balance }: { coin: Coin; balance: number }) {
+export default function Buy({ coin }: { coin: Coin }) {
   const [amount, setAmount] = React.useState<number>();
   const [quote, setQuote] = React.useState<LiFiStep | null>();
   const { quote: getQuote, swap } = useTrade();
+  const [loading, setLoading] = React.useState(false);
   const { open } = useCustomSidebar();
   const { address } = useAccount();
   const { authenticated } = usePrivy();
   const storage = useStorage();
+
+  const { data: balance } = useQuery({
+    enabled: !!address,
+    queryKey: ['native', address],
+    queryFn: async () => {
+      return await getNativeBalance(address as any);
+    },
+  });
+
+  const doSwap = async () => {
+    if (loading || !quote) return;
+    setLoading(true);
+
+    try {
+      await swap(quote);
+      toast('Transaction submitted successfully!');
+    } catch {
+      toast('Could not send transaction');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const debouncedQuote = React.useMemo(() => {
     return debounce(async (amount: number) => {
@@ -57,7 +82,9 @@ export default function Buy({ coin, balance }: { coin: Coin; balance: number }) 
       <div>
         <p className="flex items-center gap-1.5 mt-1 mb-3 justify-end">
           <Wallet2 className="size-3.5 opacity-50" />
-          <span className="font-semibold text-xs text-green-500">{formatNumber(balance)} ETH</span>
+          <span className="font-semibold text-xs text-green-500">
+            {balance === null || typeof balance === 'undefined' ? '-' : formatNumber(balance)} ETH
+          </span>
         </p>
 
         <div className="bg-secondary/40 p-1.5 border rounded-lg flex items-center gap-1 relative mb-2.5">
@@ -125,8 +152,8 @@ export default function Buy({ coin, balance }: { coin: Coin; balance: number }) 
           <Button
             size={'lg'}
             className="w-full h-11"
-            onClick={() => swap(quote!)}
-            disabled={!address || (amount || 0) > balance || !quote}
+            onClick={doSwap}
+            disabled={!address || (amount || 0) > (balance || 0) || !quote || loading}
           >
             {(typeof quote === 'undefined' && amount) || (authenticated && !address) ? (
               <Loader2 className="animate-spin opacity-60" />
@@ -142,7 +169,7 @@ export default function Buy({ coin, balance }: { coin: Coin; balance: number }) 
                 ? 'Fetching Quote'
                 : quote === null
                 ? 'No route found'
-                : amount > balance
+                : amount > (balance || 0)
                 ? 'Insufficient Funds'
                 : 'Buy Token'}
             </span>

@@ -21,7 +21,7 @@ type CoinHoldersResponse = {
 };
 
 const holderPercent = (balance: string) => {
-  return (toNumber(balance) * 100, 0) / 10 ** 9;
+  return (toNumber(balance) * 100) / 10 ** 9;
 };
 
 export default function CoinHolders({ coin }: { coin: Coin }) {

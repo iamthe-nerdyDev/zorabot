@@ -55,11 +55,11 @@ export default function CoinTrades({ coin }: Props) {
           </TabsList>
 
           <TabsContent value="buy">
-            <Buy coin={coin} balance={0} />
+            <Buy coin={coin} />
           </TabsContent>
 
           <TabsContent value="sell">
-            <Sell coin={coin} balance={0} />
+            <Sell coin={coin} />
           </TabsContent>
         </Tabs>
       </div>

@@ -39,6 +39,7 @@ export async function GET(req: NextRequest, { params }: Params) {
 
   const response = await Promise.all(fns);
   const coin = response[0];
+
   const chart = coin ? await zora.getCoinMCDataPoints((coin as Coin).id) : null;
   return NextResponse.json(
     { data: { coin, chart, alert: response[1], inWatchlist: (response[2] as number) > 0 } },

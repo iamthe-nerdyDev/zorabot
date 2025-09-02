@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useCustomSidebar } from '@/hooks/useCustomSidebar';
 import { useStorage } from '@/hooks/useStorage';
 import useTrade from '@/hooks/useTrade';
-import { formatNumber } from '@/lib/helpers';
+import { formatNumber, getTokenBalance } from '@/lib/helpers';
 import type { LiFiStep } from '@lifi/sdk';
 import { usePrivy } from '@privy-io/react-auth';
 import { IconGasStation, IconFall } from '@tabler/icons-react';
@@ -17,15 +17,40 @@ import { useAccount } from 'wagmi';
 import SettingsSidebar from './settings-sidebar';
 import Quote from './quote';
 import { Separator } from '@/components/ui/separator';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-export default function Sell({ coin, balance }: { coin: Coin; balance: number }) {
+export default function Sell({ coin }: { coin: Coin }) {
   const [amount, setAmount] = React.useState<number>();
   const [quote, setQuote] = React.useState<LiFiStep | null>();
+  const [loading, setLoading] = React.useState(false);
   const { quote: getQuote, swap } = useTrade();
   const { open } = useCustomSidebar();
   const { address } = useAccount();
   const { authenticated } = usePrivy();
   const storage = useStorage();
+
+  const { data: balance } = useQuery({
+    enabled: !!address,
+    queryKey: ['native', address],
+    queryFn: async () => {
+      return await getTokenBalance(address as any, coin.address as any);
+    },
+  });
+
+  const doSwap = async () => {
+    if (loading || !quote) return;
+    setLoading(true);
+
+    try {
+      await swap(quote);
+      toast('Transaction submitted successfully!');
+    } catch {
+      toast('Could not send transaction');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const debouncedQuote = React.useMemo(() => {
     return debounce(async (amount: number) => {
@@ -58,7 +83,8 @@ export default function Sell({ coin, balance }: { coin: Coin; balance: number })
         <p className="flex items-center gap-1.5 mt-1 mb-3 justify-end">
           <Wallet2 className="size-3.5 opacity-50" />
           <span className="font-semibold text-xs text-red-500 truncate max-w-50">
-            {formatNumber(balance)} {coin.symbol}
+            {balance === null || typeof balance === 'undefined' ? '-' : formatNumber(balance)}&nbsp;
+            {coin.symbol}
           </span>
         </p>
 
@@ -90,8 +116,8 @@ export default function Sell({ coin, balance }: { coin: Coin; balance: number })
               key={value}
               className="flex-1 h-10"
               variant={'outline'}
-              disabled={balance <= 0}
-              onClick={() => setAmount((value * balance) / 100)}
+              disabled={(balance || 0) <= 0}
+              onClick={() => setAmount((value * (balance || 0)) / 100)}
             >
               <span className="text-[13px]">{value}%</span>
             </Button>
@@ -130,8 +156,8 @@ export default function Sell({ coin, balance }: { coin: Coin; balance: number })
           <Button
             size={'lg'}
             className="w-full h-11"
-            onClick={() => swap(quote!)}
-            disabled={!address || (amount || 0) > balance || !quote}
+            onClick={doSwap}
+            disabled={!address || (amount || 0) > (balance || 0) || !quote || loading}
           >
             {(typeof quote === 'undefined' && amount) || (authenticated && !address) ? (
               <Loader2 className="animate-spin opacity-60" />
@@ -147,7 +173,7 @@ export default function Sell({ coin, balance }: { coin: Coin; balance: number })
                 ? 'Fetching Quote'
                 : quote === null
                 ? 'No route found'
-                : amount > balance
+                : amount > (balance || 0)
                 ? 'Insufficient Funds'
                 : 'Sell Token'}
             </span>

@@ -21,18 +21,22 @@ export default function () {
     async (action: 'buy' | 'sell', from: string, to: string, amount: string) => {
       if (!address) return;
       // --
-      return await getQuote({
-        fromAddress: address,
-        fromChain: ChainId.BAS,
-        toChain: ChainId.BAS,
-        fromToken: from,
-        toToken: to,
-        fromAmount: amount,
-        slippage: (action === 'buy' ? storage.buySlippage : storage.sellSlippage) / 100,
-        order: storage.quoteOrder,
-        fee: (action === 'buy' ? BUY_PERCENTAGE : SELL_PERCENTAGE) / 100,
-        maxPriceImpact: 1,
-      });
+      try {
+        return await getQuote({
+          fromAddress: address,
+          fromChain: ChainId.BAS,
+          toChain: ChainId.BAS,
+          fromToken: from,
+          toToken: to,
+          fromAmount: amount,
+          slippage: (action === 'buy' ? storage.buySlippage : storage.sellSlippage) / 100,
+          order: storage.quoteOrder,
+          fee: (action === 'buy' ? BUY_PERCENTAGE : SELL_PERCENTAGE) / 100,
+          maxPriceImpact: 1,
+        });
+      } catch {
+        return;
+      }
     },
     [address]
   );

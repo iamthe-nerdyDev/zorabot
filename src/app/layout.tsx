@@ -4,6 +4,7 @@ import GlobalProvider from '@/components/providers/GlobalProvider';
 import NextTopLoader from 'nextjs-toploader';
 import 'react-loading-skeleton/dist/skeleton.css';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 
 const ibmPlexSans = IBM_Plex_Sans_Condensed({
   variable: '--font-ibm-plex-sans',
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}>
         <GlobalProvider>{children}</GlobalProvider>
         <NextTopLoader color="#2299DD" />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

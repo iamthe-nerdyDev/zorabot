@@ -11,6 +11,7 @@ export const privyConfig: PrivyClientConfig = {
     theme: 'dark',
     walletChainType: 'ethereum-only',
     walletList: ['detected_wallets', 'base_account', 'coinbase_wallet'],
-    logo: 'https://zorabot.vercel.app/logo.png',
+    loginMessage: 'Continue to ZoraCore',
+    logo: 'https://zorabot.vercel.app/farcaster/splash-transparent.png',
   },
 };

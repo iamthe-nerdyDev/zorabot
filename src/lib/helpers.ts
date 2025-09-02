@@ -1,5 +1,8 @@
 import { ZodObject, ZodError } from 'zod';
 import qs from 'querystring';
+import { toast } from 'sonner';
+import { createPublicClient, http, formatEther, formatUnits } from 'viem';
+import { base } from 'viem/chains';
 
 export function toQueryString(obj?: Record<string, any>) {
   if (!obj) return '';
@@ -38,7 +41,10 @@ export function formatNumber(number?: number | null) {
 export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {}
+    toast('Copied to clipboard');
+  } catch {
+    toast('Could not copy');
+  }
 }
 
 export const isPathMatching = (currentPath: string, pattern: string) => {
@@ -75,4 +81,44 @@ export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSch
 
 export function toNumber(value: string, decimals = 18) {
   return Number(value) / 10 ** decimals;
+}
+
+const client = createPublicClient({
+  chain: base,
+  transport: http(),
+});
+
+const ERC20_ABI = [
+  {
+    type: 'function',
+    name: 'balanceOf',
+    stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }],
+    outputs: [{ type: 'uint256' }],
+  },
+  {
+    type: 'function',
+    name: 'decimals',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ type: 'uint8' }],
+  },
+];
+
+export async function getNativeBalance(address: `0x${string}`) {
+  const balance = await client.getBalance({ address });
+  return Number(formatEther(balance));
+}
+
+export async function getTokenBalance(address: `0x${string}`, token: `0x${string}`) {
+  const [rawBalance, decimals] = await Promise.all([
+    client.readContract({
+      address: token,
+      abi: ERC20_ABI,
+      functionName: 'balanceOf',
+      args: [address],
+    }),
+    client.readContract({ address: token, abi: ERC20_ABI, functionName: 'decimals' }),
+  ]);
+  return Number(formatUnits(rawBalance as bigint, decimals as number));
 }

@@ -11,21 +11,67 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFilterSidebar } from '@/hooks/useFilterSideBar';
 import { useStorage } from '@/hooks/useStorage';
+import useTrade from '@/hooks/useTrade';
 import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { IconUserScreen, IconComet } from '@tabler/icons-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
-import { ChevronDown, ChevronUp, Coins, Copy, ListFilter, Zap } from 'lucide-react';
+import { ChevronDown, ChevronUp, Coins, Copy, ListFilter, Loader2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
+import { toast } from 'sonner';
 
 type CoinResponse = {
   data: null | {
     coins: Coin[];
     cursor: string | null;
   };
+};
+
+const QuickBuy = ({ coin }: { coin: Coin }) => {
+  const [loading, setLoading] = React.useState(false);
+  const { quote: getQuote, swap } = useTrade();
+  const storage = useStorage();
+
+  const doSwap = async () => {
+    if (loading || storage.quickBuyPreset <= 0) return;
+    setLoading(true);
+
+    try {
+      const quote = await getQuote(
+        'buy',
+        '0x4200000000000000000000000000000000000006',
+        coin.address,
+        BigInt(storage.quickBuyPreset * 10 ** 18).toString()
+      );
+      // --
+      if (!quote) {
+        toast('Could not get quote');
+      } else {
+        await swap(quote);
+        toast('Transaction submitted successfully!');
+      }
+    } catch {
+      toast('Could not send transaction');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Button variant={'outline'} className="min-w-20" onClick={doSwap} disabled={loading}>
+      {loading ? (
+        <Loader2 className="animate-spin size-3" />
+      ) : (
+        <Ethereum className="size-3 text-gray-400" />
+      )}
+      <span className="-ml-0.5 font-semibold text-xs">
+        {storage.quickBuyPreset?.toLocaleString()}
+      </span>
+    </Button>
+  );
 };
 
 const Home = () => {
@@ -255,14 +301,9 @@ const Home = () => {
     {
       header: 'Quick Buy',
       enableSorting: false,
-      cell: () => (
+      cell: ({ row }) => (
         <div>
-          <Button variant={'outline'} className="min-w-20">
-            <Ethereum className="size-3 text-gray-400" />
-            <span className="-ml-0.5 font-semibold text-xs">
-              {storage.quickBuyPreset?.toLocaleString()}
-            </span>
-          </Button>
+          <QuickBuy coin={row.original} />
         </div>
       ),
     },

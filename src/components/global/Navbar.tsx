@@ -5,7 +5,6 @@ import { Input } from '../ui/input';
 import { Copy, Menu, Power, Search } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useSidebar } from '@/hooks/useSidebar';
-import { Separator } from '../ui/separator';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
