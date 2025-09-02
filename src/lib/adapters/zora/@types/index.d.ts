@@ -160,3 +160,36 @@ type ZoraProfile = {
     id: string;
   };
 };
+
+type ZoraProfileAdvance = {
+  __typename: string;
+  id: string;
+  handle: string;
+  avatar: ZoraMedia;
+  username: string;
+  displayName: string;
+  bio: string;
+  website: string;
+  publicWallet: {
+    walletAddress: string;
+  };
+  socialAccounts: {
+    instagram: ZoraSocialAccount;
+    tiktok: ZoraSocialAccount;
+    twitter: ZoraSocialAccount;
+    farcaster: ZoraSocialAccount;
+  };
+  linkedWallets: {
+    edges: {
+      node: {
+        walletType: 'EXTERNAL' | 'PRIVY' | 'SMART_WALLET';
+        walletAddress: string;
+      };
+    }[];
+  };
+  creatorCoin: null | {
+    address: string;
+    marketCap: string;
+    marketCapDelta24h: string;
+  };
+};

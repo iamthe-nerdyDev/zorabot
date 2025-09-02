@@ -249,6 +249,45 @@ class Zora {
       return null;
     }
   }
+
+  async getProfile(address: string) {
+    const query = toQueryString({
+      identifier: address,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/profile?${query}`);
+    if (error) return null;
+
+    return data.profile as ZoraProfileAdvance;
+  }
+
+  async getProfileCoins(address: string, cursor: string | null) {
+    const chainIds = [8453];
+    const query = toQueryString({
+      identifier: address,
+      count: 100,
+      after: cursor,
+      chainIds,
+    });
+
+    const { error, data } = await this.client.getInstance().get(`/profileCoins?${query}`);
+    if (error) return null;
+    // --
+    const response = data.profile.createdCoins as {
+      pageInfo: {
+        endCursor: string | null;
+        hasNextPage: boolean;
+      };
+      count: number;
+      edges: ZoraCoin[];
+    };
+
+    return {
+      total: response.count,
+      coins: response.edges.map((e) => this.formatCoin(e)),
+      cursor: response.pageInfo.endCursor,
+    };
+  }
 }
 
 export default new Zora();

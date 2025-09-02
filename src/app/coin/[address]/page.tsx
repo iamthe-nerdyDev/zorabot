@@ -13,8 +13,6 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
   const data = (await res.json()).data as {
     coin: Coin;
     chart: ZoraChart;
-    alerts?: Alert[];
-    inWatchlist?: boolean;
   };
 
   return {
@@ -35,6 +33,8 @@ const Coin = async ({ params }: any) => {
   const data = (await res.json()).data as {
     coin: Coin;
     chart: ZoraChart;
+    alerts?: Alert[];
+    inWatchlist?: boolean;
   };
 
   return <RenderCoin data={data} />;

@@ -11,6 +11,7 @@ import Skeleton from 'react-loading-skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { IconCircleSquare } from '@tabler/icons-react';
 import React from 'react';
+import Link from 'next/link';
 
 type CoinHoldersResponse = {
   data: null | {
@@ -98,7 +99,10 @@ export default function CoinHolders({ coin }: { coin: Coin }) {
                 />
                 <div className="space-y-[3px]">
                   <p className="flex items-center gap-1.5">
-                    <span className="text-sm flex items-center gap-1.5">
+                    <Link
+                      href={`/creator/${holder.ownerAddress}`}
+                      className="text-sm flex items-center gap-1.5"
+                    >
                       <span>{holder.ownerProfile.handle}</span>
                       {holder.ownerAddress == coin.creator.address ? (
                         <Tooltip>
@@ -119,7 +123,7 @@ export default function CoinHolders({ coin }: { coin: Coin }) {
                           </TooltipContent>
                         </Tooltip>
                       ) : null}
-                    </span>
+                    </Link>
                     <button onClick={() => copyToClipboard(holder.ownerAddress)}>
                       <Copy className="size-3 opacity-50" />
                     </button>
