@@ -45,8 +45,8 @@ export default function Buy({ coin }: { coin: Coin }) {
     try {
       await swap(quote);
       toast('Transaction submitted successfully!');
-    } catch {
-      toast('Could not send transaction');
+    } catch (e) {
+      toast((e as Error).message || 'Could not send transaction');
     } finally {
       setLoading(false);
     }
@@ -155,7 +155,7 @@ export default function Buy({ coin }: { coin: Coin }) {
             onClick={doSwap}
             disabled={!address || (amount || 0) > (balance || 0) || !quote || loading}
           >
-            {(typeof quote === 'undefined' && amount) || (authenticated && !address) ? (
+            {(typeof quote === 'undefined' && amount) || (authenticated && !address) || loading ? (
               <Loader2 className="animate-spin opacity-60" />
             ) : null}
             <span>

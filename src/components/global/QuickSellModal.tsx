@@ -14,6 +14,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import debounce from 'lodash.debounce';
 import { toNumber } from '@/lib/helpers';
 import Quote from '@/app/coin/[address]/_components/trades/_components/quote';
+import { toast } from 'sonner';
 
 type Props = {
   balance: string;
@@ -23,11 +24,26 @@ type Props = {
 export default function QuickSellModal({ balance, coin }: Props) {
   const [amount, setAmount] = React.useState<number>();
   const [quote, setQuote] = React.useState<LiFiStep | null>();
+  const [loading, setLoading] = React.useState(false);
   const { quote: getQuote, swap } = useTrade();
   const { address } = useAccount();
   const { authenticated } = usePrivy();
   const { close } = useModal();
   const storage = useStorage();
+
+  const doSwap = async () => {
+    if (loading || !quote) return;
+    setLoading(true);
+
+    try {
+      await swap(quote);
+      toast('Transaction submitted successfully!');
+    } catch (e) {
+      toast((e as Error).message || 'Could not send transaction');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const debouncedQuote = React.useMemo(() => {
     return debounce(async (amount: number) => {
@@ -128,10 +144,10 @@ export default function QuickSellModal({ balance, coin }: Props) {
           <Button
             size={'lg'}
             className="w-full h-11"
-            onClick={() => swap(quote!)}
-            disabled={!address || (amount || 0) > toNumber(balance) || !quote}
+            onClick={doSwap}
+            disabled={!address || (amount || 0) > toNumber(balance) || !quote || loading}
           >
-            {(typeof quote === 'undefined' && amount) || (authenticated && !address) ? (
+            {(typeof quote === 'undefined' && amount) || (authenticated && !address) || loading ? (
               <Loader2 className="animate-spin opacity-60" />
             ) : null}
             <span>
