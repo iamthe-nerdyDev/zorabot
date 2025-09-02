@@ -25,7 +25,11 @@ export async function generateMetadata({ params }: any): Promise<Metadata> {
 
 const Coin = async ({ params }: any) => {
   const { address } = await params;
-  const res = await fetch(`${BASE_URL}/api/coin/${address}`, { cache: 'no-store' });
+  const res = await fetch(`${BASE_URL}/api/coin/${address}`, {
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
   // --
   if (!res.ok) notFound();
   const data = (await res.json()).data as {

@@ -1,6 +1,6 @@
 {
   "frame": {
-    "name": "ZoraBot",
+    "name": "ZoraCore",
     "tags": ["social", "tokens", "analytics"],
     "homeUrl": "https://zorabot.vercel.app",
     "iconUrl": "https://zorabot.vercel.app/farcaster/icon.png",

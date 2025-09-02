@@ -2,24 +2,57 @@
 
 import useModal from '@/hooks/useModal';
 import { useStorage } from '@/hooks/useStorage';
-import { ArrowRight, Percent, X } from 'lucide-react';
+import { ArrowRight, Loader2, Percent, X } from 'lucide-react';
 import React from 'react';
 import { Input } from '../ui/input';
 import SmartImage from './SmartImage';
 import { Button } from '../ui/button';
+import type { LiFiStep } from '@lifi/sdk';
+import useTrade from '@/hooks/useTrade';
+import { useAccount } from 'wagmi';
+import { usePrivy } from '@privy-io/react-auth';
+import debounce from 'lodash.debounce';
+import { toNumber } from '@/lib/helpers';
+import Quote from '@/app/coin/[address]/_components/trades/_components/quote';
 
 type Props = {
   balance: string;
   coin: Coin;
 };
 
-const toBalance = (balance: string) => {
-  return (BigInt(balance) / BigInt(10 ** 18)).toString();
-};
-
 export default function QuickSellModal({ balance, coin }: Props) {
+  const [amount, setAmount] = React.useState<number>();
+  const [quote, setQuote] = React.useState<LiFiStep | null>();
+  const { quote: getQuote, swap } = useTrade();
+  const { address } = useAccount();
+  const { authenticated } = usePrivy();
   const { close } = useModal();
   const storage = useStorage();
+
+  const debouncedQuote = React.useMemo(() => {
+    return debounce(async (amount: number) => {
+      setQuote(undefined); // -- act as loader
+      const response = await getQuote(
+        'sell',
+        coin.address,
+        '0x4200000000000000000000000000000000000006',
+        BigInt(amount * 10 ** 18).toString()
+      );
+      // --
+      setQuote(response || null);
+    }, 400);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      debouncedQuote.cancel();
+    };
+  }, [debouncedQuote]);
+
+  React.useEffect(() => {
+    if (amount) debouncedQuote(amount);
+    else setQuote(undefined);
+  }, [amount, debouncedQuote]);
 
   return (
     <div className="pb-5">
@@ -39,7 +72,7 @@ export default function QuickSellModal({ balance, coin }: Props) {
           <span>Total Holding:</span>
           <ArrowRight className="size-3 opacity-50" />
           <span className="border-b-[1.5px] border-dotted border-gray-400">
-            {Number(toBalance(balance)).toLocaleString(undefined, {
+            {Number(toNumber(balance)).toLocaleString(undefined, {
               maximumFractionDigits: 2,
             })}
           </span>
@@ -53,8 +86,13 @@ export default function QuickSellModal({ balance, coin }: Props) {
             <div className="bg-background rounded-lg w-full">
               <Input
                 className="w-full h-9 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                style={{ fontSize: '13px' }}
                 type="number"
+                style={{ fontSize: '13px' }}
+                value={String(amount ?? '')}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  if (!isNaN(val)) setAmount(val);
+                }}
               />
               <SmartImage
                 src={coin.mediaContent.previewImage.medium}
@@ -67,16 +105,50 @@ export default function QuickSellModal({ balance, coin }: Props) {
 
           <div className="flex items-center gap-2">
             {storage.sellPresets.map((value) => (
-              <Button key={value} className="flex-1 h-10" variant={'outline'}>
-                <span className="text-[13px] font-medium">{value}%</span>
+              <Button
+                key={value}
+                className="flex-1 h-10"
+                variant={'outline'}
+                disabled={toNumber(balance) <= 0}
+                onClick={() => setAmount((value * toNumber(balance)) / 100)}
+              >
+                <span className="text-[13px]">{value}%</span>
               </Button>
             ))}
           </div>
         </div>
 
+        {quote ? (
+          <div className="p-3.5 -my-2 pb-7">
+            <Quote quote={quote} />
+          </div>
+        ) : null}
+
         <div className="px-3.5">
-          <Button size={'lg'} className="w-full h-11">
-            Insufficient Funds
+          <Button
+            size={'lg'}
+            className="w-full h-11"
+            onClick={() => swap(quote!)}
+            disabled={!address || (amount || 0) > toNumber(balance) || !quote}
+          >
+            {(typeof quote === 'undefined' && amount) || (authenticated && !address) ? (
+              <Loader2 className="animate-spin opacity-60" />
+            ) : null}
+            <span>
+              {!authenticated
+                ? 'Connect wallet'
+                : !address
+                ? 'Loading wallet'
+                : !amount
+                ? 'Enter an amount'
+                : typeof quote === 'undefined'
+                ? 'Fetching Quote'
+                : quote === null
+                ? 'No route found'
+                : amount > toNumber(balance)
+                ? 'Insufficient Funds'
+                : 'Sell Token'}
+            </span>
           </Button>
         </div>
       </div>

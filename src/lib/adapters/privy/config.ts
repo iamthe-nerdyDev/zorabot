@@ -4,10 +4,13 @@ import { base } from 'wagmi/chains';
 export const privyConfig: PrivyClientConfig = {
   defaultChain: base,
   supportedChains: [base],
+  loginMethodsAndOrder: {
+    primary: ['base_account', 'coinbase_wallet', 'detected_wallets'],
+  },
   appearance: {
     theme: 'dark',
     walletChainType: 'ethereum-only',
-    walletList: ['detected_wallets'],
+    walletList: ['detected_wallets', 'base_account', 'coinbase_wallet'],
     logo: 'https://zorabot.vercel.app/logo.png',
   },
 };

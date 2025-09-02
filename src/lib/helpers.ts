@@ -73,6 +73,6 @@ export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSch
   }
 }
 
-export function toNumber(value: string, decimals = 0) {
+export function toNumber(value: string, decimals = 18) {
   return Number(value) / 10 ** decimals;
 }

@@ -36,7 +36,7 @@ export default function Sell({ coin, balance }: { coin: Coin; balance: number })
         '0x4200000000000000000000000000000000000006',
         BigInt(amount * 10 ** 18).toString()
       );
-      // --
+      // --x
       setQuote(response || null);
     }, 400);
   }, []);

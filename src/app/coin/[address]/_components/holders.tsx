@@ -3,7 +3,7 @@
 import { Loader } from '@/components/global/Loader';
 import SmartImage from '@/components/global/SmartImage';
 import { Separator } from '@/components/ui/separator';
-import { copyToClipboard, formatNumber, toQueryString } from '@/lib/helpers';
+import { copyToClipboard, formatNumber, toNumber, toQueryString } from '@/lib/helpers';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Copy, UserRoundCog } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
@@ -20,12 +20,8 @@ type CoinHoldersResponse = {
   };
 };
 
-const toBalance = (balance: string) => {
-  return (BigInt(balance) / BigInt(10 ** 18)).toString();
-};
-
 const holderPercent = (balance: string) => {
-  return (Number(toBalance(balance)) * 100) / 10 ** 9;
+  return (toNumber(balance) * 100, 0) / 10 ** 9;
 };
 
 export default function CoinHolders({ coin }: { coin: Coin }) {
@@ -136,14 +132,13 @@ export default function CoinHolders({ coin }: { coin: Coin }) {
 
               <div className="flex items-center gap-2.5">
                 <p className="text-[13px] font-medium">
-                  $
-                  {formatNumber(Number(toBalance(holder.balance)) * Number(coin.price.priceInUsdc))}
+                  ${formatNumber(toNumber(holder.balance) * Number(coin.price.priceInUsdc))}
                 </p>
                 <div className="h-4">
                   <Separator orientation="vertical" />
                 </div>
                 <p className="text-xs font-medium opacity-60">
-                  {formatNumber(Number(toBalance(holder.balance)))} units
+                  {formatNumber(toNumber(holder.balance))} units
                 </p>
               </div>
             </div>

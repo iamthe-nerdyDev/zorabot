@@ -9,8 +9,15 @@ import Basescan from '@/components/icons/Basescan';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import useModal from '@/hooks/useModal';
-import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
+import {
+  copyToClipboard,
+  formatNumber,
+  getPercentChange,
+  toNumber,
+  toQueryString,
+} from '@/lib/helpers';
 import { cn } from '@/lib/utils';
+import { usePrivy } from '@privy-io/react-auth';
 import { IconComet, IconUserScreen } from '@tabler/icons-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { ColumnDef } from '@tanstack/react-table';
@@ -18,6 +25,7 @@ import { ChevronDown, ChevronUp, Copy, Percent } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
+import { useAccount } from 'wagmi';
 
 type Holding = {
   coin: Coin;
@@ -33,21 +41,27 @@ type HoldingsResponse = {
   };
 };
 
-const toBalance = (balance: string) => {
-  return (BigInt(balance) / BigInt(10 ** 18)).toString();
-};
-
 export default function PortfolioComponent() {
   const { ref, inView } = useInView();
   const { open } = useModal();
+  const { address } = useAccount();
+  const { ready, user } = usePrivy();
+  // --
+  const addr = React.useMemo(() => address || user?.wallet?.address, [address, user?.wallet]);
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfiniteQuery<HoldingsResponse>({
       queryKey: ['portfolio'],
       initialPageParam: null,
+      enabled: ready,
       getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
       queryFn: async ({ pageParam = null }) => {
-        // TODO: pass address here too
-        const query = toQueryString({ cursor: pageParam });
+        if (!addr) {
+          return {
+            data: null,
+          };
+        }
+
+        const query = toQueryString({ cursor: pageParam, address: addr });
         const res = await fetch(`/api/portfolio?${query}`);
         // --
         if (!res.ok) return null;
@@ -59,7 +73,7 @@ export default function PortfolioComponent() {
   const value = isLoading
     ? undefined
     : holdings.reduce((acc, curr) => {
-        return acc + Number(curr.coin.price.priceInUsdc) * Number(toBalance(curr.balance));
+        return acc + Number(curr.coin.price.priceInUsdc) * toNumber(curr.balance);
       }, 0);
 
   React.useEffect(() => {
@@ -69,7 +83,7 @@ export default function PortfolioComponent() {
   const { pnl24h, pnlPct24h } = React.useMemo(() => {
     if (!holdings.length) return { pnl24h: 0, pnlPct24h: 0 };
     const totalNow = holdings.reduce(
-      (acc, h) => acc + Number(toBalance(h.balance)) * Number(h.coin.price.priceInUsdc),
+      (acc, h) => acc + toNumber(h.balance) * Number(h.coin.price.priceInUsdc),
       0
     );
 
@@ -81,7 +95,7 @@ export default function PortfolioComponent() {
       const priceNow = Number(h.coin.price.priceInUsdc);
       const price24hAgo = priceNow / (1 + pctChange / 100);
 
-      return acc + Number(toBalance(h.balance)) * price24hAgo;
+      return acc + toNumber(h.balance) * price24hAgo;
     }, 0);
 
     const pnl = totalNow - total24hAgo;
@@ -159,9 +173,7 @@ export default function PortfolioComponent() {
       header: 'Amount',
       enableSorting: true,
       cell: ({ renderValue }) => (
-        <p className="text-sm font-medium">
-          {formatNumber(Number(toBalance(renderValue() as string)))}
-        </p>
+        <p className="text-sm font-medium">{formatNumber(toNumber(renderValue() as string))}</p>
       ),
     },
     {
@@ -204,7 +216,7 @@ export default function PortfolioComponent() {
         <p className="text-sm font-medium">
           $
           {formatNumber(
-            Number(row.original.coin.price.priceInUsdc) * Number(toBalance(row.original.balance))
+            Number(row.original.coin.price.priceInUsdc) * toNumber(row.original.balance)
           )}
         </p>
       ),
@@ -231,7 +243,7 @@ export default function PortfolioComponent() {
     },
   ];
 
-  return isLoading ? (
+  return isLoading || !ready ? (
     <div className="h-[calc(100vh-190px)] md:h-[calc(100vh-198px)] flex items-center justify-center">
       <Loader />
     </div>

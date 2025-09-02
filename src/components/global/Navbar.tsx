@@ -25,9 +25,12 @@ export default function Navbar() {
   const { open } = useSidebar();
   const { open: openModal } = useModal();
   const { address } = useAccount();
-  const { authenticated, user, logout } = usePrivy();
+  const { authenticated, user, getAccessToken, logout } = usePrivy();
   // --
-  const addr = React.useMemo(() => address || user?.wallet?.address, [address, user?.wallet]);
+  const addr = React.useMemo(
+    () => (address || user?.wallet?.address)?.toLowerCase(),
+    [address, user?.wallet]
+  );
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -45,19 +48,35 @@ export default function Navbar() {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  React.useEffect(() => {
+    async function run() {
+      if (!user) return;
+
+      const token = await getAccessToken();
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ user }),
+      });
+    }
+
+    run();
+  }, [user]);
+
   return (
     <nav className="p-3 border-b sticky top-0 bg-background z-20">
       <div>
         <div className="flex items-center justify-between">
-          <div className="flex md:hidden items-center gap-3">
-            <Button onClick={open} variant={'outline'} size={'icon'} className="rounded-full">
+          <div className="flex md:hidden items-center gap-2">
+            <Button onClick={open} variant={'ghost'} size={'icon'} className="rounded-full">
               <Menu strokeWidth={1.8} />
             </Button>
-            <div className="h-7">
-              <Separator orientation="vertical" />
-            </div>
-            <Link href={'/'}>
-              <img src={'/logo.png'} className="w-5.5 h-auto" />
+            <Link href={'/'} className="flex items-center gap-3">
+              <img src={'/logo.png'} className="w-9 rounded-full h-auto" />
+              <p className="font-light text-2xl">ZoraCore</p>
             </Link>
           </div>
 
@@ -100,13 +119,13 @@ export default function Navbar() {
                         onClick={() => copyToClipboard(addr)}
                       >
                         <Copy className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">{truncate(addr)}</p>
+                        <p className="text-[14px] font-medium">{truncate(addr)}</p>
                       </button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <button className="flex items-center gap-2" onClick={logout}>
+                      <button className="flex items-center gap-2 text-red-500" onClick={logout}>
                         <Power className="size-3" strokeWidth={2} />
-                        <p className="text-[13px] font-medium">Logout</p>
+                        <p className="text-[14px] font-medium">Disconnect</p>
                       </button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

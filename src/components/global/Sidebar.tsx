@@ -73,8 +73,8 @@ export default function Sidebar() {
     <React.Fragment>
       <div className="fixed left-0 top-0 bottom-0 h-dvh w-16 z-20 bg-background border-r p-3 hidden md:flex flex-col items-center justify-between overflow-y-auto gap-15">
         <div className="w-full flex flex-col items-center justify-center gap-1.5">
-          <Link href={'/'} className="pt-3.5 pb-5 w-5 h-auto">
-            <img src={'/logo.png'} />
+          <Link href={'/'} className="pt-3.5 pb-5 w-10 h-auto">
+            <img src={'/logo.png'} className="rounded-full w-full" />
           </Link>
 
           {menus.map((menu) => {
@@ -140,8 +140,8 @@ export default function Sidebar() {
             className="fixed left-0 top-0 bottom-0 h-dvh w-full z-50 bg-background border-r md:hidden p-4"
           >
             <div className="flex items-center justify-between mb-8 mt-1">
-              <Link href={'/'} className="w-6 h-auto">
-                <img src={'/logo.png'} />
+              <Link href={'/'} className="w-10 h-auto">
+                <img src={'/logo.png'} className="w-full rounded-full" />
               </Link>
 
               <div className="flex items-center gap-4">
