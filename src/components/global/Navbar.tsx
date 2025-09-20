@@ -2,9 +2,8 @@
 
 import React from 'react';
 import { Input } from '../ui/input';
-import { Copy, Menu, Power, Search } from 'lucide-react';
+import { Copy, Power, Search, Wallet2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { useSidebar } from '@/hooks/useSidebar';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
@@ -19,9 +18,9 @@ import {
 import ConnectButton from './ConnectButton';
 import { usePrivy } from '@privy-io/react-auth';
 import { useAccount } from 'wagmi';
+import { Separator } from '../ui/separator';
 
 export default function Navbar() {
-  const { open } = useSidebar();
   const { open: openModal } = useModal();
   const { address } = useAccount();
   const { authenticated, user, getAccessToken, logout } = usePrivy();
@@ -51,6 +50,7 @@ export default function Navbar() {
     async function run() {
       if (!user) return;
 
+      // FIXME:
       const token = await getAccessToken();
       await fetch('/api/auth', {
         method: 'POST',
@@ -69,13 +69,18 @@ export default function Navbar() {
     <nav className="p-3 border-b sticky top-0 bg-background z-20">
       <div>
         <div className="flex items-center justify-between">
-          <div className="flex md:hidden items-center gap-2">
-            <Button onClick={open} variant={'ghost'} size={'icon'} className="rounded-full">
-              <Menu strokeWidth={1.8} />
-            </Button>
+          <div className="flex md:hidden items-center gap-3">
+            <button onClick={openSearchModal}>
+              <Search className="size-5" />
+            </button>
+
+            <div className="h-7">
+              <Separator orientation="vertical" />
+            </div>
+
             <Link href={'/'} className="flex items-center gap-3">
               <img src={'/logo.png'} className="w-9 rounded-full h-auto" />
-              <p className="font-light text-2xl">ZoraCore</p>
+              <p className="font-light text-2xl">Zorlify</p>
             </Link>
           </div>
 
@@ -103,9 +108,9 @@ export default function Navbar() {
               <React.Fragment>
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
-                    <Button variant={'outline'} className="rounded-lg" asChild>
+                    <Button variant={'outline'} className="rounded-lg h-9.5 w-34" asChild>
                       <p>
-                        <span className="size-1.5 bg-green-500 rounded-full" />
+                        <Wallet2 className="opacity-60" strokeWidth={1.6} />
                         <span>{truncate(addr)}</span>
                       </p>
                     </Button>

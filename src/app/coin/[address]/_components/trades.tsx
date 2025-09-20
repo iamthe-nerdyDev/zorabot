@@ -1,15 +1,16 @@
 'use client';
 
 import React from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { IconAppWindow, IconCircleSquare, IconStar } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Bell, Clock, Copy } from 'lucide-react';
 import { copyToClipboard, truncate } from '@/lib/helpers';
 import { format } from 'date-fns';
 import { Alert } from '@/generated/prisma';
-import Buy from './trades/_components/buy';
-import Sell from './trades/_components/sell';
+// import Buy from './trades/_components/buy';
+// import Sell from './trades/_components/sell';
+import SwapWidget from './swap-widget';
 
 type Props = {
   coin: Coin;
@@ -47,7 +48,11 @@ export default function CoinTrades({ coin }: Props) {
 
   return (
     <React.Fragment>
-      <div className="border-t border-b lg:border-t-0 p-3 w-full pb-5">
+      <div className="max-w-md mx-auto border-b">
+        <SwapWidget coin={coin} />
+      </div>
+
+      {/* <div className="border-t border-b lg:border-t-0 p-3 w-full pb-5">
         <Tabs defaultValue="buy" className="w-full max-w-md mx-auto">
           <TabsList className="w-full h-10">
             <TabsTrigger value="buy">Buy</TabsTrigger>
@@ -62,7 +67,7 @@ export default function CoinTrades({ coin }: Props) {
             <Sell coin={coin} />
           </TabsContent>
         </Tabs>
-      </div>
+      </div> */}
 
       <div className="px-3 py-2 w-full max-w-md mx-auto border-b flex items-center gap-3">
         <Button className="flex-1 h-10.5" size={'lg'} variant={'outline'}>

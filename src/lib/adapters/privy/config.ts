@@ -1,3 +1,4 @@
+import { PROTOCOL_LOGO } from '@/lib/constants';
 import { type PrivyClientConfig } from '@privy-io/react-auth';
 import { base } from 'wagmi/chains';
 
@@ -12,6 +13,6 @@ export const privyConfig: PrivyClientConfig = {
     walletChainType: 'ethereum-only',
     walletList: ['detected_wallets', 'base_account', 'coinbase_wallet'],
     loginMessage: 'Continue to ZoraCore',
-    logo: 'https://zorabot.vercel.app/farcaster/splash-transparent.png',
+    logo: PROTOCOL_LOGO,
   },
 };

@@ -3,6 +3,8 @@ import qs from 'querystring';
 import { toast } from 'sonner';
 import { createPublicClient, http, formatEther, formatUnits } from 'viem';
 import { base } from 'viem/chains';
+import { ChainId, ChainType, type WidgetConfig } from '@lifi/widget';
+import { LIFI_INTEGRATOR, PROTOCOL_LOGO } from './constants';
 
 export function toQueryString(obj?: Record<string, any>) {
   if (!obj) return '';
@@ -121,4 +123,67 @@ export async function getTokenBalance(address: `0x${string}`, token: `0x${string
     client.readContract({ address: token, abi: ERC20_ABI, functionName: 'decimals' }),
   ]);
   return Number(formatUnits(rawBalance as bigint, decimals as number));
+}
+
+export function getLifiWidgetConfig(opts?: {
+  address?: string;
+  bgColor?: string;
+  userId?: string;
+}): WidgetConfig {
+  return {
+    integrator: LIFI_INTEGRATOR,
+    appearance: 'dark',
+    variant: 'compact',
+    subvariant: 'split',
+    subvariantOptions: {
+      split: 'swap',
+    },
+    sdkConfig: {
+      userId: opts?.userId,
+      rpcUrls: {
+        [ChainId.BAS]: ['https://base-mainnet.g.alchemy.com/v2/5tKWi8XDxUwBx3T-UAqy2'],
+      },
+    },
+    chains: {
+      allow: [ChainId.BAS],
+    },
+    fromChain: ChainId.BAS,
+    toChain: ChainId.BAS,
+    toAddress: opts?.address
+      ? { name: 'Connected Wallet', address: opts.address, chainType: ChainType.EVM }
+      : undefined,
+    hiddenUI: [
+      'history',
+      'language',
+      'appearance',
+      'toAddress',
+      'chainSelect',
+      'bridgesSettings',
+      'addressBookConnectedWallets',
+      'lowAddressActivityConfirmation',
+    ],
+    theme: {
+      palette: {
+        background: { default: opts?.bgColor ? opts.bgColor : 'rgb(10, 10, 10)' },
+        primary: { main: '#05df72' },
+        secondary: { main: '#05df72' },
+      },
+      typography: {
+        fontFamily: 'var(--font-sans)',
+      },
+      container: {
+        boxShadow: 'unset',
+        height: 'fit-content',
+        padding: 0,
+        maxWidth: 'unset',
+      },
+    },
+    feeConfig: {
+      name: 'Zorlify',
+      logoURI: PROTOCOL_LOGO,
+      fee: 0.01, // -- 1% fee
+      showFeePercentage: true,
+      showFeeTooltip: true,
+    },
+  };
 }

@@ -14,7 +14,21 @@ import { privyConfig } from '@/lib/adapters/privy/config';
 import { PRIVY_APP_ID, PRIVY_CLIENT_ID } from '@/lib/constants';
 import CustomProvider from './CustomProvider';
 import { WagmiProvider } from '@privy-io/wagmi';
-import { wagmiConfig } from '@/lib/adapters/wagmi/config';
+import { wagmiConfig, connectors } from '@/lib/adapters/wagmi/config';
+import { useSyncWagmiConfig } from '@lifi/wallet-management';
+import { useAvailableChains } from '@lifi/widget';
+import { Config } from 'wagmi';
+
+function CustomWagmiProvider({ children }: PropsWithChildren) {
+  const { chains } = useAvailableChains();
+  const wagmi = React.useRef<Config>(null);
+
+  if (!wagmi.current) wagmi.current = wagmiConfig;
+
+  useSyncWagmiConfig(wagmi.current, connectors, chains);
+
+  return <WagmiProvider config={wagmi.current}>{children}</WagmiProvider>;
+}
 
 export default function GlobalProvider({ children }: PropsWithChildren) {
   const queryClient = new QueryClient();
@@ -30,10 +44,10 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
       >
         <PrivyProvider appId={PRIVY_APP_ID} clientId={PRIVY_CLIENT_ID} config={privyConfig}>
           <QueryClientProvider client={queryClient}>
-            <WagmiProvider config={wagmiConfig}>
+            <CustomWagmiProvider>
               <CustomProvider>
                 <ModalProvider>
-                  <main className="md:w-[calc(100vw-64px)] md:ml-16">
+                  <main className="md:w-[calc(100vw-64px)] md:ml-16 mb-0 md:mb-0">
                     <aside>
                       <Sidebar />
                     </aside>
@@ -48,7 +62,7 @@ export default function GlobalProvider({ children }: PropsWithChildren) {
                   <CustomSidebar />
                 </ModalProvider>
               </CustomProvider>
-            </WagmiProvider>
+            </CustomWagmiProvider>
           </QueryClientProvider>
         </PrivyProvider>
       </ThemeProvider>

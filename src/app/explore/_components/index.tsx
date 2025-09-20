@@ -1,27 +1,26 @@
 'use client';
 
+import { coinColumns } from '@/app/page';
+import DataTable from '@/components/global/DataTable';
 import { Loader } from '@/components/global/Loader';
-import SmartImage from '@/components/global/SmartImage';
-import TimeAgo from '@/components/global/TimeAgo';
-import Basescan from '@/components/icons/Basescan';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useFilterSidebar } from '@/hooks/useFilterSideBar';
-import { copyToClipboard, formatNumber, getPercentChange, toQueryString } from '@/lib/helpers';
+import useTableDiv from '@/hooks/useTableDiv';
+import { toQueryString } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
-import { IconComet, IconUserScreen } from '@tabler/icons-react';
+import {
+  IconActivity,
+  IconClock,
+  IconCurrencyDollar,
+  IconHistory,
+  IconStar,
+  IconTrendingUp,
+  IconUserPlus,
+} from '@tabler/icons-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ChevronDown, ChevronUp, Compass, Copy, ListFilter } from 'lucide-react';
+import { Compass, ListFilter } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -33,17 +32,45 @@ type CoinResponse = {
 };
 
 export default function ExploreComponent() {
+  const { headerHeight, headerRef } = useTableDiv();
   const tabs = [
-    { title: 'Gainers', key: 'TOP_GAINERS' },
-    { title: 'Top Volume (24h)', key: 'TOP_VOLUME_24H' },
-    { title: 'Most Valuable', key: 'MOST_VALUABLE' },
-    { title: 'Old Tokens', key: 'OLD' },
-    { title: 'Last Traded Tokens', key: 'LAST_TRADED_UNIQUE' },
-    { title: 'New Creators', key: 'NEW_CREATORS' },
-    { title: 'Most Valuable Creators', key: 'MOST_VALUABLE_CREATORS' },
+    {
+      title: 'Top Volume (24h)',
+      key: 'TOP_VOLUME_24H',
+      icon: IconActivity,
+    },
+    {
+      title: 'Gainers',
+      key: 'TOP_GAINERS',
+      icon: IconTrendingUp,
+    },
+    {
+      title: 'Most Valuable',
+      key: 'MOST_VALUABLE',
+      icon: IconCurrencyDollar,
+    },
+    {
+      title: 'Old Tokens',
+      key: 'OLD',
+      icon: IconHistory,
+    },
+    {
+      title: 'Last Traded Tokens',
+      key: 'LAST_TRADED_UNIQUE',
+      icon: IconClock,
+    },
+    {
+      title: 'New Creators',
+      key: 'NEW_CREATORS',
+      icon: IconUserPlus,
+    },
+    {
+      title: 'Most Valuable Creators',
+      key: 'MOST_VALUABLE_CREATORS',
+      icon: IconStar,
+    },
   ];
 
-  const router = useRouter();
   const searchParams = useSearchParams();
   const tab = searchParams.get('tab') ?? tabs[0].key;
   // --
@@ -54,7 +81,7 @@ export default function ExploreComponent() {
     useInfiniteQuery<CoinResponse>({
       queryKey: ['explore', tab],
       initialPageParam: null,
-      refetchInterval: 3000,
+      // refetchInterval: 3000,
       getNextPageParam: (lastPage) => lastPage.data?.cursor ?? undefined,
       queryFn: async ({ pageParam = null }) => {
         const query = toQueryString({ listType: tab, cursor: pageParam });
@@ -111,20 +138,45 @@ export default function ExploreComponent() {
     if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage();
   }, [fetchNextPage, inView, hasNextPage]);
 
+  const FilterBtn = () => {
+    return (
+      <Button
+        className="h-8.5 w-21 rounded-md"
+        disabled={isLoading}
+        onClick={() => {
+          open({
+            cb: setFilters,
+            options: {
+              creators,
+              isContentToken: true,
+              isCreatorToken: true,
+              marketCap: true,
+              totalVolume: true,
+              uniqueHolders: true,
+              volume24h: true,
+            },
+          });
+        }}
+      >
+        <span>Filter</span>
+        <ListFilter className="opacity-60 size-3.5" strokeWidth={2} />
+      </Button>
+    );
+  };
+
   return (
-    <div className="mb-5">
-      <div className="p-3 gap-3 flex items-center justify-between sticky top-[61px] md:top-[65px] bg-background z-25 border-b">
-        <div className="flex items-center gap-4">
+    <div>
+      <div
+        ref={headerRef}
+        className="p-3 gap-3 flex flex-col 2xl:flex-row 2xl:items-center justify-between sticky top-[61px] md:top-[65px] bg-background z-25 border-b"
+      >
+        <div className="flex items-center gap-4 w-full 2xl:w-max justify-between">
           <h1 className="flex items-center gap-2 text-green-400">
             <Compass className="size-5.5" strokeWidth={2} />
-            <span className="font-semibold text-xl truncate">Explorer</span>
+            <span className="font-semibold text-xl truncate">Tokens Explorer</span>
           </h1>
 
-          <div className="h-9">
-            <Separator orientation="vertical" />
-          </div>
-
-          <Select value={tab} onValueChange={(value) => router.push(`?tab=${value}`)}>
+          {/* <Select value={tab} onValueChange={(value) => router.push(`?tab=${value}`)}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select filter" />
             </SelectTrigger>
@@ -135,232 +187,58 @@ export default function ExploreComponent() {
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>
+          </Select> */}
+
+          <div className="2xl:hidden">
+            <FilterBtn />
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            className="size-8 rounded-full sm:h-8.5 sm:w-21 sm:rounded-md"
-            disabled={isLoading}
-            onClick={() => {
-              open({
-                cb: setFilters,
-                options: {
-                  creators,
-                  isContentToken: true,
-                  isCreatorToken: true,
-                  marketCap: true,
-                  totalVolume: true,
-                  uniqueHolders: true,
-                  volume24h: true,
-                },
-              });
-            }}
-          >
-            <span className="hidden sm:block">Filter</span>
-            <ListFilter className="opacity-60 size-3.5" strokeWidth={2} />
-          </Button>
+        <div className="flex items-center gap-3 flex-wrap border-t -mx-3 pt-3 px-3 2xl:border-none 2xl:p-0 2xl:m-0">
+          {tabs.map(({ key, title, ...item }) => {
+            const isActive = tab === key;
+            return (
+              <Link
+                href={`?tab=${key}`}
+                key={key}
+                className={cn(
+                  'border flex items-center gap-2 px-3.5 py-2',
+                  isActive && 'border-violet-300 text-violet-300'
+                )}
+              >
+                <item.icon className="size-4.5 opacity-60" />
+                <span className={cn('whitespace-nowrap text-sm', isActive && 'font-semibold')}>
+                  {title}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className="hidden 2xl:block">
+          <FilterBtn />
         </div>
       </div>
 
       {isLoading ? (
-        <div className="h-[calc(100vh-150px)] md:h-[calc(100vh-150px)] flex items-center justify-center">
+        <div
+          className="flex items-center justify-center"
+          style={{ height: `calc(100dvh - ${headerHeight + 65}px)` }}
+        >
           <Loader />
         </div>
       ) : (
-        <div className="p-3 space-y-3">
-          {filteredCoins.map((coin, idx) => {
-            const change = getPercentChange(Number(coin.marketCap), Number(coin.marketCapDelta24h));
-
-            const tokenInfo = (
-              <div className="flex items-center gap-2.5">
-                <div>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      {coin.isCreatorToken ? (
-                        <IconUserScreen className="size-5 text-yellow-400" strokeWidth={1.5} />
-                      ) : (
-                        <IconComet className="size-5 text-indigo-400" strokeWidth={1.5} />
-                      )}
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="font-medium">
-                        {coin.isCreatorToken ? 'Creator Token' : 'Content Token'}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex items-center gap-2.5 w-40 shrink-0">
-                  <Link href={`/coin/${coin.address}`}>
-                    <SmartImage
-                      src={coin.mediaContent.previewImage.medium}
-                      alt={coin.symbol}
-                      className="size-9 rounded-full"
-                      loaderClassName="size-9 rounded-full bg-secondary"
-                    />
-                  </Link>
-                  <div className="space-y-[1px]">
-                    <h4 className="flex items-center gap-1">
-                      <Link
-                        href={`/coin/${coin.address}`}
-                        className="font-medium text-xs truncate w-full max-w-30"
-                      >
-                        {coin.symbol}
-                      </Link>
-                      <button
-                        className="opacity-60 shrink-0"
-                        onClick={() => copyToClipboard(coin.address)}
-                      >
-                        <Copy className="size-3" strokeWidth={3} />
-                      </button>
-                    </h4>
-                    <div className="flex items-center gap-1.5">
-                      <TimeAgo
-                        className="text-orange-400 font-semibold text-xs opacity-100"
-                        date={coin.created_at}
-                      />
-                      <Link href={`https://basescan.org/address/${coin.address}`} target="_blank">
-                        <Basescan className="size-[13px] dark:text-[#555] #eee" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-
-            return (
-              <div ref={idx === filteredCoins.length - 8 ? ref : undefined} key={coin.address}>
-                {/** >= tablets */}
-                <div className="hidden md:flex border w-full p-4 hover:bg-secondary/30 hover:border-gray-600 items-center gap-8">
-                  {tokenInfo}
-
-                  <div className="h-10">
-                    <Separator orientation="vertical" />
-                  </div>
-
-                  <Link
-                    href={`/coin/${coin.address}`}
-                    className="w-full flex items-center gap-10 justify-between"
-                  >
-                    <div className="space-y-[1px] flex-1 text-end">
-                      <p className="text-xs font-medium">{formatNumber(coin.uniqueHolders)}</p>
-                      <p className="text-xs font-medium opacity-50 truncate">U. Holders </p>
-                    </div>
-
-                    <div className="space-y-[1px] flex-1 text-end">
-                      <p className="text-xs font-medium">
-                        ${formatNumber(Number(coin.totalVolume))}
-                      </p>
-                      <p className="text-xs font-medium opacity-50 truncate">Total Volume</p>
-                    </div>
-
-                    <div className="space-y-[1px] flex-1 text-end">
-                      <p className="text-xs font-medium">${formatNumber(Number(coin.volume24h))}</p>
-                      <p className="text-xs font-medium opacity-50 truncate">Volume (24h)</p>
-                    </div>
-
-                    <div className="space-y-[1px] flex-1 text-end">
-                      <p className="text-xs font-medium flex items-center justify-end gap-1">
-                        <span
-                          className={cn(
-                            'block lg:hidden',
-                            change >= 0 ? 'text-green-600' : 'text-red-600'
-                          )}
-                        >
-                          {change >= 0 ? (
-                            <ChevronUp className="size-3.5" strokeWidth={3} />
-                          ) : (
-                            <ChevronDown className="size-3.5" strokeWidth={3} />
-                          )}
-                        </span>
-                        <span>${formatNumber(Number(coin.marketCap))}</span>
-                      </p>
-                      <p className="text-xs font-medium opacity-50 truncate">Mkt Price</p>
-                    </div>
-
-                    <div className="hidden lg:block space-y-[1px] text-end flex-1">
-                      <p
-                        className={cn(
-                          'flex items-center justify-end gap-0.5',
-                          change >= 0 ? 'text-green-600' : 'text-red-600'
-                        )}
-                      >
-                        {change >= 0 ? (
-                          <ChevronUp className="size-3.5" strokeWidth={3} />
-                        ) : (
-                          <ChevronDown className="size-3.5" strokeWidth={3} />
-                        )}
-                        <span className="text-xs font-semibold">{formatNumber(change)}%</span>
-                      </p>
-                      <p className="text-xs font-medium opacity-50">24h</p>
-                    </div>
-                  </Link>
-                </div>
-
-                {/** <= mobile */}
-                <div className="flex flex-col md:hidden border w-full hover:bg-secondary/30 hover:border-gray-600">
-                  <div className="flex items-center justify-between border-b w-full p-4">
-                    {tokenInfo}
-
-                    <Link href={`/coin/${coin.address}`} className="flex items-center gap-5">
-                      <div className="space-y-[1px] text-end flex-1">
-                        <p
-                          className={cn(
-                            'flex items-center justify-end gap-0.5',
-                            change >= 0 ? 'text-green-600' : 'text-red-600'
-                          )}
-                        >
-                          {change >= 0 ? (
-                            <ChevronUp className="size-3.5" strokeWidth={3} />
-                          ) : (
-                            <ChevronDown className="size-3.5" strokeWidth={3} />
-                          )}
-                          <span className="text-xs font-semibold">{formatNumber(change)}%</span>
-                        </p>
-                        <p className="text-xs font-medium opacity-50">24h</p>
-                      </div>
-                      <div className="space-y-[1px] flex-1 text-end">
-                        <p className="text-xs font-medium">
-                          ${formatNumber(Number(coin.marketCap))}
-                        </p>
-                        <p className="text-xs font-medium opacity-50 truncate">Mkt Price</p>
-                      </div>
-                    </Link>
-                  </div>
-
-                  <Link
-                    href={`/coin/${coin.address}`}
-                    className="p-4 flex items-center justify-between"
-                  >
-                    <div className="space-y-[1px] flex-1 text-center">
-                      <p className="text-xs font-medium">{formatNumber(coin.uniqueHolders)}</p>
-                      <p className="text-xs font-medium opacity-50 truncate">U. Holders </p>
-                    </div>
-
-                    <div className="space-y-[1px] flex-1 text-center">
-                      <p className="text-xs font-medium">
-                        ${formatNumber(Number(coin.totalVolume))}
-                      </p>
-                      <p className="text-xs font-medium opacity-50 truncate">Total Volume</p>
-                    </div>
-
-                    <div className="space-y-[1px] flex-1 text-center">
-                      <p className="text-xs font-medium">${formatNumber(Number(coin.volume24h))}</p>
-                      <p className="text-xs font-medium opacity-50 truncate">Volume (24h)</p>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+        <div className="overflow-y-hidden">
+          <DataTable<Coin>
+            columns={coinColumns}
+            data={filteredCoins}
+            triggerRowRef={ref}
+            triggerOffset={10}
+            containerClassName="pb-17 md:pb-0"
+            containerStyles={{ height: `calc(100dvh - ${headerHeight + 65}px)` }}
+          />
         </div>
       )}
-
-      {isFetchingNextPage ? (
-        <div className="flex items-center justify-center pb-5 pt-3">
-          <Loader />
-        </div>
-      ) : null}
     </div>
   );
 }

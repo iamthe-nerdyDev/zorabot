@@ -65,7 +65,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} antialiased`}>
         <GlobalProvider>{children}</GlobalProvider>
-        <NextTopLoader color="#2299DD" />
+        <NextTopLoader color="#05df72" />
         <Toaster position="bottom-right" />
       </body>
     </html>

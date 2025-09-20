@@ -2,13 +2,11 @@
 
 import DataTable from '@/components/global/DataTable';
 import { Loader } from '@/components/global/Loader';
-import QuickSellModal from '@/components/global/QuickSellModal';
+import QuickBuy from '@/components/global/QuickBuy';
 import SmartImage from '@/components/global/SmartImage';
 import TimeAgo from '@/components/global/TimeAgo';
 import Basescan from '@/components/icons/Basescan';
-import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import useModal from '@/hooks/useModal';
 import {
   copyToClipboard,
   formatNumber,
@@ -43,7 +41,6 @@ type HoldingsResponse = {
 
 export default function PortfolioComponent() {
   const { ref, inView } = useInView();
-  const { open } = useModal();
   const { address } = useAccount();
   const { ready, user } = usePrivy();
   // --
@@ -139,7 +136,7 @@ export default function PortfolioComponent() {
             <div className="space-y-[1px]">
               <h4 className="flex items-center gap-1">
                 <Link
-                  className="w-full max-w-20 truncate"
+                  className="w-full max-w-20 md:max-w-30 lg:max-w-50 truncate"
                   href={`/coin/${row.original.coin.address}`}
                 >
                   <span className="font-medium text-xs">{row.original.coin.symbol}</span>
@@ -224,22 +221,7 @@ export default function PortfolioComponent() {
     {
       header: 'Action',
       enableSorting: false,
-      cell: ({ row }) => (
-        <div>
-          <Button
-            variant={'outline'}
-            className="min-w-20"
-            onClick={() => {
-              return open({
-                content: <QuickSellModal balance={row.original.balance} coin={row.original.coin} />,
-              });
-            }}
-          >
-            <Percent className="size-3 text-gray-400" />
-            <span className="-ml-0.5 font-semibold text-xs text--500">SELL</span>
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => <QuickBuy action="Sell" coin={row.original.coin} />,
     },
   ];
 
@@ -289,7 +271,7 @@ export default function PortfolioComponent() {
         <DataTable<Holding>
           columns={columns}
           data={holdings}
-          containerClassName="h-[calc(100dvh-160px)] md:h-[calc(100dvh-173px)]"
+          containerClassName="h-[calc(100dvh-160px)] md:h-[calc(100dvh-173px)] pb-17 md:pb-0"
           triggerRowRef={ref}
           triggerOffset={10}
         />

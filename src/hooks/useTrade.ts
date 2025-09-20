@@ -10,8 +10,8 @@ import {
 } from '@lifi/sdk';
 import React from 'react';
 import { useStorage } from './useStorage';
-import { BUY_PERCENTAGE, SELL_PERCENTAGE } from '@/lib/constants';
 import { useAccount } from 'wagmi';
+import { SWAP_PERCENTAGE } from '@/lib/constants';
 
 export default function () {
   const storage = useStorage();
@@ -31,7 +31,7 @@ export default function () {
           fromAmount: amount,
           slippage: (action === 'buy' ? storage.buySlippage : storage.sellSlippage) / 100,
           order: storage.quoteOrder,
-          fee: (action === 'buy' ? BUY_PERCENTAGE : SELL_PERCENTAGE) / 100,
+          fee: SWAP_PERCENTAGE / 100,
           maxPriceImpact: 1,
         });
       } catch {

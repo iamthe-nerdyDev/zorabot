@@ -1,30 +1,14 @@
 'use client';
 
 import React, { type PropsWithChildren } from 'react';
-import { createConfig, EVM, config } from '@lifi/sdk';
-import { getWalletClient, switchChain } from '@wagmi/core';
-import { wagmiConfig } from '@/lib/adapters/wagmi/config';
+// import { createConfig, EVM, config } from '@lifi/sdk';
 import { usePrivy } from '@privy-io/react-auth';
 import { Loader } from '../global/Loader';
 import miniappSdk from '@farcaster/miniapp-sdk';
 import { useLoginToMiniApp } from '@privy-io/react-auth/farcaster';
 
-createConfig({
-  integrator: 'Main',
-  providers: [
-    EVM({
-      getWalletClient: () => getWalletClient(wagmiConfig),
-      switchChain: async (chainId) => {
-        //@ts-ignore
-        const chain = await switchChain(wagmiConfig, { chainId });
-        return getWalletClient(wagmiConfig, { chainId: chain.id });
-      },
-    }),
-  ],
-});
-
 export default function CustomProvider({ children }: PropsWithChildren) {
-  const { ready, authenticated, user } = usePrivy();
+  const { ready, authenticated } = usePrivy();
   const { initLoginToMiniApp, loginToMiniApp } = useLoginToMiniApp();
   const [isSDKLoaded, setIsSDKLoaded] = React.useState(false);
   const [isInMiniApp, setIsInMiniApp] = React.useState(false);
@@ -34,21 +18,18 @@ export default function CustomProvider({ children }: PropsWithChildren) {
       if (!miniappSdk || isSDKLoaded) return;
       // --
       const response = await miniappSdk.isInMiniApp();
-      setIsInMiniApp(response);
       if (response) {
-        miniappSdk.back.enableWebNavigation();
-        miniappSdk.actions.ready();
+        await Promise.all([miniappSdk.back.enableWebNavigation(), miniappSdk.actions.ready()]);
+        // --
+        await miniappSdk.actions.addMiniApp();
       }
 
+      setIsInMiniApp(response);
       setIsSDKLoaded(true);
     }
 
     init();
   }, [isSDKLoaded]);
-
-  React.useEffect(() => {
-    if (user) config.set({ ...config.get(), userId: user.id });
-  }, [user]);
 
   React.useEffect(() => {
     if (ready && !authenticated && isInMiniApp) {

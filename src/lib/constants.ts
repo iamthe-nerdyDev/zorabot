@@ -11,8 +11,7 @@ export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:30
 export const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'cmeqz4m1i01npkz0cqljvaf2g';
 export const PRIVY_CLIENT_ID = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
 // --
-const NEXT_PUBLIC_BUY_PERCENTAGE = Number(process.env.NEXT_PUBLIC_BUY_PERCENTAGE || 1);
-export const BUY_PERCENTAGE = isNaN(NEXT_PUBLIC_BUY_PERCENTAGE) ? 1 : NEXT_PUBLIC_BUY_PERCENTAGE;
-// --
-const NEXT_PUBLIC_SELL_PERCENTAGE = Number(process.env.NEXT_PUBLIC_SELL_PERCENTAGE || 1);
-export const SELL_PERCENTAGE = isNaN(NEXT_PUBLIC_SELL_PERCENTAGE) ? 1 : NEXT_PUBLIC_SELL_PERCENTAGE;
+export const LIFI_INTEGRATOR = process.env.NEXT_PUBLIC_LIFI_INTEGRATOR || 'Zorlify';
+export const PROTOCOL_LOGO = 'https://zorabot.vercel.app/farcaster/splash-transparent.png';
+const NEXT_PUBLIC_SWAP_PERCENTAGE = Number(process.env.NEXT_PUBLIC_SWAP_PERCENTAGE || 1);
+export const SWAP_PERCENTAGE = isNaN(NEXT_PUBLIC_SWAP_PERCENTAGE) ? 1 : NEXT_PUBLIC_SWAP_PERCENTAGE;

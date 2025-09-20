@@ -1,52 +1,49 @@
 'use client';
 
-import {
-  Bell,
-  ChevronRight,
-  Compass,
-  History,
-  Mail,
-  Search,
-  Settings,
-  Star,
-  Wallet2,
-  X,
-} from 'lucide-react';
+import { Bell, Compass, Home, Mail, Star, Wallet2 } from 'lucide-react';
 import React from 'react';
-import { Separator } from '../ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/hooks/useSidebar';
 import { isPathMatching } from '@/lib/helpers';
-import useModal from '@/hooks/useModal';
-import SettingsModal from './SettingsModal';
-import SearchModal from './SearchModal';
 
 export default function Sidebar() {
   const path = usePathname();
   const { state, close } = useSidebar();
-  const { open } = useModal();
 
   const menus = [
-    { title: 'New Tokens', icon: History, href: '/', match: ['/coin/*', '/creator/*'] },
-    { title: 'Explore', icon: Compass, href: '/explore' },
-    { title: 'Alerts', icon: Bell, href: '/alerts' },
-    { title: 'Watchlist', icon: Star, href: '/watchlist' },
-    { title: 'Portfolio', icon: Wallet2, href: '/portfolio' },
+    {
+      title: 'Home',
+      icon: Home,
+      href: '/',
+      match: ['/coin/*', '/creator/*'],
+    },
+    {
+      title: 'Explore',
+      icon: Compass,
+      href: '/explore',
+    },
+    {
+      title: 'Alerts',
+      icon: Bell,
+      href: '/alerts',
+    },
+    {
+      title: 'Watchlist',
+      icon: Star,
+      href: '/watchlist',
+    },
+    {
+      title: 'Portfolio',
+      icon: Wallet2,
+      href: '/portfolio',
+    },
   ];
 
   const actions = [
-    {
-      title: 'Settings',
-      icon: Settings,
-      handleClick: () => {
-        close();
-        open({ content: <SettingsModal /> });
-      },
-    },
     {
       title: 'Send Us a Message',
       icon: Mail,
@@ -130,83 +127,36 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {state && (
-          <motion.div
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30, duration: 0.3 }}
-            className="fixed left-0 top-0 bottom-0 h-dvh w-full z-50 bg-background border-r md:hidden p-4"
-          >
-            <div className="flex items-center justify-between mb-8 mt-1">
-              <Link href={'/'} className="w-10 h-auto">
-                <img src={'/logo.png'} className="w-full rounded-full" />
+      {isPathMatching(path, '/coin/*') ? null : (
+        <nav className="flex md:hidden fixed right-0 left-0 bottom-0 bg-black/50 border-t items-center justify-around z-50 backdrop-blur-md">
+          {menus.map((menu) => {
+            const isActive =
+              path === menu.href || (menu.match && menu.match.some((m) => isPathMatching(path, m)));
+
+            return (
+              <Link
+                href={menu.href}
+                className={cn(
+                  'flex flex-col gap-0.5 items-center text-center p-1.5',
+                  isActive ? 'opacity-100 text-violet-300' : 'opacity-50'
+                )}
+              >
+                <div className="relative p-2.5 rounded-full">
+                  <menu.icon className="size-4.5 z-50" strokeWidth={2} />
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeIndicator"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      className="absolute inset-0 rounded-full border-[1px] border-violet-500 bg-transparent pointer-events-none"
+                    />
+                  )}
+                </div>
+                <span className="text-[12px]">{menu.title}</span>
               </Link>
-
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => {
-                    close();
-                    open({ content: <SearchModal /> });
-                  }}
-                >
-                  <Search className="size-5" />
-                </button>
-
-                <button onClick={close}>
-                  <X className="size-5 opacity-60" />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              {menus.map((menu) => {
-                const isActive =
-                  path === menu.href ||
-                  (menu.match && menu.match.some((m) => isPathMatching(path, m)));
-
-                return (
-                  <Link
-                    href={menu.href}
-                    key={menu.title}
-                    className="flex items-center justify-between"
-                  >
-                    <div
-                      className={cn(
-                        'flex items-center gap-3',
-                        isActive ? 'font-semibold opacity-100' : 'opacity-50'
-                      )}
-                    >
-                      <menu.icon className="size-5 opacity-50" strokeWidth={2} />
-                      <span>{menu.title}</span>
-                    </div>
-
-                    <ChevronRight className="size-4 opacity-50" />
-                  </Link>
-                );
-              })}
-            </div>
-
-            <Separator className="my-6" />
-
-            <div className="flex flex-col gap-6">
-              {actions.map((action) => (
-                <button
-                  key={action.title}
-                  onClick={action.handleClick}
-                  className="flex items-center justify-between"
-                >
-                  <div className={cn('flex items-center gap-3')}>
-                    <action.icon className="size-5 opacity-50" strokeWidth={2} />
-                    <span className="font-medium">{action.title}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            );
+          })}
+        </nav>
+      )}
     </React.Fragment>
   );
 }

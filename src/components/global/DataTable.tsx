@@ -14,6 +14,7 @@ import { Box } from 'lucide-react';
 
 type Props<T> = {
   containerClassName?: string;
+  containerStyles?: React.CSSProperties;
   headerClassName?: string;
   columns: ColumnDef<T>[];
   data: T[];
@@ -25,6 +26,7 @@ type Props<T> = {
 
 export default function DataTable<T>({
   containerClassName,
+  containerStyles,
   headerClassName,
   data,
   columns,
@@ -58,6 +60,7 @@ export default function DataTable<T>({
         scrollBehavior: 'smooth',
         touchAction: 'pan-x pan-y',
         willChange: 'scroll-position',
+        ...containerStyles,
       }}
     >
       <table className={cn('min-w-full border-collapse', className)} {...props}>
@@ -73,11 +76,11 @@ export default function DataTable<T>({
                     key={header.id}
                     className={cn(
                       'text-start text-sm font-medium cursor-pointer select-none whitespace-nowrap dark:text-gray-500',
-                      enableStickyColumns && isFirst && 'sticky left-0 z-15 bg-background',
-                      enableStickyColumns &&
-                        isLast &&
-                        columns.length > 1 &&
-                        'sticky right-0 z-15 bg-background'
+                      enableStickyColumns && isFirst && 'sticky left-0 z-15 bg-background'
+                      // enableStickyColumns &&
+                      //   isLast &&
+                      //   columns.length > 1 &&
+                      //   'sticky right-0 z-15 bg-background'
                     )}
                     style={{
                       WebkitOverflowScrolling: 'touch',
@@ -95,7 +98,7 @@ export default function DataTable<T>({
                       className={cn(
                         'p-3 border-b',
                         isFirst && 'border-r',
-                        isLast && 'border-l',
+                        // isLast && 'border-l',
                         header.column.getCanSort()
                           ? { asc: 'asc', desc: 'desc' }[header.column.getIsSorted() as string] ??
                               'sort'
@@ -145,10 +148,11 @@ export default function DataTable<T>({
                         className={cn(
                           'whitespace-nowrap min-w-30',
                           enableStickyColumns && isFirst && 'sticky left-0 z-10 bg-background',
-                          enableStickyColumns &&
-                            isLast &&
-                            row.getVisibleCells().length > 1 &&
-                            'sticky right-0 z-10 bg-background'
+                          isLast && 'w-23'
+                          // enableStickyColumns &&
+                          //   isLast &&
+                          //   row.getVisibleCells().length > 1 &&
+                          //   'sticky right-0 z-10 bg-background'
                         )}
                         style={{
                           WebkitOverflowScrolling: 'touch',
@@ -160,7 +164,13 @@ export default function DataTable<T>({
                           willChange: 'scroll-position',
                         }}
                       >
-                        <div className={cn('p-3', isFirst && 'border-r', isLast && 'border-l')}>
+                        <div
+                          className={cn(
+                            'p-3',
+                            isFirst && 'border-r',
+                            isLast && 'flex items-center justify-center'
+                          )}
+                        >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </div>
                       </td>

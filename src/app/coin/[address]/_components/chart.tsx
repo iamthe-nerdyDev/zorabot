@@ -69,9 +69,11 @@ export default function CoinChart({ data, price }: Props) {
             ? 250
             : breakpoint === 'md'
             ? 310
-            : breakpoint === 'lg'
-            ? 410
-            : 460
+            : typeof window !== 'undefined'
+            ? breakpoint === 'lg'
+              ? window.innerHeight - 380
+              : window.innerHeight - 320
+            : 0
         }
       >
         {chartData && chartData.length > 0 ? (
