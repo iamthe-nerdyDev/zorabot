@@ -19,9 +19,10 @@ export default function CustomProvider({ children }: PropsWithChildren) {
       // --
       const response = await miniappSdk.isInMiniApp();
       if (response) {
-        await Promise.all([miniappSdk.back.enableWebNavigation(), miniappSdk.actions.ready()]);
+        miniappSdk.back.enableWebNavigation();
+        miniappSdk.actions.ready();
         // --
-        await miniappSdk.actions.addMiniApp();
+        miniappSdk.actions.addMiniApp().catch((e) => console.error(e));
       }
 
       setIsInMiniApp(response);
