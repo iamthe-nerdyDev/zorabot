@@ -12,13 +12,17 @@ model User {
   id                         String      @id @default(cuid())
   fid                        String?     @unique
   address                    String      @unique
+  name                       String?
   farcasterNotificationUrl   String?
   farcasterNotificationToken String?
   createdAt                  DateTime    @default(now())
   updatedAt                  DateTime    @updatedAt
   metadata                   Json?
+  
   alerts                     Alert[]
   watchlists                 Watchlist[]
+  createdMarkets             PriceMarket[] @relation("CreatedMarkets")
+  shares                     Shares[]      @relation("UserShares")
 
   @@map("users")
 }
@@ -70,4 +74,90 @@ model Alert {
 enum AlertStatus {
   ENABLED
   DISABLED
+}
+
+enum MarketOutcome {
+  UNRESOLVED
+  YES
+  NO
+}
+
+model PriceMarket {
+  id                       String        @id @default(cuid())
+  onchain_id               Int           @unique
+  tokenAddress             String
+  creatorAddress           String
+  bettingTokenAddress      String
+  targetPrice              String
+  targetIsAboveTargetPrice Boolean
+  outcome                  MarketOutcome @default(UNRESOLVED)
+  endTs                    DateTime
+  totalYesShares           String
+  totalNoShares            String
+  resolved                 Boolean
+  isResolving              Boolean       @default(false)
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  token         Token @relation("Token", fields: [tokenAddress], references: [address], onDelete: Restrict)
+  bettingToken  Token @relation("BettingToken", fields: [bettingTokenAddress], references: [address], onDelete: Restrict)
+  creator       User  @relation("CreatedMarkets", fields: [creatorAddress], references: [address], onDelete: Restrict)
+
+  fee    Fee?
+  shares Shares[]
+
+  @@map("priceMarkets")
+  @@index([tokenAddress])
+  @@index([creatorAddress])
+}
+
+model Token {
+  id            String    @id @default(cuid())
+  address       String    @unique
+  name          String
+  symbol        String
+  description   String
+  icon          String
+  decimals      Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  marketsUsingAsToken        PriceMarket[] @relation("Token")
+  marketsUsingAsBettingToken PriceMarket[] @relation("BettingToken")
+  
+  @@map("tokens")
+}
+
+model Fee {
+  id         String      @id @default(cuid())
+  marketId   String      @unique
+  feeAmount  String
+  feeAddress String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  market PriceMarket @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@map("fees")
+}
+
+model Shares {
+  id          String      @id @default(cuid())
+  marketId    String
+  userAddress String
+  isYes       Boolean
+  amount      String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  market PriceMarket @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  user   User        @relation("UserShares", fields: [userAddress], references: [address], onDelete: Restrict)
+
+  @@map("shares")
+  @@index([userAddress])
+}
+
+model Creator {
+  id      String @id @default(cuid())
+  address String
 }
