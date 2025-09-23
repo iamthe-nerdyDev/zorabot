@@ -193,7 +193,7 @@ export default function CreatorComponent({ data: profile }: { data: ZoraProfileA
             data={filteredCoins}
             triggerRowRef={ref}
             triggerOffset={10}
-            containerClassName="h-[calc(100dvh-300px)] md:h-[calc(100dvh-232px)]"
+            containerClassName="h-[calc(100dvh-300px)] md:h-[calc(100dvh-232px)] pb-17 md:pb-0"
           />
         </div>
       )}
