@@ -23,6 +23,7 @@ model User {
   watchlists                 Watchlist[]
   createdMarkets             PriceMarket[] @relation("CreatedMarkets")
   shares                     Shares[]      @relation("UserShares")
+  claims                     Claim[]      @relation("UserClaims")
 
   @@map("users")
 }
@@ -95,7 +96,6 @@ model PriceMarket {
   totalYesShares           String
   totalNoShares            String
   resolved                 Boolean
-  isResolving              Boolean       @default(false)
   createdAt                DateTime      @default(now())
   updatedAt                DateTime      @updatedAt
 
@@ -103,8 +103,8 @@ model PriceMarket {
   bettingToken  Token @relation("BettingToken", fields: [bettingTokenAddress], references: [address], onDelete: Restrict)
   creator       User  @relation("CreatedMarkets", fields: [creatorAddress], references: [address], onDelete: Restrict)
 
-  fee    Fee?
   shares Shares[]
+  claims Claim[]
 
   @@map("priceMarkets")
   @@index([tokenAddress])
@@ -128,25 +128,13 @@ model Token {
   @@map("tokens")
 }
 
-model Fee {
-  id         String      @id @default(cuid())
-  marketId   String      @unique
-  feeAmount  String
-  feeAddress String
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  market PriceMarket @relation(fields: [marketId], references: [id], onDelete: Cascade)
-
-  @@map("fees")
-}
-
 model Shares {
   id          String      @id @default(cuid())
   marketId    String
   userAddress String
   isYes       Boolean
   amount      String
+  feeAmount   String      @default("0")
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
@@ -157,7 +145,27 @@ model Shares {
   @@index([userAddress])
 }
 
+model Claim {
+  id          String      @id @default(cuid())
+  marketId    String
+  userAddress String
+  amount      String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  market PriceMarket @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  user   User        @relation("UserClaims", fields: [userAddress], references: [address], onDelete: Restrict)
+
+  @@map("claims")
+  @@index([marketId])
+  @@index([userAddress])
+  @@unique([marketId, userAddress]) 
+}
+
 model Creator {
   id      String @id @default(cuid())
-  address String
+  address String @unique
+  admin   String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }

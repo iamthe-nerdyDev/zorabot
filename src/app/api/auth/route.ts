@@ -21,12 +21,12 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.upsert({
     where: { address: body.wallet.address },
+    update: {},
     create: {
       address: body.wallet.address,
       fid: body.farcaster?.fid.toString(),
       metadata: JSON.stringify(body),
     },
-    update: {},
   });
 
   const response = NextResponse.json({ data: user });

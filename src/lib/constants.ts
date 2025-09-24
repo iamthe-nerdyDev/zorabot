@@ -1,3 +1,5 @@
+import { sepolia } from 'viem/chains';
+
 export const IS_PROD = process.env.NODE_ENV === 'production';
 export const DEBUG = IS_PROD ? false : true;
 export const ZORA_API_BASE_URL =
@@ -6,7 +8,13 @@ export const ZORA_API_KEY = process.env.ZORA_API_KEY;
 export const ZORA_GRAPHQL_URL = 'https://api.zora.co/universal/graphql';
 export const RPC_URL = process.env.RPC_URL;
 export const PRIVY_APP_SECRET = process.env.PRIVY_APP_SECRET || '';
+export const MORALIS_SECRET_KEY = process.env.MORALIS_SECRET_KEY || '';
+export const CRONJOB_API_KEY = process.env.CRONJOB_API_KEY || '';
+export const PRIVATE_KEY = (process.env.PRIVATE_KEY || '') as `0x${string}`;
 // -- client keys
+export const CONTRACT_CHAIN = sepolia; // TODO: change to base!
+export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
+  '0xa4729be1EB35d45319B5f4cCEbd6cdf26Ee83309') as `0x${string}`;
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 export const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'cmeqz4m1i01npkz0cqljvaf2g';
 export const PRIVY_CLIENT_ID = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;

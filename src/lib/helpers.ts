@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { createPublicClient, http, formatEther, formatUnits } from 'viem';
 import { base } from 'viem/chains';
 import { ChainId, ChainType, type WidgetConfig } from '@lifi/widget';
-import { LIFI_INTEGRATOR, PROTOCOL_LOGO } from './constants';
+import { BASE_URL, CRONJOB_API_KEY, LIFI_INTEGRATOR, PROTOCOL_LOGO } from './constants';
 
 export function toQueryString(obj?: Record<string, any>) {
   if (!obj) return '';
@@ -186,4 +186,46 @@ export function getLifiWidgetConfig(opts?: {
       showFeeTooltip: true,
     },
   };
+}
+
+export async function createEvent(runAt: Date, marketId: string, payload: any) {
+  const expiresAt = runAt.toISOString().replace(/[-:T]/g, '').slice(0, 14) + '00';
+  const body = {
+    job: {
+      enabled: true,
+      title: `End market @ ${marketId}`,
+      saveResponses: true,
+      url: `${BASE_URL}/api/event`,
+      requestMethod: 1,
+      schedule: {
+        timezone: 'UTC',
+        minutes: [runAt.getUTCMinutes()],
+        hours: [runAt.getUTCHours()],
+        mdays: [runAt.getUTCDate()],
+        months: [runAt.getUTCMonth() + 1],
+        wdays: [-1],
+        expiresAt: parseInt(expiresAt),
+      },
+      extendedData: {
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Secret': CRONJOB_API_KEY,
+        },
+      },
+    },
+  };
+
+  const res = await fetch('https://api.cron-job.org/jobs', {
+    method: 'PUT',
+    body: JSON.stringify(body),
+    headers: {
+      Authorization: `Bearer ${CRONJOB_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const data = await res.json();
+  if (res.ok) return data.jobId as number;
+  return null;
 }
