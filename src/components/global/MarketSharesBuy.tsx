@@ -11,25 +11,21 @@ import { abi } from '@/lib/abis/ZolifyPricePredictions.abi.json';
 import { useQuery } from '@tanstack/react-query';
 import { CONTRACT_ADDRESS } from '@/lib/constants';
 import client from '@/lib/client';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 import { formatNumber, toBigIntAmount, toNumber } from '@/lib/helpers';
 import { Input } from '../ui/input';
 import { IconCheck, IconTicket, IconX } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { ethers } from 'ethers';
 import { cn } from '@/lib/utils';
+import useAddress from '@/hooks/useAddress';
 
 export default function MarketSharesBuy({ market }: { market: CustomPriceMarket }) {
+  const address = useAddress();
   const [amount, setAmount] = React.useState('');
   const [choice, setChoice] = React.useState<'yes' | 'no'>('yes');
-  const { authenticated, user } = usePrivy();
+  const { authenticated } = usePrivy();
   const { writeContractAsync, isPending } = useWriteContract();
-  const account = useAccount();
-
-  const address = React.useMemo(
-    () => (account.address || user?.wallet?.address)?.toLowerCase(),
-    [account.address, user?.wallet]
-  );
 
   const {
     data: allowance,
@@ -132,42 +128,19 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
   const fee = formatNumber(feeBps && amount ? (Number(amount) * feeBps) / 10000 : 0, false);
   //   const net = amount ? Number(amount) - fee : 0;
 
-  // the button should only take the colour when no blockers (or put blockers as text errors)
+  const err = isNaN(Number(amount))
+    ? 'Not a valid number'
+    : balance && balance < Number(amount)
+    ? `Insufficient ${market.bettingToken.symbol} Balance`
+    : null;
 
-  return (
-    <div className="p-3.5">
+  return hasEnded ? null : (
+    <div className="p-3.5 border rounded-lg mb-3">
       <div className="flex items-center justify-between mb-3.5">
         <h4 className="text-lg font-semibold flex items-center gap-1.5">
           <IconTicket className="opacity-60 size-5" strokeWidth={1.5} />
           <span>Place Bet</span>
         </h4>
-        {/* <div className="flex gap-1.5">
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setChoice('yes')}
-            className={`rounded-full size-7 border ${
-              choice === 'yes'
-                ? 'bg-green-500 text-white hover:bg-green-600'
-                : 'bg-green-50 text-green-500 hover:bg-green-100'
-            }`}
-          >
-            Y
-          </Button>
-
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => setChoice('no')}
-            className={`rounded-full size-7 border ${
-              choice === 'no'
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-red-50 text-red-500 hover:bg-red-100'
-            }`}
-          >
-            N
-          </Button>
-        </div> */}
       </div>
 
       <div className="flex gap-1.5 mb-4">
@@ -179,7 +152,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
           }`}
         >
           <span>Yes</span>
-          <IconCheck />
+          <IconCheck strokeWidth={2.5} />
         </Button>
 
         <Button
@@ -190,7 +163,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
           }`}
         >
           <span>No</span>
-          <IconX />
+          <IconX strokeWidth={2.5} />
         </Button>
       </div>
 
@@ -245,17 +218,17 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
         ) : null}
       </div>
 
+      {err ? <p className="text-red-500 text-sm font-medium mb-2.5">{err}</p> : null}
+
       {!authenticated ? (
         <ConnectButton className="h-10.5 w-full" />
-      ) : hasEnded ? (
-        <Button className="h-10.5 w-full rounded-lg" disabled>
-          Betting ended
-        </Button>
       ) : (
         <Button
           className={cn(
-            'h-10.5 w-full rounded-lg text-white',
-            choice === 'yes' ? 'bg-green-600' : 'bg-red-600'
+            'h-10.5 w-full rounded-lg',
+            !needsApproval &&
+              !isLoading &&
+              (choice === 'yes' ? 'bg-green-600 text-white' : 'bg-red-600 text-white')
           )}
           disabled={
             isLoading || !amount || isNaN(Number(amount)) || (balance || 0) < Number(amount)
@@ -270,13 +243,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
               ? 'Loading'
               : needsApproval
               ? `Approve ${market.bettingToken.symbol}`
-              : amount
-              ? isNaN(Number(amount))
-                ? 'Not a valid number'
-                : balance && balance < Number(amount)
-                ? 'Insufficient Balance'
-                : `Place ${choice === 'yes' ? 'YES' : 'NO'} Bet`
-              : 'Enter an amount'}
+              : `Place ${choice === 'yes' ? 'YES' : 'NO'} Bet`}
           </span>
         </Button>
       )}

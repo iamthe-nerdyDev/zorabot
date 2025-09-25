@@ -1,7 +1,5 @@
 'use client';
 
-// add portfolio
-
 import React from 'react';
 import { Input } from '../ui/input';
 import { Copy, Power, Search } from 'lucide-react';
@@ -18,21 +16,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ConnectButton from './ConnectButton';
 import { usePrivy } from '@privy-io/react-auth';
-import { useAccount } from 'wagmi';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import { IconArrowRight, IconBox } from '@tabler/icons-react';
+import { IconArrowRight, IconScale } from '@tabler/icons-react';
 import { Badge } from '../ui/badge';
+import SmartImage from './SmartImage';
+import useAddress from '@/hooks/useAddress';
 
 export default function Navbar() {
+  const addr = useAddress();
   const { open: openModal } = useModal();
-  const { address } = useAccount();
-  const { authenticated, user, getAccessToken, logout } = usePrivy();
-  // --
-  const addr = React.useMemo(
-    () => (address || user?.wallet?.address)?.toLowerCase(),
-    [address, user?.wallet]
-  );
+  const { authenticated, getAccessToken, logout, user } = usePrivy();
 
   const openSearchModal = () => {
     openModal({ content: <SearchModal /> });
@@ -131,7 +125,7 @@ export default function Navbar() {
                     href="/positions"
                     className="flex items-center gap-1 text-sm font-medium text-green-500"
                   >
-                    <IconBox className="size-4.5" strokeWidth={1.5} />
+                    <IconScale className="size-4.5" strokeWidth={1.5} />
                     <span>My Positions</span>
                   </Link>
 
@@ -142,7 +136,12 @@ export default function Navbar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger className="rounded-lg">
                       <div className="flex items-center gap-2">
-                        <img src={getImageURL(addr)} className="size-8 rounded-full" />
+                        <SmartImage
+                          src={getImageURL(addr)}
+                          alt={addr}
+                          className="size-8 rounded-full"
+                          loaderClassName="size-8 rounded-full bg-secondary"
+                        />
                         <p className="text-[15px] font-medium border-b border-gray-300">
                           {truncate(addr)}
                         </p>

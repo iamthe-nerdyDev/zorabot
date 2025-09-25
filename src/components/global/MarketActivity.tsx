@@ -1,10 +1,8 @@
 'use client';
 
 import { getActivity } from '@/app/predictions/_components/actions';
-import { usePrivy } from '@privy-io/react-auth';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
-import { useAccount } from 'wagmi';
 import React from 'react';
 import { getImageURL, toNumber, truncate } from '@/lib/helpers';
 import Basescan from '../icons/Basescan';
@@ -14,16 +12,12 @@ import { IconActivity, IconLink } from '@tabler/icons-react';
 import { Loader } from './Loader';
 import { Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import SmartImage from './SmartImage';
+import useAddress from '@/hooks/useAddress';
 
 export default function MarketActivity({ id }: { id: string }) {
   const { ref, inView } = useInView();
-  const account = useAccount();
-  const { user } = usePrivy();
-  // --
-  const address = React.useMemo(
-    () => (account.address || user?.wallet?.address)?.toLowerCase(),
-    [account.address, user?.wallet]
-  );
+  const address = useAddress();
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['activity', id],
@@ -59,7 +53,6 @@ export default function MarketActivity({ id }: { id: string }) {
     );
   }
 
-  // TODO: make the div scrollable
   return (
     <div className="p-4 border rounded-xl">
       <div className="flex flex-col gap-5.5">
@@ -70,7 +63,13 @@ export default function MarketActivity({ id }: { id: string }) {
           >
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
-                <img src={getImageURL(activity.userAddress)} className="size-9 rounded-full" />
+                <SmartImage
+                  src={getImageURL(activity.userAddress)}
+                  alt={activity.userAddress}
+                  className="size-9 rounded-full"
+                  loaderClassName="size-9 rounded-full bg-secondary"
+                />
+
                 <div>
                   <p className="text-sm font-medium mb-0.5">
                     {truncate(activity.userAddress)}&nbsp;

@@ -2,62 +2,7 @@
 
 import prisma from '@/lib/adapters/prisma';
 
-export async function getUserActivePositions(userAddress: string) {
-  const activeMarkets = await prisma.priceMarket.findMany({
-    where: {
-      shares: {
-        some: {
-          userAddress: userAddress,
-        },
-      },
-      OR: [
-        // Market is still unresolved (ongoing)
-        {
-          outcome: 'UNRESOLVED',
-        },
-        // Market is resolved but user hasn't claimed
-        {
-          AND: [
-            {
-              outcome: {
-                not: 'UNRESOLVED',
-              },
-            },
-            {
-              claims: {
-                none: {
-                  userAddress: userAddress,
-                },
-              },
-            },
-          ],
-        },
-      ],
-    },
-    include: {
-      token: true,
-      bettingToken: true,
-      creator: true,
-      shares: {
-        where: {
-          userAddress: userAddress,
-        },
-      },
-      claims: {
-        where: {
-          userAddress: userAddress,
-        },
-      },
-    },
-    orderBy: {
-      endTs: 'desc',
-    },
-  });
-
-  return activeMarkets;
-}
-
-export async function getUserMarketHistory(
+export async function getUserPossitionsHistory(
   userAddress: string,
   options?: {
     includeActive?: boolean;

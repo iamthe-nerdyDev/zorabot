@@ -153,9 +153,7 @@ export default function MarketModal({ market }: Props) {
         </div>
       ) : null}
 
-      <div className="border rounded-lg mb-3">
-        <MarketSharesBuy market={market} />
-      </div>
+      <MarketSharesBuy market={market} />
 
       <Tabs defaultValue="resolution" className="w-full">
         <TabsList className="w-full h-10">

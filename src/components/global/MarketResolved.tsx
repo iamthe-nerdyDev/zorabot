@@ -3,7 +3,7 @@
 import { formatNumber, toNumber } from '@/lib/helpers';
 import React from 'react';
 import { Button } from '../ui/button';
-import { IconAward } from '@tabler/icons-react';
+import { IconAward, IconScale } from '@tabler/icons-react';
 import type { CustomPriceMarket } from '@/types';
 import { calculatePotentialWin } from './UserMarketHoldings';
 import { abi } from '@/lib/abis/ZolifyPricePredictions.abi.json';
@@ -11,6 +11,7 @@ import { CONTRACT_ADDRESS } from '@/lib/constants';
 import { toast } from 'sonner';
 import { useWriteContract } from 'wagmi';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Props {
   market: CustomPriceMarket;
@@ -52,7 +53,22 @@ export function MarketResolved({ market, disableClick = true }: Props) {
 
   const hasClaimed = (market.claims || []).length > 0;
 
-  return !claimAmount ? null : (
+  return !market.resolved || claimAmount == null ? null : claimAmount === 0 ? (
+    <div className="flex items-center gap-1.5">
+      <IconScale className="opacity-50" size={17} />
+      <div className="text-sm">
+        <span className="opacity-50">Market resolved as</span>&nbsp;
+        <span
+          className={cn(
+            'font-semibold',
+            market.outcome === 'YES' ? 'text-green-500' : 'text-red-500'
+          )}
+        >
+          {market.outcome}
+        </span>
+      </div>
+    </div>
+  ) : (
     <Button
       onClick={() => {
         if (disableClick) return;

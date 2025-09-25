@@ -2,15 +2,11 @@
 
 import { formatNumber, toNumber } from '@/lib/helpers';
 import type { CustomPriceMarket } from '@/types';
-import { IconAward, IconTargetArrow } from '@tabler/icons-react';
-import React from 'react';
-import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
-import { useWriteContract } from 'wagmi';
-import { abi } from '@/lib/abis/ZolifyPricePredictions.abi.json';
-import { CONTRACT_ADDRESS } from '@/lib/constants';
-import { toast } from 'sonner';
+import { IconTargetArrow } from '@tabler/icons-react';
 import { cn } from '@/lib/utils';
+import { MarketPending } from './MarketPending';
+import { MarketResolved } from './MarketResolved';
+import React from 'react';
 
 export function calculatePotentialWin(
   on: 'Yes' | 'No',
@@ -30,7 +26,6 @@ export function calculatePotentialWin(
 }
 
 export default function UserMarketHoldings({ market }: { market: CustomPriceMarket }) {
-  const { writeContractAsync, isPending } = useWriteContract();
   const shares = React.useMemo(() => market.shares ?? [], [market]);
   const yesAmount = shares
     .filter((s) => s.isYes)
@@ -38,31 +33,6 @@ export default function UserMarketHoldings({ market }: { market: CustomPriceMark
   const noAmount = shares
     .filter((s) => !s.isYes)
     .reduce((acc, curr) => acc + toNumber(curr.amount, market.bettingToken.decimals), 0);
-
-  const claimAmount = React.useMemo(() => {
-    if (!market.resolved) return null;
-    if (market.outcome === 'NO') return calculatePotentialWin('No', noAmount, market);
-    if (market.outcome === 'YES') return calculatePotentialWin('Yes', yesAmount, market);
-    return 0;
-  }, [market, yesAmount, noAmount]);
-
-  async function claim() {
-    try {
-      await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        abi,
-        functionName: 'claim',
-        args: [BigInt(market.onchain_id)],
-      });
-
-      toast(`Successfully claimed ${formatNumber(claimAmount)} ${market.bettingToken.symbol}}`);
-    } catch (e) {
-      console.error(e);
-      toast('Could not claim rewards');
-    }
-  }
-
-  const hasClaimed = (market.claims || []).length > 0;
 
   return (
     <div className="p-3.5">
@@ -107,25 +77,14 @@ export default function UserMarketHoldings({ market }: { market: CustomPriceMark
         ) : null}
       </div>
 
-      {claimAmount ? (
-        <Button
-          onClick={claim}
-          disabled={hasClaimed || isPending}
-          variant="default"
-          className="w-full h-10.5 gap-1 bg-violet-500 text-white hover:bg-violet-600 mt-4"
-        >
-          {isPending ? (
-            <Loader2 className="size-3.5 opacity-60 animate-spin" strokeWidth={2.5} />
-          ) : null}
-
-          <IconAward className="size-4.5 opacity-100" />
-          <span>
-            {hasClaimed ? 'Claimed' : 'Claim'}&nbsp;
-            <span className="font-medium">
-              {formatNumber(claimAmount)} {market.bettingToken.symbol}
-            </span>
-          </span>
-        </Button>
+      {new Date(market.endTs) < new Date() ? (
+        <div className="mt-2.5">
+          {market.resolved ? (
+            <MarketResolved market={market} disableClick={false} />
+          ) : (
+            <MarketPending />
+          )}
+        </div>
       ) : null}
     </div>
   );

@@ -6,10 +6,9 @@ import { useInView } from 'react-intersection-observer';
 import { getMarkets } from './actions';
 // import MarketSkeleton from '@/components/global/MarketSkeleton';
 import MarketCard from '@/components/global/MarketCard';
-import { useAccount } from 'wagmi';
-import { usePrivy } from '@privy-io/react-auth';
 import { Loader } from '@/components/global/Loader';
 import { IconBasket } from '@tabler/icons-react';
+import useAddress from '@/hooks/useAddress';
 
 type Props = {
   filter: 'trending' | 'ending-soon' | 'newest';
@@ -17,13 +16,7 @@ type Props = {
 
 export default function RenderMarkets({ filter }: Props) {
   const { ref, inView } = useInView();
-  const account = useAccount();
-  const { user } = usePrivy();
-  // --
-  const address = React.useMemo(
-    () => (account.address || user?.wallet?.address)?.toLowerCase(),
-    [account.address, user?.wallet]
-  );
+  const address = useAddress();
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['markets', filter, address],
