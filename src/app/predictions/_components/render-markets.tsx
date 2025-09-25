@@ -7,7 +7,7 @@ import { getMarkets } from './actions';
 // import MarketSkeleton from '@/components/global/MarketSkeleton';
 import MarketCard from '@/components/global/MarketCard';
 import { Loader } from '@/components/global/Loader';
-import { IconBasket } from '@tabler/icons-react';
+import { IconScale } from '@tabler/icons-react';
 import useAddress from '@/hooks/useAddress';
 
 type Props = {
@@ -52,7 +52,7 @@ export default function RenderMarkets({ filter }: Props) {
   if (markets.length === 0) {
     return (
       <div className="flex flex-col text-center items-center justify-center h-80">
-        <IconBasket className="size-13 opacity-50 mb-2.5" strokeWidth={1} />
+        <IconScale className="size-13 opacity-50 mb-2.5" strokeWidth={1} />
         <h5 className="text-xl font-semibold mb-[3px]">Nothing to see here</h5>
         <p className="opacity-70 text-sm">Check back later or try other options</p>
       </div>

@@ -20,7 +20,7 @@ export default function Sidebar() {
       title: 'Home',
       icon: Home,
       href: '/',
-      match: ['/coin/*', '/creator/*'],
+      match: ['/coin/*', '/creator/*', '/positions'],
     },
     {
       title: 'Predictions',
