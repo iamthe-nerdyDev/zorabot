@@ -68,7 +68,7 @@ export default function RenderCoin({ data }: Props) {
   }, [tab]);
 
   return (
-    <div className="overflow-x-hidden lg:flex lg:overflow-y-hidden lg:h-[91dvh]">
+    <div className="overflow-x-hidden lg:flex lg:overflow-y-hidden lg:h-[84dvh]">
       <section className="w-full lg:w-[calc(100vw-520px)]">
         <div className="p-4 border-b flex flex-col gap-4 md:flex-row md:items-center md:gap-8 lg:flex-col lg:items-start lg:gap-4 xl:flex-row xl:items-center xl:gap-8">
           <div className="flex items-center gap-2.5 pr-">

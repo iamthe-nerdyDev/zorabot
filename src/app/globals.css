@@ -148,3 +148,17 @@ th .desc::after {
   content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNyIgaGVpZ2h0PSI5IiB2aWV3Qm94PSIwIDAgNyA5IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cGF0aCBkPSJNMy4xNDkgMC42NDY3NjhDMy4zNDM2NiAwLjQ1NDg4NSAzLjY1NjM0IDAuNDU0ODg1IDMuODUxIDAuNjQ2NzY4TDYuMTMxNTEgMi44OTQ2OUM2LjQ0OTk4IDMuMjA4NjIgNi4yMjc2OSAzLjc1MDc4IDUuNzgwNSAzLjc1MDc4SDEuMjE5NUMwLjc3MjMwNyAzLjc1MDc4IDAuNTUwMDE4IDMuMjA4NjIgMC44Njg0OTUgMi44OTQ2OUwzLjE0OSAwLjY0Njc2OFoiIGZpbGw9IiM2RTc4OTEiLz4KPC9zdmc+Cg==) !important;
   margin-left: 0.45rem;
 }
+
+@keyframes wiggleRight {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-wiggle-right {
+  animation: wiggleRight 1.2s ease-in-out infinite;
+}

@@ -226,7 +226,7 @@ export function getLifiWidgetConfig(opts?: {
       },
     },
     feeConfig: {
-      name: 'Zorlify',
+      name: 'Zolify',
       logoURI: PROTOCOL_LOGO,
       fee: 0.01, // -- 1% fee
       showFeePercentage: true,

@@ -1,4 +1,4 @@
-import { sepolia } from 'viem/chains';
+import { base } from 'viem/chains';
 
 export const IS_PROD = process.env.NODE_ENV === 'production';
 export const DEBUG = IS_PROD ? false : true;
@@ -12,7 +12,7 @@ export const MORALIS_SECRET_KEY = process.env.MORALIS_SECRET_KEY || '';
 export const CRONJOB_API_KEY = process.env.CRONJOB_API_KEY || '';
 export const PRIVATE_KEY = (process.env.PRIVATE_KEY || '') as `0x${string}`;
 // -- client keys
-export const CONTRACT_CHAIN = sepolia; // TODO: change to base!
+export const CONTRACT_CHAIN = base;
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
   '0x25319a78F3AE46A13B19f10871A5eC33EdF91e39') as `0x${string}`;
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

@@ -221,10 +221,7 @@ export default function ExploreComponent() {
       </div>
 
       {isLoading ? (
-        <div
-          className="flex items-center justify-center"
-          style={{ height: `calc(100dvh - ${headerHeight + 65}px)` }}
-        >
+        <div className="flex items-center justify-center py-30">
           <Loader />
         </div>
       ) : (
@@ -235,7 +232,7 @@ export default function ExploreComponent() {
             triggerRowRef={ref}
             triggerOffset={10}
             containerClassName="pb-17 md:pb-0"
-            containerStyles={{ height: `calc(100dvh - ${headerHeight + 65}px)` }}
+            containerStyles={{ height: `calc(100dvh - ${headerHeight + 110}px)` }}
           />
         </div>
       )}

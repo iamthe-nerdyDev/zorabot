@@ -297,7 +297,7 @@ const Home = () => {
       </div>
 
       {isLoading ? (
-        <div className="h-[calc(100vh-126px)] md:h-[calc(100vh-142px)] flex items-center justify-center">
+        <div className="h-[calc(100dvh-169px)] md:h-[calc(100dvh-185px)] flex items-center justify-center">
           <Loader />
         </div>
       ) : (
@@ -307,7 +307,7 @@ const Home = () => {
             data={filteredCoins}
             triggerRowRef={ref}
             triggerOffset={10}
-            containerClassName="h-[calc(100dvh-126px)] md:h-[calc(100dvh-142px)] pb-17 md:pb-0"
+            containerClassName="h-[calc(100dvh-169px)] md:h-[calc(100dvh-185px)] pb-17 md:pb-0"
           />
         </div>
       )}

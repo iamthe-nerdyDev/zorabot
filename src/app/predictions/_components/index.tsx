@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { TabsList, TabsTrigger, Tabs, TabsContent } from '@/components/ui/tabs';
-import { IconClock24, IconFlame, IconListDetails } from '@tabler/icons-react';
+import { IconClock24, IconFlame, IconPlaylistAdd } from '@tabler/icons-react';
 import RenderMarkets from './render-markets';
 
 export default function PredictionsComponent() {
@@ -18,7 +18,7 @@ export default function PredictionsComponent() {
       text: 'Markets Ending Soon',
     },
     newest: {
-      icon: IconListDetails,
+      icon: IconPlaylistAdd,
       text: 'Newest Markets',
     },
   };
@@ -41,7 +41,7 @@ export default function PredictionsComponent() {
           >
             <div className="flex flex-col gap-3 sm:flex-row md:items-center justify-between border-b py-2 px-3">
               <h1 className="font-normal text-xl w-full flex items-center gap-2">
-                <Icon className="size-5 opacity-60" />
+                <Icon className="size-5.5 opacity-60" />
                 <span>{map[activeTab].text}</span>
               </h1>
 

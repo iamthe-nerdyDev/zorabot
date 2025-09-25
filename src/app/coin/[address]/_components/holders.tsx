@@ -3,7 +3,7 @@
 import { Loader } from '@/components/global/Loader';
 import SmartImage from '@/components/global/SmartImage';
 import { Separator } from '@/components/ui/separator';
-import { copyToClipboard, formatNumber, toNumber, toQueryString } from '@/lib/helpers';
+import { copyToClipboard, formatNumber, getImageURL, toNumber, toQueryString } from '@/lib/helpers';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Copy, UserRoundCog } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
@@ -92,7 +92,10 @@ export default function CoinHolders({ coin }: { coin: Coin }) {
             <div className="flex items-start justify-between w-full">
               <div className="flex items-center gap-2.5">
                 <SmartImage
-                  src={holder.ownerProfile.avatar?.previewImage.medium ?? '/avatar.png'}
+                  src={
+                    holder.ownerProfile.avatar?.previewImage.medium ??
+                    getImageURL(holder.ownerAddress)
+                  }
                   alt={holder.ownerAddress}
                   className="size-9 rounded-full"
                   loaderClassName="size-9 rounded-full bg-secondary"

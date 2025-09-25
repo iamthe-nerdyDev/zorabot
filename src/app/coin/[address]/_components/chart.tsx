@@ -75,8 +75,8 @@ export default function CoinChart({ data, price, height }: Props) {
             ? 310
             : typeof window !== 'undefined'
             ? breakpoint === 'lg'
-              ? window.innerHeight - 380
-              : window.innerHeight - 320
+              ? window.innerHeight - 410
+              : window.innerHeight - 370
             : 0)
         }
       >

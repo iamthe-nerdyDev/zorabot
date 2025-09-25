@@ -9,7 +9,7 @@ import MarketCard from '@/components/global/MarketCard';
 import { useAccount } from 'wagmi';
 import { usePrivy } from '@privy-io/react-auth';
 import { Loader } from '@/components/global/Loader';
-import { IconBinaryTree } from '@tabler/icons-react';
+import { IconBasket } from '@tabler/icons-react';
 
 type Props = {
   filter: 'trending' | 'ending-soon' | 'newest';
@@ -59,9 +59,9 @@ export default function RenderMarkets({ filter }: Props) {
   if (markets.length === 0) {
     return (
       <div className="flex flex-col text-center items-center justify-center h-80">
-        <IconBinaryTree className="size-12 opacity-50 mb-3" strokeWidth={1} />
-        <h5 className="text-lg font-semibold mb-0.5">Nothing to see here</h5>
-        <p className="opacity-70 text-sm">Try other options, might be a filter issue</p>
+        <IconBasket className="size-13 opacity-50 mb-2.5" strokeWidth={1} />
+        <h5 className="text-xl font-semibold mb-[3px]">Nothing to see here</h5>
+        <p className="opacity-70 text-sm">Check back later or try other options</p>
       </div>
     );
   }

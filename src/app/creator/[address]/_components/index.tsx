@@ -183,7 +183,7 @@ export default function CreatorComponent({ data: profile }: { data: ZoraProfileA
         </Button>
       </div>
       {isLoading ? (
-        <div className="h-[calc(100vh-300px)] md:h-[calc(100vh-232px)] flex items-center justify-center">
+        <div className="py-30 flex items-center justify-center">
           <Loader />
         </div>
       ) : (
@@ -193,7 +193,7 @@ export default function CreatorComponent({ data: profile }: { data: ZoraProfileA
             data={filteredCoins}
             triggerRowRef={ref}
             triggerOffset={10}
-            containerClassName="h-[calc(100dvh-300px)] md:h-[calc(100dvh-232px)] pb-17 md:pb-0"
+            containerClassName="h-[calc(100dvh-350px)] md:h-[calc(100dvh-280px)] pb-17 md:pb-0"
           />
         </div>
       )}
