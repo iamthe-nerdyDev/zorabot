@@ -58,7 +58,7 @@ export const metadata: Metadata = {
       'Track Zora tokens with real-time analytics and explore price prediction markets on Zolify.',
     url: 'https://zolify.xyz',
     siteName: 'Zolify',
-    images: [{ url: '/farcaster/og.png', width: 6000, height: 2000 }],
+    images: [{ url: 'https://zolify.xyz/farcaster/og.png', width: 6000, height: 2000 }],
     locale: 'en_US',
     type: 'website',
   },
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     description:
       'Track Zora tokens with real-time analytics and explore price prediction markets on Zolify.',
     creator: '@zolify',
-    images: ['/farcaster/og.png'],
+    images: ['https://zolify.xyz/farcaster/og.png'],
   },
   other: {
     'fc:miniapp': `${JSON.stringify(FarcasterEmbedJson)}`,
