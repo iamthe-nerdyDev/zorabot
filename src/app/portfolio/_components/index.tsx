@@ -271,7 +271,7 @@ export default function PortfolioComponent() {
         <DataTable<Holding>
           columns={columns}
           data={holdings}
-          containerClassName="h-[calc(100dvh-160px)] md:h-[calc(100dvh-173px)] pb-17 md:pb-0"
+          containerClassName="h-[calc(100dvh-205px)] md:h-[calc(100dvh-212px)] pb-17 md:pb-0"
           triggerRowRef={ref}
           triggerOffset={10}
         />
