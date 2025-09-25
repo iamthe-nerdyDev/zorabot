@@ -4,7 +4,7 @@ import { createConfig } from '@privy-io/wagmi';
 import { baseAccount } from 'wagmi/connectors';
 import { type Chain, createClient } from 'viem';
 
-export const connectors = [baseAccount({ appName: 'ZoraCore' })];
+export const connectors = [baseAccount({ appName: 'Zolify' })];
 export const chains: [Chain, ...Chain[]] = [base];
 
 export const wagmiConfig = createConfig({

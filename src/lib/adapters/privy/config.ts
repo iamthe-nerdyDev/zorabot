@@ -12,7 +12,7 @@ export const privyConfig: PrivyClientConfig = {
     theme: 'dark',
     walletChainType: 'ethereum-only',
     walletList: ['detected_wallets', 'base_account', 'coinbase_wallet'],
-    loginMessage: 'Continue to ZoraCore',
+    loginMessage: 'Continue to Zolify',
     logo: PROTOCOL_LOGO,
   },
 };

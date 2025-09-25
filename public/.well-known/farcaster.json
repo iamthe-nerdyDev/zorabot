@@ -3,14 +3,14 @@
     "version": "1",
     "name": "Zolify",
     "homeUrl": "https://zolify.xyz",
-    "tags": ["social", "tokens", "analytics", "predictions market"],
+    "tags": ["social", "tokens", "analytics", "predictions", "defi"],
     "iconUrl": "https://zolify.xyz/farcaster/icon.png",
     "imageUrl": "https://zolify.xyz/farcaster/og.png",
     "subtitle": "The lens into Zora coins",
     "tagline": "The lens into Zora coins",
     "webhookUrl": "https://zolify.xyz/api/webhook",
     "buttonTitle": "Launch Zolify",
-    "description": "An analytics platform for Zora tokens with powerful insights and a price predictions market to help traders and builders navigate the Zora ecosystem.",
+    "description": "Track Zora tokens with real-time analytics and explore price prediction markets on Zolify",
     "screenshotUrls": [
       "https://zolify.xyz/farcaster/screenshots/1.png",
       "https://zolify.xyz/farcaster/screenshots/2.png",
@@ -21,7 +21,7 @@
     "splashBackgroundColor": "#0a0a0a",
     "heroImageUrl": "https://zolify.xyz/farcaster/og.png",
     "ogTitle": "ZoraBot",
-    "ogDescription": "An analytics platform for Zora tokens with powerful insights and a price predictions market to help traders and builders navigate the Zora ecosystem.",
+    "ogDescription": "Track Zora tokens with real-time analytics and explore price prediction markets on Zolify",
     "ogImageUrl": "https://zolify.xyz/farcaster/og.png"
   },
   "accountAssociation": {
