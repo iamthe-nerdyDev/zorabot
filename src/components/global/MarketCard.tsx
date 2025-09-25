@@ -15,12 +15,13 @@ import MarketModal from './MarketModal';
 
 type Props = {
   market: CustomPriceMarket;
-  isTrending?: boolean;
   ref?: React.Ref<HTMLDivElement>;
+  disableClick?: boolean;
 };
 
-export default function MarketCard({ ref, market, isTrending = false }: Props) {
+export default function MarketCard({ ref, market, disableClick = false }: Props) {
   const { open } = useModal();
+  const isTrending = React.useMemo(() => (market.shares ?? []).length > 0, [market]);
   const total = React.useMemo(() => {
     return (
       toNumber(market.totalNoShares, market.bettingToken.decimals) +
@@ -33,7 +34,10 @@ export default function MarketCard({ ref, market, isTrending = false }: Props) {
       className="flex flex-col py-5 hover:border-white cursor-pointer"
       ref={ref}
       role="button"
-      onClick={() => open({ content: <MarketModal market={market} isTrending={isTrending} /> })}
+      onClick={() => {
+        if (disableClick) return;
+        open({ content: <MarketModal market={market} /> });
+      }}
     >
       <CardHeader className="px-5">
         <CardTitle className="leading-6">💎 {buildQuestion(market)}</CardTitle>
@@ -48,7 +52,7 @@ export default function MarketCard({ ref, market, isTrending = false }: Props) {
 
           {new Date(market.endTs) < new Date() ? (
             market.resolved ? (
-              <MarketResolved market={market} />
+              <MarketResolved market={market} disableClick={!disableClick} />
             ) : (
               <MarketPending />
             )

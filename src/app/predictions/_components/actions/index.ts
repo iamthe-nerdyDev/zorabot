@@ -84,7 +84,7 @@ export async function getMarkets(
     return marketIds.map((id) => markets.find((m) => m.id === id)!);
   }
 
-  // where.resolved = false;
+  where.resolved = false;
 
   if (filter === 'ending-soon') {
     const twentyFourHoursFromNow = new Date();

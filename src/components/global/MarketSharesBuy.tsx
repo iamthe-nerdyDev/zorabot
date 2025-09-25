@@ -132,6 +132,8 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
   const fee = formatNumber(feeBps && amount ? (Number(amount) * feeBps) / 10000 : 0, false);
   //   const net = amount ? Number(amount) - fee : 0;
 
+  // the button should only take the colour when no blockers (or put blockers as text errors)
+
   return (
     <div className="p-3.5">
       <div className="flex items-center justify-between mb-3.5">

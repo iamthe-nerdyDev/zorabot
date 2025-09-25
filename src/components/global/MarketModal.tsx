@@ -30,7 +30,6 @@ import { toast } from 'sonner';
 
 type Props = {
   market: CustomPriceMarket;
-  isTrending?: boolean;
 };
 
 type ChartResponse = {
@@ -40,8 +39,9 @@ type ChartResponse = {
   };
 };
 
-export default function MarketModal({ market, isTrending = false }: Props) {
+export default function MarketModal({ market }: Props) {
   const { close } = useModal();
+  const isTrending = React.useMemo(() => (market.shares ?? []).length > 0, [market]);
   const total = React.useMemo(() => {
     return (
       toNumber(market.totalNoShares, market.bettingToken.decimals) +

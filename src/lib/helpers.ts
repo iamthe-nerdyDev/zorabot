@@ -30,7 +30,7 @@ export function buildQuestion(market: CustomPriceMarket) {
   return `${market.token.name} ${market.targetIsAboveTargetPrice ? 'above' : 'below'} $${toNumber(
     market.targetPrice,
     6
-  )} on ${utcString(new Date(market.endTs))} UTC?`;
+  )} on ${utcString(new Date(market.endTs))} UTC?${market.resolved ? ` (${market.outcome})` : ''}`;
 }
 
 export function toQueryString(obj?: Record<string, any>) {

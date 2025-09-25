@@ -6,12 +6,19 @@ import { Button } from '../ui/button';
 import { IconAward } from '@tabler/icons-react';
 import type { CustomPriceMarket } from '@/types';
 import { calculatePotentialWin } from './UserMarketHoldings';
+import { abi } from '@/lib/abis/ZolifyPricePredictions.abi.json';
+import { CONTRACT_ADDRESS } from '@/lib/constants';
+import { toast } from 'sonner';
+import { useWriteContract } from 'wagmi';
+import { Loader2 } from 'lucide-react';
 
 interface Props {
   market: CustomPriceMarket;
+  disableClick?: boolean;
 }
 
-export function MarketResolved({ market }: Props) {
+export function MarketResolved({ market, disableClick = true }: Props) {
+  const { writeContractAsync, isPending } = useWriteContract();
   const shares = React.useMemo(() => market.shares ?? [], [market]);
   const yesAmount = shares
     .filter((s) => s.isYes)
@@ -27,15 +34,38 @@ export function MarketResolved({ market }: Props) {
     return 0;
   }, [market, yesAmount, noAmount]);
 
+  async function claim() {
+    try {
+      await writeContractAsync({
+        address: CONTRACT_ADDRESS,
+        abi,
+        functionName: 'claim',
+        args: [BigInt(market.onchain_id)],
+      });
+
+      toast(`Successfully claimed ${formatNumber(claimAmount)} ${market.bettingToken.symbol}}`);
+    } catch (e) {
+      console.error(e);
+      toast('Could not claim rewards');
+    }
+  }
+
   const hasClaimed = (market.claims || []).length > 0;
 
   return !claimAmount ? null : (
     <Button
-      onClick={() => {}}
-      disabled={hasClaimed}
+      onClick={() => {
+        if (disableClick) return;
+        claim();
+      }}
+      disabled={hasClaimed || isPending}
       variant="default"
       className="w-full h-10.5 gap-1 bg-violet-500 text-white hover:bg-violet-600 mt-2"
     >
+      {isPending ? (
+        <Loader2 className="size-3.5 opacity-60 animate-spin" strokeWidth={2.5} />
+      ) : null}
+
       <IconAward className="size-4.5 opacity-100" />
       <span>
         {hasClaimed ? 'Claimed' : 'Claim'}&nbsp;

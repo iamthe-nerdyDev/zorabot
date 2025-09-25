@@ -74,7 +74,6 @@ export default function RenderMarkets({ filter }: Props) {
             ref={idx === markets.length ? ref : undefined} // intentional!
             market={market}
             key={idx}
-            isTrending={filter === 'trending'}
           />
         ))}
       </div>
