@@ -1,7 +1,6 @@
 'use client';
 
 import React, { type PropsWithChildren } from 'react';
-// import { createConfig, EVM, config } from '@lifi/sdk';
 import { usePrivy } from '@privy-io/react-auth';
 import { Loader } from '../global/Loader';
 import miniappSdk from '@farcaster/miniapp-sdk';
@@ -18,6 +17,8 @@ export default function CustomProvider({ children }: PropsWithChildren) {
       if (!miniappSdk || isSDKLoaded) return;
       // --
       const response = await miniappSdk.isInMiniApp();
+      setIsInMiniApp(response);
+
       if (response) {
         miniappSdk.back.enableWebNavigation();
         miniappSdk.actions.ready();
@@ -25,7 +26,6 @@ export default function CustomProvider({ children }: PropsWithChildren) {
         miniappSdk.actions.addMiniApp().catch((e) => console.error(e));
       }
 
-      setIsInMiniApp(response);
       setIsSDKLoaded(true);
     }
 
