@@ -5,6 +5,7 @@ import RenderCoin from './_components/render-coin';
 import { Metadata } from 'next';
 import { formatNumber } from '@/lib/helpers';
 import { Alert } from '@/generated/prisma';
+import type { CustomPriceMarket } from '@/types';
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { address } = await params;
@@ -32,6 +33,7 @@ const Coin = async ({ params }: any) => {
   if (!res.ok) notFound();
   const data = (await res.json()).data as {
     coin: Coin;
+    markets: CustomPriceMarket[];
     chart: ZoraChart;
     alerts?: Alert[];
     inWatchlist?: boolean;

@@ -1,13 +1,14 @@
-import { base } from 'wagmi/chains';
+import { base, sepolia } from 'wagmi/chains';
 import { http } from 'wagmi';
 import { createConfig } from '@privy-io/wagmi';
 import { baseAccount } from 'wagmi/connectors';
-import { createClient } from 'viem';
+import { type Chain, createClient } from 'viem';
 
 export const connectors = [baseAccount({ appName: 'ZoraCore' })];
+export const chains: [Chain, ...Chain[]] = [base, sepolia];
 
 export const wagmiConfig = createConfig({
-  chains: [base],
+  chains: chains as readonly [Chain, ...Chain[]],
   ssr: true,
   connectors,
   client({ chain }) {

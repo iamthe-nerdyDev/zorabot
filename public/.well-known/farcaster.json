@@ -1,32 +1,32 @@
 {
   "frame": {
-    "name": "ZoraCore",
-    "tags": ["social", "tokens", "analytics"],
-    "homeUrl": "https://zorabot.vercel.app",
-    "iconUrl": "https://zorabot.vercel.app/farcaster/icon.png",
-    "imageUrl": "https://zorabot.vercel.app/farcaster/og.png",
     "version": "1",
+    "name": "Zolify",
+    "homeUrl": "https://zolify.xyz",
+    "tags": ["social", "tokens", "analytics", "predictions market"],
+    "iconUrl": "https://zolify.xyz/farcaster/icon.png",
+    "imageUrl": "https://zolify.xyz/farcaster/og.png",
     "subtitle": "The lens into Zora coins",
     "tagline": "The lens into Zora coins",
-    "webhookUrl": "https://zorabot.vercel.app/api/webhook",
-    "buttonTitle": "Open ZoraBot",
-    "description": "Get detailed insights about Zora tokens, creator coins, and posts directly inside Farcaster",
+    "webhookUrl": "https://zolify.xyz/api/webhook",
+    "buttonTitle": "Launch Zolify",
+    "description": "An analytics platform for Zora tokens with powerful insights and a price predictions market to help traders and builders navigate the Zora ecosystem.",
     "screenshotUrls": [
-      "https://zorabot.vercel.app/farcaster/screenshots/1.png",
-      "https://zorabot.vercel.app/farcaster/screenshots/2.png",
-      "https://zorabot.vercel.app/farcaster/screenshots/3.png"
+      "https://zolify.xyz/farcaster/screenshots/1.png",
+      "https://zolify.xyz/farcaster/screenshots/2.png",
+      "https://zolify.xyz/farcaster/screenshots/3.png"
     ],
-    "splashImageUrl": "https://zorabot.vercel.app/farcaster/splash.png",
+    "splashImageUrl": "https://zolify.xyz/farcaster/splash.png",
     "primaryCategory": "finance",
     "splashBackgroundColor": "#0a0a0a",
-    "heroImageUrl": "https://zorabot.vercel.app/farcaster/og.png",
+    "heroImageUrl": "https://zolify.xyz/farcaster/og.png",
     "ogTitle": "ZoraBot",
-    "ogDescription": "Get detailed insights about Zora tokens, creator coins, and posts directly inside Farcaster",
-    "ogImageUrl": "https://zorabot.vercel.app/farcaster/og.png"
+    "ogDescription": "An analytics platform for Zora tokens with powerful insights and a price predictions market to help traders and builders navigate the Zora ecosystem.",
+    "ogImageUrl": "https://zolify.xyz/farcaster/og.png"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjEzMTY5NDEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhjMzRENjY5MWU1M0UzMzVEZTA4QjEzNDNFM2EyM0ExN2JlODkzNUI4In0",
-    "payload": "eyJkb21haW4iOiJ6b3JhYm90LnZlcmNlbC5hcHAifQ",
-    "signature": "MHg5YjI1NGY4ODlmYjIwYzY1YmRjMTg1OThlMmY4ODNhZDRiNTcwZmUzMTQ5Yzc3MzBlYzlmYzgyMWZmMmQxMTg3MGU1NTIxNTc0YWRhODYyYjAxMGY3ZjRkNDQ3YjNkY2NhODY2YjIwY2EyYjQ5YTJmYWM0MGE1YjE3Y2VmYTU2OTFj"
+    "payload": "eyJkb21haW4iOiJ6b2xpZnkueHl6In0",
+    "signature": "MHg0NzZmY2M1NzgzMDI0YmE0MzVkYmVkNDY3YjMxZDI1NGVkOWRlNDA2ZmVmMmUxZWIyYTY4ZTdiOTQ5ZGNjNDU3MDgyYjg0YmIyNTFiMWFhNTFkZmQ0OGFmNmRkZGY1OTcxNGNiNGI5NmZiOTBhYThiZWFiMTc1OGUxZjhjMDg3ZjFj"
   }
 }

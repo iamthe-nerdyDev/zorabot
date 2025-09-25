@@ -120,6 +120,17 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        }
+      ],
+      "name": "SafeERC20FailedOperation",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "uint256",
           "name": "value",
           "type": "uint256"
@@ -153,40 +164,9 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "fee",
-          "type": "uint256"
         }
       ],
       "name": "Claimed",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "marketId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "feeAmount",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "address",
-          "name": "feeAddress",
-          "type": "address"
-        }
-      ],
-      "name": "FeeCollected",
       "type": "event"
     },
     {
@@ -416,6 +396,12 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "fee",
+          "type": "uint256"
         }
       ],
       "name": "SharesPurchased",
@@ -543,25 +529,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "bytes",
-          "name": "response",
-          "type": "bytes"
-        }
-      ],
-      "name": "decodePrice",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "price",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "donId",
       "outputs": [
@@ -606,6 +573,49 @@
           "internalType": "uint256",
           "name": "marketId",
           "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "usr",
+          "type": "address"
+        }
+      ],
+      "name": "getAmountClaimable",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "getFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "marketId",
+          "type": "uint256"
         }
       ],
       "name": "getMarket",
@@ -618,6 +628,11 @@
         {
           "internalType": "address",
           "name": "creator",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "bettingToken",
           "type": "address"
         },
         {
@@ -659,11 +674,6 @@
           "internalType": "bool",
           "name": "resolved",
           "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "feeCollected",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -864,11 +874,6 @@
           "internalType": "bool",
           "name": "resolved",
           "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "feeCollected",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -1113,19 +1118,6 @@
         }
       ],
       "name": "transferOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_source",
-          "type": "string"
-        }
-      ],
-      "name": "updateSource",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

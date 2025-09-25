@@ -8,6 +8,7 @@ import { CONTRACT_ADDRESS, MORALIS_SECRET_KEY } from '@/lib/constants';
 import Moralis from 'moralis';
 import { createEvent } from '@/lib/helpers';
 import client from '@/lib/client';
+import zora from '@/lib/adapters/zora';
 
 Moralis.start({ streamsSecret: MORALIS_SECRET_KEY });
 
@@ -66,18 +67,20 @@ async function upsertToken(tokenAddress: `0x${string}`) {
       },
     });
   } catch {
+    const coin = await zora.getCoin(tokenAddress);
     return await prisma.token.upsert({
       where: { address: tokenAddress },
       update: {
-        name: 'Unknown Token',
-        symbol: 'UNT',
-        decimals: 16,
+        name: coin?.name ?? 'Unknown Token',
+        symbol: coin?.symbol ?? 'UNT',
+        decimals: 18,
+        description: '',
       },
       create: {
         address: tokenAddress,
-        name: 'Unknown Token',
-        symbol: 'UNT',
-        decimals: 16,
+        name: coin?.name ?? 'Unknown Token',
+        symbol: coin?.symbol ?? 'UNT',
+        decimals: 18,
         description: '',
         icon: '',
       },
@@ -162,6 +165,7 @@ export async function POST(req: NextRequest) {
 
   const log = body.logs[0];
   if (!log) return NextResponse.json('Ok'); // -- testing webhook
+  if (body.confirmed == true) return NextResponse.json('Ok'); // -- idempodency rocks!
 
   const response = decodeEvent(log);
   console.log(response);
@@ -222,8 +226,14 @@ export async function POST(req: NextRequest) {
       const [role, usr, actor] = args;
       // --
       if (role === CREATOR_ROLE) {
-        if (name == 'RoleGranted')
-          await prisma.creator.create({ data: { address: usr, admin: actor } });
+        if (name == 'RoleGranted') {
+          await prisma.creator.upsert({
+            update: {},
+            where: { address: usr },
+            create: { address: usr, admin: actor },
+          });
+        }
+
         if (name == 'RoleRevoked') await prisma.creator.delete({ where: { address: usr } });
       }
     }

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const { marketId } = body;
   const market = await prisma.priceMarket.findFirst({ where: { id: marketId } });
   console.log(market);
-  if (market) {
+  if (market && !market.resolved) {
     const account = privateKeyToAccount(PRIVATE_KEY);
     const walletClient = createWalletClient({
       account,

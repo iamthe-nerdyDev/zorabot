@@ -14,12 +14,12 @@ export const PRIVATE_KEY = (process.env.PRIVATE_KEY || '') as `0x${string}`;
 // -- client keys
 export const CONTRACT_CHAIN = sepolia; // TODO: change to base!
 export const CONTRACT_ADDRESS = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS ||
-  '0xa4729be1EB35d45319B5f4cCEbd6cdf26Ee83309') as `0x${string}`;
+  '0x25319a78F3AE46A13B19f10871A5eC33EdF91e39') as `0x${string}`;
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 export const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID || 'cmeqz4m1i01npkz0cqljvaf2g';
 export const PRIVY_CLIENT_ID = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID;
 // --
 export const LIFI_INTEGRATOR = process.env.NEXT_PUBLIC_LIFI_INTEGRATOR || 'Zorlify';
-export const PROTOCOL_LOGO = 'https://zorabot.vercel.app/farcaster/splash-transparent.png';
+export const PROTOCOL_LOGO = 'https://zolify.xyz/farcaster/splash-transparent.png';
 const NEXT_PUBLIC_SWAP_PERCENTAGE = Number(process.env.NEXT_PUBLIC_SWAP_PERCENTAGE || 1);
 export const SWAP_PERCENTAGE = isNaN(NEXT_PUBLIC_SWAP_PERCENTAGE) ? 1 : NEXT_PUBLIC_SWAP_PERCENTAGE;

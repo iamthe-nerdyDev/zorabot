@@ -3,14 +3,15 @@
 import { Button } from '@/components/ui/button';
 import useBreakpoint from '@/hooks/useBreakpoint';
 import { formatNumber } from '@/lib/helpers';
-import { ChartColumn } from 'lucide-react';
+import { IconChartBar } from '@tabler/icons-react';
 import React from 'react';
 import { AreaChart, Tooltip, Area, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import type { MouseHandlerDataParam } from 'recharts/types/synchronisation/types';
 
 type Props = {
   data: ZoraChart | null;
-  price: number;
+  price?: number;
+  height?: number;
 };
 
 const OPTIONS = [
@@ -21,7 +22,7 @@ const OPTIONS = [
   { key: 'all', label: 'All' },
 ];
 
-export default function CoinChart({ data, price }: Props) {
+export default function CoinChart({ data, price, height }: Props) {
   const breakpoint = useBreakpoint();
   const [mousePosition, setMousePosition] = React.useState<null | {
     x: number;
@@ -55,15 +56,18 @@ export default function CoinChart({ data, price }: Props) {
 
   return (
     <div className="pb-4">
-      <div className="p-4">
-        <p className="text-sm text-muted-foreground font-medium">Price</p>
-        <h1 className="text-3xl font-semibold">${formatNumber(hoverPrice ?? price)}</h1>
-      </div>
+      {price && (
+        <div className="p-4">
+          <p className="text-sm text-muted-foreground font-medium">Price</p>
+          <h1 className="text-3xl font-semibold">${formatNumber(hoverPrice ?? price, false)}</h1>
+        </div>
+      )}
 
       <ResponsiveContainer
         width="100%"
         height={
-          breakpoint === 'base'
+          height ||
+          (breakpoint === 'base'
             ? 200
             : breakpoint === 'sm'
             ? 250
@@ -73,7 +77,7 @@ export default function CoinChart({ data, price }: Props) {
             ? breakpoint === 'lg'
               ? window.innerHeight - 380
               : window.innerHeight - 320
-            : 0
+            : 0)
         }
       >
         {chartData && chartData.length > 0 ? (
@@ -132,7 +136,7 @@ export default function CoinChart({ data, price }: Props) {
           </AreaChart>
         ) : (
           <div className="flex flex-col h-full items-center justify-center gap-2 opacity-60">
-            <ChartColumn strokeWidth={1.8} className="size-8" />
+            <IconChartBar strokeWidth={1.3} className="size-8" />
             <p className="font-medium">Nothing here</p>
           </div>
         )}

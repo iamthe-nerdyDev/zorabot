@@ -1,10 +1,10 @@
 import { PROTOCOL_LOGO } from '@/lib/constants';
 import { type PrivyClientConfig } from '@privy-io/react-auth';
-import { base } from 'wagmi/chains';
+import { chains } from '../wagmi/config';
 
 export const privyConfig: PrivyClientConfig = {
-  defaultChain: base,
-  supportedChains: [base],
+  defaultChain: chains[0],
+  supportedChains: chains,
   loginMethodsAndOrder: {
     primary: ['base_account', 'coinbase_wallet', 'detected_wallets'],
   },

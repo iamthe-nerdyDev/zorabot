@@ -5,6 +5,33 @@ import { createPublicClient, http, formatEther, formatUnits } from 'viem';
 import { base } from 'viem/chains';
 import { ChainId, ChainType, type WidgetConfig } from '@lifi/widget';
 import { BASE_URL, CRONJOB_API_KEY, LIFI_INTEGRATOR, PROTOCOL_LOGO } from './constants';
+import type { CustomPriceMarket } from '@/types';
+import { abi as Erc20_Abi } from '@/lib/abis/ERC20.abi.json';
+
+export function getImageURL(seed: string) {
+  return `https://api.dicebear.com/9.x/glass/svg?seed=${seed}`;
+}
+
+export function utcString(date: Date) {
+  const text = date.toLocaleString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'UTC',
+  });
+
+  return text.replace(',', '');
+}
+
+export function buildQuestion(market: CustomPriceMarket) {
+  return `${market.token.name} ${market.targetIsAboveTargetPrice ? 'above' : 'below'} $${toNumber(
+    market.targetPrice,
+    6
+  )} on ${utcString(new Date(market.endTs))} UTC?`;
+}
 
 export function toQueryString(obj?: Record<string, any>) {
   if (!obj) return '';
@@ -24,7 +51,7 @@ export function getPercentChange(a: number, delta: number): number {
   return (delta / oldPrice) * 100;
 }
 
-export function formatNumber(number?: number | null) {
+export function formatNumber(number?: number | null, shrink = true) {
   if (!number || number == 0) return '0';
 
   const num = Math.abs(number);
@@ -37,7 +64,39 @@ export function formatNumber(number?: number | null) {
     return number.toFixed(3).replace(/\.?0+$/, '');
   }
 
-  return '<0.001';
+  if (shrink) return '<0.001';
+
+  let decimalPlaces = 50; // default for very small numbers
+
+  const scientificMatch = num.toString().match(/e-(\d+)/);
+  if (scientificMatch) {
+    decimalPlaces = parseInt(scientificMatch[1]) + 10; // add some buffer
+  }
+
+  const numStr = num.toFixed(decimalPlaces).replace(/\.?0+$/, '');
+
+  // Find the first non-zero digit after decimal point
+  const decimalIndex = numStr.indexOf('.');
+  if (decimalIndex === -1) return numStr;
+
+  const decimalPart = numStr.slice(decimalIndex + 1);
+  let nonZeroIndex = -1;
+
+  for (let i = 0; i < decimalPart.length; i++) {
+    if (decimalPart[i] !== '0') {
+      nonZeroIndex = i;
+      break;
+    }
+  }
+
+  if (nonZeroIndex === -1) return '0';
+
+  // Take 2 significant digits after the first non-zero digit
+  const significantDigits = 2;
+  const endIndex = nonZeroIndex + significantDigits;
+  const truncatedDecimal = decimalPart.substring(0, endIndex);
+
+  return `0.${truncatedDecimal}`;
 }
 
 export async function copyToClipboard(text: string) {
@@ -81,7 +140,12 @@ export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSch
   }
 }
 
-export function toNumber(value: string, decimals = 18) {
+export function toBigIntAmount(value: number, decimals: number) {
+  const scaled = Math.trunc(value * 10 ** decimals);
+  return BigInt(scaled);
+}
+
+export function toNumber(value: string | bigint, decimals = 18) {
   return Number(value) / 10 ** decimals;
 }
 
@@ -89,23 +153,6 @@ const client = createPublicClient({
   chain: base,
   transport: http(),
 });
-
-const ERC20_ABI = [
-  {
-    type: 'function',
-    name: 'balanceOf',
-    stateMutability: 'view',
-    inputs: [{ name: 'account', type: 'address' }],
-    outputs: [{ type: 'uint256' }],
-  },
-  {
-    type: 'function',
-    name: 'decimals',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ type: 'uint8' }],
-  },
-];
 
 export async function getNativeBalance(address: `0x${string}`) {
   const balance = await client.getBalance({ address });
@@ -116,11 +163,11 @@ export async function getTokenBalance(address: `0x${string}`, token: `0x${string
   const [rawBalance, decimals] = await Promise.all([
     client.readContract({
       address: token,
-      abi: ERC20_ABI,
+      abi: Erc20_Abi,
       functionName: 'balanceOf',
       args: [address],
     }),
-    client.readContract({ address: token, abi: ERC20_ABI, functionName: 'decimals' }),
+    client.readContract({ address: token, abi: Erc20_Abi, functionName: 'decimals' }),
   ]);
   return Number(formatUnits(rawBalance as bigint, decimals as number));
 }

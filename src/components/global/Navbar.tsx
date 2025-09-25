@@ -2,12 +2,11 @@
 
 import React from 'react';
 import { Input } from '../ui/input';
-import { Copy, Power, Search, Wallet2 } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Copy, Power, Search } from 'lucide-react';
 import useModal from '@/hooks/useModal';
 import SearchModal from './SearchModal';
 import Link from 'next/link';
-import { copyToClipboard, truncate } from '@/lib/helpers';
+import { copyToClipboard, getImageURL, truncate } from '@/lib/helpers';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,7 +49,6 @@ export default function Navbar() {
     async function run() {
       if (!user) return;
 
-      // FIXME:
       const token = await getAccessToken();
       await fetch('/api/auth', {
         method: 'POST',
@@ -80,7 +78,7 @@ export default function Navbar() {
 
             <Link href={'/'} className="flex items-center gap-3">
               <img src={'/logo.png'} className="w-9 rounded-full h-auto" />
-              <p className="font-light text-2xl">Zorlify</p>
+              {/* <p className="font-light text-2xl">Zolify</p> */}
             </Link>
           </div>
 
@@ -105,17 +103,15 @@ export default function Navbar() {
 
           <aside className="flex items-center gap-3">
             {authenticated && addr ? (
-              <React.Fragment>
+              <div className="flex items-center gap-2.5">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="rounded-lg">
-                    <Button variant={'outline'} className="rounded-lg h-9.5 w-34" asChild>
-                      <p>
-                        <Wallet2 className="opacity-60" strokeWidth={1.6} />
-                        <span>{truncate(addr)}</span>
-                      </p>
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <img src={getImageURL(addr)} className="size-8 rounded-full" />
+                      <p className="text-[15px] font-medium">{truncate(addr)}</p>
+                    </div>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-45 mr-3" side="bottom">
+                  <DropdownMenuContent className="w-45 mr-2" side="bottom" sideOffset={10}>
                     <DropdownMenuLabel className="opacity-50">Account</DropdownMenuLabel>
                     <DropdownMenuItem>
                       <button
@@ -134,7 +130,7 @@ export default function Navbar() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </React.Fragment>
+              </div>
             ) : (
               <ConnectButton />
             )}

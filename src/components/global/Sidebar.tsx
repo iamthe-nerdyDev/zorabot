@@ -9,6 +9,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useSidebar } from '@/hooks/useSidebar';
 import { isPathMatching } from '@/lib/helpers';
+import { IconTargetArrow } from '@tabler/icons-react';
 
 export default function Sidebar() {
   const path = usePathname();
@@ -22,6 +23,11 @@ export default function Sidebar() {
       match: ['/coin/*', '/creator/*'],
     },
     {
+      title: 'Predictions',
+      icon: IconTargetArrow,
+      href: '/predictions',
+    },
+    {
       title: 'Explore',
       icon: Compass,
       href: '/explore',
@@ -30,6 +36,7 @@ export default function Sidebar() {
       title: 'Alerts',
       icon: Bell,
       href: '/alerts',
+      hideOnMobile: true,
     },
     {
       title: 'Watchlist',
@@ -133,8 +140,9 @@ export default function Sidebar() {
             const isActive =
               path === menu.href || (menu.match && menu.match.some((m) => isPathMatching(path, m)));
 
-            return (
+            return menu.hideOnMobile ? null : (
               <Link
+                key={menu.title}
                 href={menu.href}
                 className={cn(
                   'flex flex-col gap-0.5 items-center text-center p-1.5',

@@ -15,9 +15,11 @@ import CoinSwaps from './swaps';
 import CoinTrades from './trades';
 import CoinHolders from './holders';
 import { Alert } from '@/generated/prisma';
+import type { CustomPriceMarket } from '@/types';
 
 type Props = {
   data: {
+    markets: CustomPriceMarket[];
     coin: Coin;
     chart: ZoraChart;
     alerts?: Alert[];
@@ -108,7 +110,7 @@ export default function RenderCoin({ data }: Props) {
             <div>
               <p className="text-xs opacity-60 font-medium">Price</p>
               <p className="text-sm font-medium">
-                ${formatNumber(Number(data.coin.price.priceInUsdc))}
+                ${formatNumber(Number(data.coin.price.priceInUsdc), false)}
               </p>
             </div>
 
@@ -134,7 +136,12 @@ export default function RenderCoin({ data }: Props) {
             <CoinChart data={data.chart} price={Number(data.coin.price.priceInUsdc)} />
           </div>
           <div className="block lg:hidden mb-20">
-            <Tab coin={data.coin} alerts={data.alerts} inWatchlist={data.inWatchlist} />
+            <Tab
+              coin={data.coin}
+              alerts={data.alerts}
+              inWatchlist={data.inWatchlist}
+              markets={data.markets}
+            />
           </div>
         </div>
       </section>
@@ -157,7 +164,12 @@ export default function RenderCoin({ data }: Props) {
           ))}
         </nav>
 
-        <Tab coin={data.coin} alerts={data.alerts} inWatchlist={data.inWatchlist} />
+        <Tab
+          coin={data.coin}
+          alerts={data.alerts}
+          inWatchlist={data.inWatchlist}
+          markets={data.markets}
+        />
       </aside>
 
       <nav className="flex gap-5 py-3 px-5.5 lg:hidden bg-background fixed bottom-0 border z-20 rounded-full left-1/2 -translate-1/2">

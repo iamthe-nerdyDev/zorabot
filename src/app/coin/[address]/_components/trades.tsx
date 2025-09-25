@@ -1,24 +1,24 @@
 'use client';
 
 import React from 'react';
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { IconAppWindow, IconCircleSquare, IconStar } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Bell, Clock, Copy } from 'lucide-react';
 import { copyToClipboard, truncate } from '@/lib/helpers';
 import { format } from 'date-fns';
 import { Alert } from '@/generated/prisma';
-// import Buy from './trades/_components/buy';
-// import Sell from './trades/_components/sell';
 import SwapWidget from './swap-widget';
+import type { CustomPriceMarket } from '@/types';
+import MarketCard from '@/components/global/MarketCard';
 
 type Props = {
   coin: Coin;
   alerts?: Alert[];
+  markets: CustomPriceMarket[];
   inWatchlist?: boolean;
 };
 
-export default function CoinTrades({ coin }: Props) {
+export default function CoinTrades({ coin, markets }: Props) {
   const details = [
     {
       icon: Clock,
@@ -48,26 +48,20 @@ export default function CoinTrades({ coin }: Props) {
 
   return (
     <React.Fragment>
+      {markets.length > 0 ? (
+        <div className="px-3 py-2 w-full max-w-md mx-auto flex flex-col gap-4">
+          <h2 className="font-bold text-2xl mt-5 text-center">Price Predictions</h2>
+          <div className="w-full flex flex-col gap-3">
+            {markets.map((market, idx) => (
+              <MarketCard market={market} key={idx} />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       <div className="max-w-md mx-auto border-b">
         <SwapWidget coin={coin} />
       </div>
-
-      {/* <div className="border-t border-b lg:border-t-0 p-3 w-full pb-5">
-        <Tabs defaultValue="buy" className="w-full max-w-md mx-auto">
-          <TabsList className="w-full h-10">
-            <TabsTrigger value="buy">Buy</TabsTrigger>
-            <TabsTrigger value="sell">Sell</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="buy">
-            <Buy coin={coin} />
-          </TabsContent>
-
-          <TabsContent value="sell">
-            <Sell coin={coin} />
-          </TabsContent>
-        </Tabs>
-      </div> */}
 
       <div className="px-3 py-2 w-full max-w-md mx-auto border-b flex items-center gap-3">
         <Button className="flex-1 h-10.5" size={'lg'} variant={'outline'}>
