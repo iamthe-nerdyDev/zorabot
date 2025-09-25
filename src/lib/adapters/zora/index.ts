@@ -22,8 +22,8 @@ class Zora {
         ? '0x498581ff718922c3f8e6a244956af099b2652b2b'
         : coin.node.uniswapV3PoolAddress,
       price: {
-        priceInPoolToken: coin.node.tokenPrice.priceInPoolToken,
-        priceInUsdc: coin.node.tokenPrice.priceInUsdc,
+        priceInPoolToken: coin.node.tokenPrice?.priceInPoolToken ?? '0',
+        priceInUsdc: coin.node.tokenPrice?.priceInUsdc ?? '0',
       },
       marketCap: coin.node.marketCap,
       marketCapDelta24h: coin.node.marketCapDelta24h,
