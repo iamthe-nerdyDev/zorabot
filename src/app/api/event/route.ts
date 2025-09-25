@@ -1,5 +1,11 @@
 import prisma from '@/lib/adapters/prisma';
-import { CONTRACT_ADDRESS, CONTRACT_CHAIN, CRONJOB_API_KEY, PRIVATE_KEY } from '@/lib/constants';
+import {
+  CONTRACT_ADDRESS,
+  CONTRACT_CHAIN,
+  CRONJOB_API_KEY,
+  PRIVATE_KEY,
+  RPC_URL,
+} from '@/lib/constants';
 import { NextRequest, NextResponse } from 'next/server';
 import { createWalletClient, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -22,7 +28,7 @@ export async function POST(req: NextRequest) {
     const walletClient = createWalletClient({
       account,
       chain: CONTRACT_CHAIN,
-      transport: http(),
+      transport: http(RPC_URL),
     });
 
     const tx = await writeContract(walletClient, {

@@ -3,6 +3,7 @@ import { http } from 'wagmi';
 import { createConfig } from '@privy-io/wagmi';
 import { baseAccount } from 'wagmi/connectors';
 import { type Chain, createClient } from 'viem';
+import { RPC_URL } from '@/lib/constants';
 
 export const connectors = [baseAccount({ appName: 'Zolify' })];
 export const chains: [Chain, ...Chain[]] = [base];
@@ -12,6 +13,6 @@ export const wagmiConfig = createConfig({
   ssr: true,
   connectors,
   client({ chain }) {
-    return createClient({ chain, transport: http() });
+    return createClient({ chain, transport: http(RPC_URL) });
   },
 });

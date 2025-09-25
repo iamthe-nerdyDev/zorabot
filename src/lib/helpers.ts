@@ -1,12 +1,12 @@
 import { ZodObject, ZodError } from 'zod';
 import qs from 'querystring';
 import { toast } from 'sonner';
-import { createPublicClient, http, formatEther, formatUnits } from 'viem';
-import { base } from 'viem/chains';
+import { formatEther, formatUnits } from 'viem';
 import { ChainId, ChainType, type WidgetConfig } from '@lifi/widget';
 import { BASE_URL, CRONJOB_API_KEY, LIFI_INTEGRATOR, PROTOCOL_LOGO } from './constants';
 import type { CustomPriceMarket } from '@/types';
 import { abi as Erc20_Abi } from '@/lib/abis/ERC20.abi.json';
+import client from './client';
 
 export function getImageURL(seed: string) {
   return `https://api.dicebear.com/9.x/glass/svg?seed=${seed}`;
@@ -148,11 +148,6 @@ export function toBigIntAmount(value: number, decimals: number) {
 export function toNumber(value: string | bigint, decimals = 18) {
   return Number(value) / 10 ** decimals;
 }
-
-const client = createPublicClient({
-  chain: base,
-  transport: http(),
-});
 
 export async function getNativeBalance(address: `0x${string}`) {
   const balance = await client.getBalance({ address });

@@ -131,7 +131,9 @@ export default function Navbar() {
                     <DropdownMenuTrigger className="rounded-lg">
                       <div className="flex items-center gap-2">
                         <img src={getImageURL(addr)} className="size-8 rounded-full" />
-                        <p className="text-[15px] font-medium">{truncate(addr)}</p>
+                        <p className="text-[15px] font-medium border-b border-gray-300">
+                          {truncate(addr)}
+                        </p>
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-45 mr-2" side="bottom" sideOffset={10}>
