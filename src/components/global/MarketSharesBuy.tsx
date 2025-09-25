@@ -123,6 +123,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
     }
   }
 
+  const isLoading = isPending || isFetchingFee || isFetchingAllowance || isFetchingBalance;
   const hasEnded = new Date().getTime() > new Date(market.endTs).getTime();
   const needsApproval =
     allowance !== undefined && (allowance === 0 || allowance < toNumber(amount));
@@ -227,21 +228,15 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
         <Button
           className="h-10.5 w-full rounded-lg"
           disabled={
-            isPending ||
-            isFetchingFee ||
-            isFetchingAllowance ||
-            isFetchingBalance ||
-            !amount ||
-            isNaN(Number(amount)) ||
-            (balance || 0) < Number(amount)
+            isLoading || !amount || isNaN(Number(amount)) || (balance || 0) < Number(amount)
           }
           onClick={needsApproval ? approve : buyShares}
         >
-          {isPending || isFetchingFee ? (
+          {isLoading ? (
             <Loader2 className="size-3.5 opacity-60 animate-spin" strokeWidth={2.5} />
           ) : null}
           <span>
-            {isFetchingFee
+            {isLoading
               ? 'Loading form'
               : needsApproval
               ? `Approve ${market.bettingToken.symbol}`
