@@ -21,7 +21,7 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useAccount } from 'wagmi';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import { IconArrowRight } from '@tabler/icons-react';
+import { IconArrowRight, IconBox } from '@tabler/icons-react';
 import { Badge } from '../ui/badge';
 
 export default function Navbar() {
@@ -126,7 +126,19 @@ export default function Navbar() {
 
             <aside className="flex items-center gap-3">
               {authenticated && addr ? (
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/positions"
+                    className="flex items-center gap-1 text-sm font-medium text-green-500"
+                  >
+                    <IconBox className="size-4.5" strokeWidth={1.5} />
+                    <span>My Positions</span>
+                  </Link>
+
+                  <div className="h-7">
+                    <Separator orientation="vertical" />
+                  </div>
+
                   <DropdownMenu>
                     <DropdownMenuTrigger className="rounded-lg">
                       <div className="flex items-center gap-2">

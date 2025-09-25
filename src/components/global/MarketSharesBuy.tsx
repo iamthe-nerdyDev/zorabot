@@ -14,9 +14,10 @@ import client from '@/lib/client';
 import { useAccount, useWriteContract } from 'wagmi';
 import { formatNumber, toBigIntAmount, toNumber } from '@/lib/helpers';
 import { Input } from '../ui/input';
-import { IconTicket } from '@tabler/icons-react';
+import { IconCheck, IconTicket, IconX } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { ethers } from 'ethers';
+import { cn } from '@/lib/utils';
 
 export default function MarketSharesBuy({ market }: { market: CustomPriceMarket }) {
   const [amount, setAmount] = React.useState('');
@@ -138,7 +139,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
           <IconTicket className="opacity-60 size-5" strokeWidth={1.5} />
           <span>Place Bet</span>
         </h4>
-        <div className="flex gap-1.5">
+        {/* <div className="flex gap-1.5">
           <Button
             type="button"
             size="sm"
@@ -164,7 +165,31 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
           >
             N
           </Button>
-        </div>
+        </div> */}
+      </div>
+
+      <div className="flex gap-1.5 mb-4">
+        <Button
+          type="button"
+          onClick={() => setChoice('yes')}
+          className={`h-10.5 flex-1 bg-green-500 text-white hover:bg-green-600 ${
+            choice === 'yes' ? 'opacity-100' : 'bg-green-300 opacity-50'
+          }`}
+        >
+          <span>Yes</span>
+          <IconCheck />
+        </Button>
+
+        <Button
+          type="button"
+          onClick={() => setChoice('no')}
+          className={`h-10.5 flex-1 bg-red-500 text-white hover:bg-red-600 ${
+            choice === 'no' ? 'opacity-100' : 'bg-red-300 opacity-50'
+          }`}
+        >
+          <span>No</span>
+          <IconX />
+        </Button>
       </div>
 
       <div className="mb-3">
@@ -226,7 +251,10 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
         </Button>
       ) : (
         <Button
-          className="h-10.5 w-full rounded-lg"
+          className={cn(
+            'h-10.5 w-full rounded-lg text-white',
+            choice === 'yes' ? 'bg-green-600' : 'bg-red-600'
+          )}
           disabled={
             isLoading || !amount || isNaN(Number(amount)) || (balance || 0) < Number(amount)
           }
@@ -237,7 +265,7 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
           ) : null}
           <span>
             {isLoading
-              ? 'Loading form'
+              ? 'Loading'
               : needsApproval
               ? `Approve ${market.bettingToken.symbol}`
               : amount
