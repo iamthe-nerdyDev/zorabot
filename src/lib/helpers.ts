@@ -140,9 +140,10 @@ export function validateZodSchema<T>(schema: ZodObject, data: T): ValidateZodSch
   }
 }
 
-export function toBigIntAmount(value: number, decimals: number) {
-  const scaled = Math.trunc(value * 10 ** decimals);
-  return BigInt(scaled);
+export function toBigIntAmount(value: number, decimals: number, roundUp = false) {
+  const scaled = value * 10 ** decimals;
+  const result = roundUp ? Math.ceil(scaled) : Math.trunc(scaled);
+  return BigInt(result);
 }
 
 export function toNumber(value: string | bigint, decimals = 18) {

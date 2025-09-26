@@ -84,7 +84,10 @@ export default function MarketSharesBuy({ market }: { market: CustomPriceMarket 
         address: market.bettingToken.address as `0x${string}`,
         abi: Erc20Abi,
         functionName: 'approve',
-        args: [CONTRACT_ADDRESS, ethers.MaxUint256],
+        args: [
+          CONTRACT_ADDRESS,
+          toBigIntAmount(Number(amount), market.bettingToken.decimals, true),
+        ],
       });
 
       await refetchAllowance();
