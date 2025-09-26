@@ -61,7 +61,7 @@ export function formatNumber(number?: number | null, shrink = true) {
   if (num >= 1_000) return (number / 1_000).toFixed(2) + 'K';
 
   if (num >= 0.001) {
-    return number.toFixed(3).replace(/\.?0+$/, '');
+    // return number.toFixed(3).replace(/\.?0+$/, '');
   }
 
   if (shrink) return '<0.001';
