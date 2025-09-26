@@ -6,7 +6,7 @@ import { IconClock24, IconFlame, IconPlaylistAdd } from '@tabler/icons-react';
 import RenderMarkets from './render-markets';
 
 export default function PredictionsComponent() {
-  const [activeTab, setActiveTab] = React.useState('trending');
+  const [activeTab, setActiveTab] = React.useState('newest');
 
   const map: any = {
     trending: {
