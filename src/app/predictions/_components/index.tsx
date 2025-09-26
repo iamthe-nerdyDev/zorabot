@@ -34,7 +34,7 @@ export default function PredictionsComponent() {
       <div className="pb-20 mb:pb-0">
         <div>
           <Tabs
-            defaultValue="trending"
+            defaultValue="newest"
             value={activeTab}
             onValueChange={setActiveTab}
             className="w-full"
@@ -46,20 +46,20 @@ export default function PredictionsComponent() {
               </h1>
 
               <TabsList className="w-full sm:max-w-md mx-auto h-10">
+                <TabsTrigger value="newest">Newest</TabsTrigger>
                 <TabsTrigger value="trending">Trending</TabsTrigger>
                 <TabsTrigger value="ending-soon">Ending Soon</TabsTrigger>
-                <TabsTrigger value="newest">Newest</TabsTrigger>
               </TabsList>
             </div>
 
+            <TabsContent value="newest">
+              <RenderMarkets filter="newest" />
+            </TabsContent>
             <TabsContent value="trending">
               <RenderMarkets filter="trending" />
             </TabsContent>
             <TabsContent value="ending-soon">
               <RenderMarkets filter="ending-soon" />
-            </TabsContent>
-            <TabsContent value="newest">
-              <RenderMarkets filter="newest" />
             </TabsContent>
           </Tabs>
         </div>

@@ -11,11 +11,12 @@ import {
   IconScale,
   IconShare3,
   IconTrendingUp,
+  IconCopy,
   IconX,
 } from '@tabler/icons-react';
 import useModal from '@/hooks/useModal';
 import Link from 'next/link';
-import { buildQuestion, toNumber, utcString } from '@/lib/helpers';
+import { buildQuestion, toNumber, utcString, copyToClipboard } from '@/lib/helpers';
 import { MarketProgress } from './MarketProgress';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
@@ -54,6 +55,11 @@ export default function MarketModal({ market }: Props) {
       title: 'Close',
       icon: IconX,
       onclick: close,
+    },
+    {
+      title: 'Copy',
+      icon: IconCopy,
+      onclick: () => copyToClipboard(`${BASE_URL}/coin/${market.token.address}`),
     },
     {
       title: 'Share',
