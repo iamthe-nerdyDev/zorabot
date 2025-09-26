@@ -60,8 +60,8 @@ export function formatNumber(number?: number | null, shrink = true) {
   if (num >= 1_000_000) return (number / 1_000_000).toFixed(2) + 'M';
   if (num >= 1_000) return (number / 1_000).toFixed(2) + 'K';
 
-  if (num >= 0.001) {
-    // return number.toFixed(3).replace(/\.?0+$/, '');
+  if (num >= 1) {
+    return number.toFixed(4).replace(/\.?0+$/, '');
   }
 
   if (shrink && num < 0.001) return '<0.001';
