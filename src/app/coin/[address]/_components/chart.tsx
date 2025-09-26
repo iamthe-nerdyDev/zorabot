@@ -56,12 +56,12 @@ export default function CoinChart({ data, price, height }: Props) {
 
   return (
     <div className="pb-4">
-      {price && (
+      {typeof price === 'number' ? (
         <div className="p-4">
           <p className="text-sm text-muted-foreground font-medium">Price</p>
           <h1 className="text-3xl font-semibold">${formatNumber(hoverPrice ?? price, false)}</h1>
         </div>
-      )}
+      ) : null}
 
       <ResponsiveContainer
         width="100%"
