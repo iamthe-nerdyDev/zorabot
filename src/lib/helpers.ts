@@ -64,7 +64,7 @@ export function formatNumber(number?: number | null, shrink = true) {
     // return number.toFixed(3).replace(/\.?0+$/, '');
   }
 
-  if (shrink) return '<0.001';
+  if (shrink && num < 0.001) return '<0.001';
 
   let decimalPlaces = 50; // default for very small numbers
 
