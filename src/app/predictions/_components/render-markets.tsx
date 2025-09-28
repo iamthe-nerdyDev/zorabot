@@ -16,8 +16,8 @@ type Props = {
 
 export default function RenderMarkets({ filter }: Props) {
   const { ref, inView } = useInView();
-  // const address = useAddress();
-  const address = '0x220cea70580da89994d708fe18732a7ac7b3ac66';
+  const address = useAddress();
+  // const address = '0x220cea70580da89994d708fe18732a7ac7b3ac66';
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = useInfiniteQuery({
     queryKey: ['markets', filter, address],
