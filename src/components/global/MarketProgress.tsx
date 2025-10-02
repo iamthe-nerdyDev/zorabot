@@ -15,7 +15,7 @@ export function MarketProgress({ totalNoShares, totalYesShares, className }: Pro
   return (
     <div className={cn('mb-4', className)}>
       <div className="flex justify-between mb-1.5">
-        <span className="text-red-300 font-semibold">
+        <span className="text-green-300 font-semibold">
           <span className="text-sm">Yes&nbsp;</span>
           <span className="text-xs">{Math.floor(yesPercentage)}%</span>
         </span>
