@@ -84,10 +84,15 @@ export async function getMarkets(
     return marketIds.map((id) => markets.find((m) => m.id === id)!);
   }
 
-  if (filter === 'ended') where.resolved = true;
-  else where.resolved = false;
+  if (filter === 'ended') {
+    where.resolved = true;
+    orderBy = {
+      endTs: 'desc',
+    };
+  }
 
   if (filter === 'ending-soon') {
+    where.resolved = false;
     const twentyFourHoursFromNow = new Date();
     twentyFourHoursFromNow.setHours(twentyFourHoursFromNow.getHours() + 24);
 
@@ -102,6 +107,7 @@ export async function getMarkets(
   }
 
   if (filter === 'newest') {
+    where.resolved = false;
     orderBy = {
       createdAt: 'desc',
     };
