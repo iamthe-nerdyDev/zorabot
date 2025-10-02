@@ -11,7 +11,7 @@ import { IconScale } from '@tabler/icons-react';
 import useAddress from '@/hooks/useAddress';
 
 type Props = {
-  filter: 'trending' | 'ending-soon' | 'newest';
+  filter: 'trending' | 'ending-soon' | 'newest' | 'ended';
 };
 
 export default function RenderMarkets({ filter }: Props) {
