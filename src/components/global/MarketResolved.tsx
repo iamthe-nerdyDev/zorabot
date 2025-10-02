@@ -53,7 +53,7 @@ export function MarketResolved({ market, disableClick = true }: Props) {
 
   const hasClaimed = (market.claims || []).length > 0;
 
-  return !market.resolved || claimAmount == null ? null : claimAmount === 0 ? (
+  return !market.resolved || claimAmount == null || shares.length === 0 ? null : claimAmount === 0 ? (
     <div className="flex items-center gap-1.5">
       <IconScale className="opacity-50" size={17} />
       <div className="text-sm">
