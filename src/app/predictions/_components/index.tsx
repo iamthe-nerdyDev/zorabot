@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { TabsList, TabsTrigger, Tabs, TabsContent } from '@/components/ui/tabs';
-import { IconClock24, IconFlame, IconPlaylistAdd } from '@tabler/icons-react';
+import { IconCircleCheck, IconClock24, IconFlame, IconPlaylistAdd } from '@tabler/icons-react';
 import RenderMarkets from './render-markets';
 
 export default function PredictionsComponent() {
@@ -20,6 +20,10 @@ export default function PredictionsComponent() {
     newest: {
       icon: IconPlaylistAdd,
       text: 'Newest Markets',
+    },
+    ended: {
+      icon: IconCircleCheck,
+      text: 'Ended Markets',
     },
   };
 
@@ -49,6 +53,7 @@ export default function PredictionsComponent() {
                 <TabsTrigger value="newest">Newest</TabsTrigger>
                 <TabsTrigger value="trending">Trending</TabsTrigger>
                 <TabsTrigger value="ending-soon">Ending Soon</TabsTrigger>
+                <TabsTrigger value="ended">Ended</TabsTrigger>
               </TabsList>
             </div>
 
@@ -60,6 +65,9 @@ export default function PredictionsComponent() {
             </TabsContent>
             <TabsContent value="ending-soon">
               <RenderMarkets filter="ending-soon" />
+            </TabsContent>
+            <TabsContent value="ended">
+              <RenderMarkets filter="ended" />
             </TabsContent>
           </Tabs>
         </div>
