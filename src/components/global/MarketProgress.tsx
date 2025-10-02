@@ -19,7 +19,8 @@ export function MarketProgress({ totalNoShares, totalYesShares, className }: Pro
           <span className="text-sm">Yes&nbsp;</span>
           <span className="text-xs">{Math.floor(yesPercentage)}%</span>
         </span>
-        <span className="text-primary/50 font-semibold">
+        {/* <span className="text-primary/50 font-semibold"> */}
+        <span className="text-red-300 font-semibold">
           <span className="text-sm">No&nbsp;</span>
           <span className="text-xs">{Math.floor(100 - yesPercentage)}%</span>
         </span>
