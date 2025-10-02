@@ -28,7 +28,7 @@ export async function getActivity(marketId: string, page = 1) {
 }
 
 export async function getMarkets(
-  filter: 'trending' | 'ending-soon' | 'newest',
+  filter: 'trending' | 'ending-soon' | 'newest' | 'ended',
   page = 1,
   opts?: { tokenAddress?: string; userAddress?: string }
 ): Promise<CustomPriceMarket[]> {
@@ -84,7 +84,8 @@ export async function getMarkets(
     return marketIds.map((id) => markets.find((m) => m.id === id)!);
   }
 
-  where.resolved = false;
+  if (filter === 'ended') where.resolved = true;
+  else where.resolved = false;
 
   if (filter === 'ending-soon') {
     const twentyFourHoursFromNow = new Date();
