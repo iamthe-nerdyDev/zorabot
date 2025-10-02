@@ -20,13 +20,12 @@ export default function CustomProvider({ children }: PropsWithChildren) {
       setIsInMiniApp(response);
 
       if (response) {
-        miniappSdk.back.enableWebNavigation();
+        setIsSDKLoaded(true);
         miniappSdk.actions.ready();
+        miniappSdk.back.enableWebNavigation();
         // --
         miniappSdk.actions.addMiniApp().catch((e) => console.error(e));
       }
-
-      setIsSDKLoaded(true);
     }
 
     init();
